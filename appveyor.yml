@@ -6,7 +6,7 @@ install:
   - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
 
 before_build:
-  - nuget restore src\Nine.Graphics.sln
+  - nuget restore Nine.Graphics.sln
 
 build:
   parallel: true
