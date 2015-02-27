@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>$id$</id>
+        <version>$version$</version>
+        <authors>$author$</authors>
+        <licenseUrl>https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/studio-nine/Nine.Graphics</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>$description$</description>
+        <tags>PCL, Portable, IOC, Constructor Graphics, Dependency Graphics</tags>
+    </metadata>
+</package>
