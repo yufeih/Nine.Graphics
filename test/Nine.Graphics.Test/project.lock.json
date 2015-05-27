@@ -5,7 +5,10 @@
     "": [
       "Nine.Graphics >= 1.0.0-*",
       "xunit >= 2.1.0-beta2-*",
-      "xunit.runner.dnx >= 2.1.0-beta2-*"
+      "xunit.runner.dnx >= 2.1.0-beta2-*",
+      "Nine.Graphics.DirectX >= 1.0.0-*",
+      "Nine.Graphics.OpenGL >= 1.0.0-*",
+      "Nine.Injection >= 1.1.66-alpha"
     ],
     "DNX,Version=v4.5.1": []
   },
@@ -774,6 +777,174 @@
         "lib/portable-net45+wp80+win8+wpa81+aspnetcore50/Newtonsoft.Json.dll",
         "lib/portable-net45+wp80+win8+wpa81+aspnetcore50/Newtonsoft.Json.xml",
         "tools/install.ps1"
+      ]
+    },
+    "Nine.Imaging/1.0.78-alpha": {
+      "serviceable": false,
+      "sha": "2ViufWQKRq6qm6bUBKSr+XbBYd7UM7OUtjnfD3TfE5RQQhktW3sXOt7zVJgJ1Hg85ekEhtYzGXN2g/IMxpI7xg==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {
+            "SharpZipLib.Portable": "0.86.0.0002"
+          },
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {
+            "SharpZipLib.Portable": "0.86.0.0002"
+          },
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ]
+        }
+      },
+      "files": [
+        "Nine.Imaging.1.0.78-alpha.nupkg",
+        "Nine.Imaging.1.0.78-alpha.nupkg.sha512",
+        "Nine.Imaging.nuspec",
+        "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+      ]
+    },
+    "Nine.Injection/1.1.66-alpha": {
+      "serviceable": false,
+      "sha": "bmNM5QO9kWzEkSUjbz4Lx52hjcsgAJCsgAeMn+pLeV5mFzDb3JU2979TbRNgDBq6mJLNGfnn31CzVs9tRiUZlw==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Injection.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Injection.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Injection.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Injection.dll"
+          ]
+        }
+      },
+      "files": [
+        "Nine.Injection.1.1.66-alpha.nupkg",
+        "Nine.Injection.1.1.66-alpha.nupkg.sha512",
+        "Nine.Injection.nuspec",
+        "lib/portable-net45+win+wp80/Nine.Injection.dll",
+        "lib/portable-net45+win+wp80/Nine.Injection.XML"
+      ]
+    },
+    "OpenTK/1.1.1589.5942": {
+      "serviceable": false,
+      "sha": "kDJrP4a/bqlyFtMiy+dn9stzAoHxLQ2RvEwp6dcpixefdN1CVcQb9gPjpsEvpUXau+IoSyVsUHxNGDOs7bGUSA==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/NET40/OpenTK.dll"
+          ],
+          "compileAssemblies": [
+            "lib/NET40/OpenTK.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [],
+          "compileAssemblies": []
+        }
+      },
+      "files": [
+        "OpenTK.1.1.1589.5942.nupkg",
+        "OpenTK.1.1.1589.5942.nupkg.sha512",
+        "OpenTK.nuspec",
+        "lib/NET40/OpenTK.dll",
+        "lib/NET40/OpenTK.dll.config",
+        "lib/NET40/OpenTK.xml"
+      ]
+    },
+    "SharpDX/3.0.0-alpha01": {
+      "serviceable": false,
+      "sha": "Jc0uHltCQw9+SbaxdaLtHAefR6bp9dRPZSSKSKU4+/0RrQYD3+KRdw6DZUxtSMPigSSQATqUuS0R0lTiqp/jVg==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/net45/SharpDX.dll"
+          ],
+          "compileAssemblies": [
+            "lib/net45/SharpDX.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.dll"
+          ]
+        }
+      },
+      "files": [
+        "SharpDX.3.0.0-alpha01.nupkg",
+        "SharpDX.3.0.0-alpha01.nupkg.sha512",
+        "SharpDX.nuspec",
+        "lib/net45/SharpDX.dll",
+        "lib/net45/SharpDX.xml",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.dll",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.xml"
+      ]
+    },
+    "SharpZipLib.Portable/0.86.0.0002": {
+      "serviceable": false,
+      "sha": "udGFuRKSOMjjZdUKS9y7WRPQeuVuzbZjW2YgLVmQlV53lYNNbToqH9nyYq01md8tHJrL+Iymr2Mr5+oggkrBow==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ]
+        }
+      },
+      "files": [
+        "SharpZipLib.Portable.0.86.0.0002.nupkg",
+        "SharpZipLib.Portable.0.86.0.0002.nupkg.sha512",
+        "SharpZipLib.Portable.nuspec",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.pdb",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.xml"
       ]
     },
     "System.Collections.Immutable/1.1.33-beta": {

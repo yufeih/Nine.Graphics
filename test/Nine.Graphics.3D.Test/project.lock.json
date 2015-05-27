@@ -776,6 +776,76 @@
         "tools/install.ps1"
       ]
     },
+    "Nine.Imaging/1.0.78-alpha": {
+      "serviceable": false,
+      "sha": "2ViufWQKRq6qm6bUBKSr+XbBYd7UM7OUtjnfD3TfE5RQQhktW3sXOt7zVJgJ1Hg85ekEhtYzGXN2g/IMxpI7xg==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {
+            "SharpZipLib.Portable": "0.86.0.0002"
+          },
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {
+            "SharpZipLib.Portable": "0.86.0.0002"
+          },
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ]
+        }
+      },
+      "files": [
+        "Nine.Imaging.1.0.78-alpha.nupkg",
+        "Nine.Imaging.1.0.78-alpha.nupkg.sha512",
+        "Nine.Imaging.nuspec",
+        "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+      ]
+    },
+    "SharpZipLib.Portable/0.86.0.0002": {
+      "serviceable": false,
+      "sha": "udGFuRKSOMjjZdUKS9y7WRPQeuVuzbZjW2YgLVmQlV53lYNNbToqH9nyYq01md8tHJrL+Iymr2Mr5+oggkrBow==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
+          ]
+        }
+      },
+      "files": [
+        "SharpZipLib.Portable.0.86.0.0002.nupkg",
+        "SharpZipLib.Portable.0.86.0.0002.nupkg.sha512",
+        "SharpZipLib.Portable.nuspec",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.pdb",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.xml"
+      ]
+    },
     "System.Collections.Immutable/1.1.33-beta": {
       "serviceable": true,
       "sha": "Qnv6M/BRf0w1xNoD5tH7V+jK0kdO+OZymwQS5Lj6FALt3AZMGVeJs+lHXi1PsKFll67UtGY+I7r8WDhRzspXCA==",

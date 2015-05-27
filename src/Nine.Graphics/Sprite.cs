@@ -15,5 +15,8 @@
         public float Rotation { get; set; }
 
         public TextureId Texture { get; set; }
+
+        public Sprite() { }
+        public Sprite(TextureId texture) { this.Texture = texture; }
     }
 }
