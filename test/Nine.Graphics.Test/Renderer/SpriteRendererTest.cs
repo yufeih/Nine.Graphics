@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class SpriteRendererTest : TestBase
+    public class SpriteRendererTest : GraphicsTest
     {
         public static readonly TheoryData<Type, Type, string> Dimensions = new TheoryData<Type, Type, string>
         {
@@ -15,12 +15,10 @@
         [MemberData(nameof(Dimensions))]
         public async Task draw_an_image(Type hostType, Type rendererType, string texture)
         {
-            using (var host = Container.Get(hostType) as IGraphicsHost)
+            using (Frame(hostType))
             {
                 var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
                 renderer.Draw(new[] { new Sprite(texture) });
-
-                host.GetTexture();
             }
         }
     }

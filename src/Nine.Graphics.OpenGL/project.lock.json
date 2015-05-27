@@ -6,7 +6,9 @@
       "OpenTK >= 1.1.1589.5942",
       "Nine.Graphics "
     ],
-    "DNX,Version=v4.5.1": []
+    "DNX,Version=v4.5.1": [
+      "framework/System.Drawing >= 4.0.0.0"
+    ]
   },
   "libraries": {
     "Nine.Imaging/1.0.78-alpha": {
