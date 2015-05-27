@@ -810,6 +810,44 @@
         "lib/portable-net45+win8+wp8+wpa81/System.Collections.Immutable.xml"
       ]
     },
+    "System.Numerics.Vectors/4.0.0": {
+      "serviceable": true,
+      "sha": "H/72pHnKZ5wZk8lMrZ2H10OsBgkRcbQ7sXuLzxAL9/evRB95yYf3j+iXdrRv2JHNGspdmC8oVo7B3RQrY5QBWw==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
+          ]
+        }
+      },
+      "files": [
+        "License-Stable.rtf",
+        "System.Numerics.Vectors.4.0.0.nupkg",
+        "System.Numerics.Vectors.4.0.0.nupkg.sha512",
+        "System.Numerics.Vectors.nuspec",
+        "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll",
+        "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.xml",
+        "lib/win8/System.Numerics.Vectors.dll",
+        "lib/win8/System.Numerics.Vectors.WindowsRuntime.dll",
+        "lib/win8/System.Numerics.Vectors.WindowsRuntime.xml",
+        "lib/win8/System.Numerics.Vectors.xml"
+      ]
+    },
     "System.Reflection.Metadata/1.0.18-beta": {
       "serviceable": true,
       "sha": "4PtC2U6seQthZMvXvGTxXZUqlF0oV9jzYNTkG0Yo/D6cLO5AH3lrxh2djGyKsDYnAZjBCoyA/z3vHRCeaBEp4w==",

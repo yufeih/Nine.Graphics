@@ -1,13 +1,13 @@
 ﻿{
     "version": "1.0.0-*",
-    "description": "A real-time rendering library",
+    "description": "The openGL renderer for Nine.Graphics",
     "authors": [ "Yufei Huang" ],
     "tags": [ "graphics, realtime rendering, 3d" ],
     "projectUrl": "https://github.com/studio-nine/Nine.Graphics",
     "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
     "dependencies": {
-        "System.Numerics.Vectors": "4.0.0"
+        "OpenTK": "1.1.1589.5942"
     },
 
     "frameworks": {
