@@ -7,12 +7,4 @@
     {
         Task<Stream> Load(string name);
     }
-
-    public class ContentLoader : IContentLoader
-    {
-        public Task<Stream> Load(string name)
-        {
-            return Task.FromResult<Stream>(File.OpenRead(name));
-        }
-    }
 }

@@ -9,7 +9,11 @@
     },
 
     "frameworks": {
-        "dnx451": { }
+        "dnx451": {
+            "frameworkAssemblies": {
+                "System.Drawing": "4.0.0.0"
+            }
+        }
     },
 
     "commands": {

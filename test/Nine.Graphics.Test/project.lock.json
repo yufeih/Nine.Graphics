@@ -10,7 +10,9 @@
       "Nine.Graphics.OpenGL >= 1.0.0-*",
       "Nine.Injection >= 1.1.66-alpha"
     ],
-    "DNX,Version=v4.5.1": []
+    "DNX,Version=v4.5.1": [
+      "framework/System.Drawing >= 4.0.0.0"
+    ]
   },
   "libraries": {
     "Microsoft.CodeAnalysis.Analyzers/1.0.0-rc2": {

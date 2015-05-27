@@ -10,7 +10,8 @@
         {
             Container
                 .Map<IContentLoader, ContentLoader>()
-                .Map<ITextureLoader, TextureLoader>();
+                .Map<ITextureLoader, TextureLoader>()
+                .Map(new OpenGL.GraphicsHost(1024, 768));
         }
     }
 }

@@ -6,17 +6,22 @@
 
     public class SpriteRendererTest : TestBase
     {
-        public static readonly TheoryData<Type, string> Dimensions = new TheoryData<Type, string>
+        public static readonly TheoryData<Type, Type, string> Dimensions = new TheoryData<Type, Type, string>
         {
-            { typeof(OpenGL.SpriteRenderer), "Content/Logo.png" },
+            { typeof(OpenGL.GraphicsHost), typeof(OpenGL.SpriteRenderer), "Content/Logo.png" },
         };
 
         [Theory]
         [MemberData(nameof(Dimensions))]
-        public async Task draw_an_image(Type rendererType, string texture)
+        public async Task draw_an_image(Type hostType, Type rendererType, string texture)
         {
-            var renderer = (IRenderer<Sprite>)Container.Get(rendererType);
-            renderer.Draw(new[] { new Sprite(texture) });
+            using (var host = Container.Get(hostType) as IGraphicsHost)
+            {
+                var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
+                renderer.Draw(new[] { new Sprite(texture) });
+
+                host.GetTexture();
+            }
         }
     }
 }

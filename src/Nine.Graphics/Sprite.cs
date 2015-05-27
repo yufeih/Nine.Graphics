@@ -4,17 +4,17 @@
 
     public class Sprite
     {
-        public bool IsVisible { get; set; }
+        public bool IsVisible;
 
-        public float Opacity { get; set; }
+        public float Opacity = 1.0f;
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position;
 
-        public Vector2 Scale { get; set; }
+        public Vector2 Scale;
 
-        public float Rotation { get; set; }
+        public float Rotation;
 
-        public TextureId Texture { get; set; }
+        public TextureId Texture;
 
         public Sprite() { }
         public Sprite(TextureId texture) { this.Texture = texture; }
