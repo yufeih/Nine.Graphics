@@ -1,0 +1,23 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "A real-time rendering library",
+  "authors": [ "Yufei Huang" ],
+  "tags": [ "graphics, realtime rendering, 3d" ],
+  "projectUrl": "https://github.com/studio-nine/Nine.Graphics",
+  "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
+
+  "dependencies": {
+  },
+
+  "frameworks" : {
+    "dnx451": { },
+    "dnxcore50" : {
+      "dependencies": {
+        "System.Collections": "4.0.10-beta-22816",
+        "System.Linq": "4.0.0-beta-22816",
+        "System.Threading": "4.0.10-beta-22816",
+        "Microsoft.CSharp": "4.0.0-beta-22816"
+      }
+    }
+  }
+}
