@@ -1,6 +1,6 @@
 ﻿namespace Nine.Graphics
 {
-    using System;
+    using System.Diagnostics;
 
     public class TextureContent
     {
@@ -10,9 +10,9 @@
 
         public TextureContent(int width, int height, byte[] pixels)
         {
-            if (width <= 0) throw new ArgumentException(nameof(width));
-            if (height <= 0) throw new ArgumentException(nameof(height));
-            if (pixels == null) throw new ArgumentNullException(nameof(pixels));
+            Debug.Assert(width > 0);
+            Debug.Assert(height > 0);
+            Debug.Assert(pixels != null);
 
             this.Width = width;
             this.Height = height;

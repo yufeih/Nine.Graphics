@@ -21,6 +21,7 @@
             "dependencies": {
                 "Microsoft.CSharp": "4.0.0-beta-22816",
                 "System.Collections": "4.0.10-beta-22816",
+                "System.Collections.Concurrent": "4.0.10-beta-22816",
                 "System.Diagnostics.Debug": "4.0.10-beta-22816",
                 "System.IO": "4.0.10-beta-22816",
                 "System.IO.FileSystem": "4.0.0-beta-22816",

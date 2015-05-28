@@ -14,7 +14,11 @@
 
         public float Rotation;
 
+        public Vector2 Origin;
+
         public TextureId Texture;
+
+        public float Depth;
 
         public Sprite() { }
         public Sprite(TextureId texture) { this.Texture = texture; }
