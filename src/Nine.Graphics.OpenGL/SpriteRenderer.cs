@@ -11,11 +11,11 @@
             this.textureFactory = textureFactory;
         }
 
-        public void Draw(Sprite[] drawables)
+        public void Draw(Slice<Sprite> drawables)
         {
-            for (var i = 0; i < drawables.Length; i++)
+            for (var i = drawables.Begin; i < drawables.End; i++)
             {
-                var drawable = drawables[i];
+                var drawable = drawables.Items[i];
                 var texture = textureFactory.GetTexture(drawable.Texture);
             }
         }
