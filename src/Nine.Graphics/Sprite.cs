@@ -20,6 +20,8 @@
 
         public float Depth;
 
+        public int Color; // TODO: Turn into Color
+
         public Sprite() { }
         public Sprite(TextureId texture) { this.Texture = texture; }
     }

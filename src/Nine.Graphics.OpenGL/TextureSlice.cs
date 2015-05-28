@@ -5,34 +5,42 @@
     public class TextureSlice
     {
         public readonly int Texture;
+        
         public readonly int Width;
         public readonly int Height;
+
+        public readonly int SourceWidth;
+        public readonly int SourceHeight;
 
         public readonly float Left;
         public readonly float Right;
         public readonly float Top;
         public readonly float Bottom;
 
-        public TextureSlice(int texture, int width, int height, int left, int right, int top, int bottom)
+        public TextureSlice(int texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom)
         {
-            Debug.Assert(width > 0);
-            Debug.Assert(height > 0);
+            Debug.Assert(sourceWidth > 0);
+            Debug.Assert(sourceHeight > 0);
 
-            Debug.Assert(left >= 0 && left <= width);
-            Debug.Assert(right >= 0 && right <= width);
+            Debug.Assert(left >= 0 && left <= sourceWidth);
+            Debug.Assert(right >= 0 && right <= sourceWidth);
             Debug.Assert(right >= left);
 
-            Debug.Assert(top >= 0 && top <= height);
-            Debug.Assert(bottom >= 0 && bottom <= height);
+            Debug.Assert(top >= 0 && top <= sourceHeight);
+            Debug.Assert(bottom >= 0 && bottom <= sourceHeight);
             Debug.Assert(bottom >= top);
 
             this.Texture = texture;
-            this.Width = width;
-            this.Height = height;
-            this.Left = (float)left / width;
-            this.Right = (float)right / width;
-            this.Top = (float)top / height;
-            this.Bottom = (float)bottom / height;
+            this.SourceWidth = sourceWidth;
+            this.SourceHeight = sourceHeight;
+
+            this.Width = right - left;
+            this.Height = bottom - top;
+
+            this.Left = (float)left / sourceWidth;
+            this.Right = (float)right / sourceWidth;
+            this.Top = (float)top / sourceHeight;
+            this.Bottom = (float)bottom / sourceHeight;
         }
     }
 }
