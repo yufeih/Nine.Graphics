@@ -1,11 +1,12 @@
 ﻿namespace Nine.Graphics.OpenGL
 {
     using System;
+    using System.Diagnostics;
     using System.Numerics;
     using System.Runtime.InteropServices;
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class SpriteRenderer : IRenderer<Sprite>, IDisposable
+    public sealed partial class SpriteRenderer : IRenderer<Sprite>, IDisposable
     {
         struct Vertex
         {
@@ -34,6 +35,11 @@
             this.textureFactory = textureFactory;
             this.vertexBuffer = new Vertex[initialSpriteCapacity * 4];
             this.pinnedVertexBuffer = GCHandle.Alloc(vertexBuffer, GCHandleType.Pinned);
+        }
+
+        public void Draw(Slice<Sprite> sprites, Slice<Matrix3x2> transforms)
+        {
+            Debug.Assert(sprites.Count == transforms.Count);
         }
 
         public void Draw(Slice<Sprite> sprites)

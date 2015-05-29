@@ -1,23 +1,23 @@
 {
-    "dependencies": {
-        "Nine.Graphics": "1.0.0-*",
-        "xunit": "2.1.0-beta2-*",
-        "xunit.runner.dnx": "2.1.0-beta2-*",
-        "Nine.Graphics.DirectX": "1.0.0-*",
-        "Nine.Graphics.OpenGL": "1.0.0-*",
-        "Nine.Injection": "1.1.66-alpha",
-        "Nine.Imaging": "1.0.78-alpha"
-    },
+  "dependencies": {
+    "Nine.Graphics": "1.0.0-*",
+    "xunit": "2.1.0-beta2-*",
+    "xunit.runner.dnx": "2.1.0-beta2-*",
+    "Nine.Graphics.DirectX": "1.0.0-*",
+    "Nine.Graphics.OpenGL": "1.0.0-*",
+    "Nine.Injection": "1.1.66-alpha",
+    "Nine.Imaging": "1.0.78-alpha"
+  },
 
-    "frameworks": {
-        "dnx451": {
-            "frameworkAssemblies": {
-                "System.Drawing": "4.0.0.0"
-            }
-        }
-    },
-
-    "commands": {
-        "test": "xunit.runner.dnx"
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Drawing": "4.0.0.0"
+      }
     }
+  },
+
+  "commands": {
+    "test": "xunit.runner.dnx"
+  }
 }
