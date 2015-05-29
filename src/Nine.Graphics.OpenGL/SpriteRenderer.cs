@@ -3,8 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.Numerics;
-    using System.Runtime.InteropServices;
-    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Graphics.OpenGL;
 
     public sealed partial class SpriteRenderer : IRenderer<Sprite>, IDisposable
     {
@@ -17,24 +16,15 @@
             public const int SizeInBytes = 6 + 4 + 4;
         }
 
-        private readonly TextureFactory textureFactory;
-
-        private Vertex[] vertexBuffer;
-        private GCHandle pinnedVertexBuffer;
-
-        private static ushort[] indexBuffer;
-
-        // Pin indexBuffer to the memory for the whole lifetime of the app.
-        private static GCHandle pinnedIndexBuffer;
-        private static object indexBufferLock = new object();
+        readonly TextureFactory textureFactory;
 
         public SpriteRenderer(TextureFactory textureFactory, int initialSpriteCapacity = 2048)
         {
             if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
 
             this.textureFactory = textureFactory;
-            this.vertexBuffer = new Vertex[initialSpriteCapacity * 4];
-            this.pinnedVertexBuffer = GCHandle.Alloc(vertexBuffer, GCHandleType.Pinned);
+            this.CreateBuffers(initialSpriteCapacity);
+            this.CreateShaders();
         }
 
         public void Draw(Slice<Sprite> sprites, Slice<Matrix3x2> transforms)
@@ -46,7 +36,7 @@
         {
             var spriteCount = sprites.Count;
 
-            EnsureCapacity(spriteCount);
+            EnsureBufferCapacity(spriteCount);
 
             var i = 0;
 
@@ -69,44 +59,14 @@
 
             if (i <= 0) return;
 
-            // TODO: Bind buffer.
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, 0, 0);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, 0, 0);
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, true, 0, 0);
 
             GL.DrawElements(BeginMode.Triangles, i / 4 * 6, DrawElementsType.UnsignedShort, 0);
         }
 
-        private void EnsureCapacity(int spriteCount)
-        {
-            if (spriteCount * 4 > vertexBuffer.Length)
-            {
-                pinnedVertexBuffer.Free();
-
-                Array.Resize(ref vertexBuffer, spriteCount * 4);
-
-                pinnedVertexBuffer = GCHandle.Alloc(vertexBuffer, GCHandleType.Pinned);
-            }
-
-            if (indexBuffer == null || spriteCount * 6 > indexBuffer.Length)
-            {
-                lock (indexBufferLock)
-                {
-                    var start = 0;
-
-                    if (indexBuffer != null)
-                    {
-                        start = indexBuffer.Length / 6;
-                        pinnedIndexBuffer.Free();
-                    }
-                    
-                    Array.Resize(ref indexBuffer, spriteCount * 6);
-
-                    pinnedIndexBuffer = GCHandle.Alloc(indexBuffer, GCHandleType.Pinned);
-
-                    PopulateIndex(start, spriteCount);
-                }
-            }
-        }
-
-        private void ExtractVertex(
+        void ExtractVertex(
             Sprite sprite, TextureSlice texture,
             ref Vertex tl, ref Vertex tr, ref Vertex bl, ref Vertex br)
         {
@@ -147,7 +107,7 @@
             br.TextureCoordinate.Y = texture.Bottom;
         }
 
-        private static void PopulateIndex(int start, int spriteCount)
+        static void PopulateIndex(int start, int spriteCount)
         {
             for (var i = start; i < spriteCount; i++)
             {
@@ -163,10 +123,7 @@
 
         public void Dispose()
         {
-            if (vertexBuffer != null)
-            {
-                pinnedVertexBuffer.Free();
-            }
+            DisposeBuffers();
         }
     }
 }
