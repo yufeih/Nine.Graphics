@@ -7,6 +7,7 @@
       "Nine.Graphics "
     ],
     "DNX,Version=v4.5.1": [
+      "framework/System.Runtime >= 4.0.10.0",
       "framework/System.Drawing >= 4.0.0.0"
     ]
   },
