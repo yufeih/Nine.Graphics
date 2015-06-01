@@ -7,7 +7,7 @@ environment:
 install:
   - dnu restore
 test_script:
-  - ps: dnx . test
+  - ps: dnx test\Nine.Graphics.Test test
 deploy:
 - provider: NuGet
   api_key:
