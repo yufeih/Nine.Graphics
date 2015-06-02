@@ -1,28 +1,25 @@
-﻿{
-  "version": "1.0.0-*",
-  "description": "The openGL renderer for Nine.Graphics",
-  "authors": [ "Yufei Huang" ],
-  "tags": [ "graphics, realtime rendering, 3d" ],
-  "projectUrl": "https://github.com/studio-nine/Nine.Graphics",
-  "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
+{
+    "version": "1.0.0-*",
+    "description": "The openGL renderer for Nine.Graphics",
+    "authors": [ "Yufei Huang" ],
+    "tags": [ "graphics, realtime rendering, 3d" ],
+    "projectUrl": "https://github.com/studio-nine/Nine.Graphics",
+    "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
-  "dependencies": {
-    "SharpDX": "3.0.0-alpha01"
-  },
-
-  "frameworks": {
-    "dnx451": {
-      "frameworkAssemblies": {
-        "System.Runtime": "4.0.10.0"
-      }
+    "dependencies": {
+        "SharpDX": "3.0.0-alpha01",
+        "Nine.Graphics": "1.0.0-*",
+        "SharpDX.Direct3D12": "3.0.0-alpha01",
+        "SharpDX.DXGI": "3.0.0-alpha01",
+        "SharpDX.Desktop": "3.0.0-alpha01",
+        "SharpDX.Mathematics": "3.0.0-alpha01"
     },
-    "dnxcore50": {
-      "dependencies": {
-        "System.Collections": "4.0.10-beta-22816",
-        "System.Linq": "4.0.0-beta-22816",
-        "System.Threading": "4.0.10-beta-22816",
-        "Microsoft.CSharp": "4.0.0-beta-22816"
-      }
+
+    "frameworks": {
+        "dnx451": {
+            "frameworkAssemblies": {
+                "System.Runtime": "4.0.10.0"
+            }
+        }
     }
-  }
 }

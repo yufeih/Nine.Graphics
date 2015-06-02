@@ -3,57 +3,52 @@
   "version": -9998,
   "projectFileDependencyGroups": {
     "": [
-      "SharpDX >= 3.0.0-alpha01"
+      "SharpDX >= 3.0.0-alpha01",
+      "Nine.Graphics >= 1.0.0-*",
+      "SharpDX.Direct3D12 >= 3.0.0-alpha01",
+      "SharpDX.DXGI >= 3.0.0-alpha01",
+      "SharpDX.Desktop >= 3.0.0-alpha01",
+      "SharpDX.Mathematics >= 3.0.0-alpha01"
     ],
     "DNX,Version=v4.5.1": [
       "framework/System.Runtime >= 4.0.10.0"
-    ],
-    "DNXCore,Version=v5.0": [
-      "System.Collections >= 4.0.10-beta-22816",
-      "System.Linq >= 4.0.0-beta-22816",
-      "System.Threading >= 4.0.10-beta-22816",
-      "Microsoft.CSharp >= 4.0.0-beta-22816"
     ]
   },
   "libraries": {
-    "Microsoft.CSharp/4.0.0-beta-22816": {
+    "Nine.Imaging/1.0.78-alpha": {
       "serviceable": false,
-      "sha": "FGnaYvmoVLd0QTnOyHfm+C79a9CGqQAoh76Ix9++a4SdeaAB8PgpB2Vi/Uc5jcp491QvPyPQjtXCuhRfqWvNkw==",
+      "sha": "2ViufWQKRq6qm6bUBKSr+XbBYd7UM7OUtjnfD3TfE5RQQhktW3sXOt7zVJgJ1Hg85ekEhtYzGXN2g/IMxpI7xg==",
       "frameworks": {
         "DNX,Version=v4.5.1": {
           "dependencies": {
-            "System.Dynamic.Runtime": "4.0.10-beta-22816",
-            "System.Linq.Expressions": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [],
-          "compileAssemblies": []
-        },
-        "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.Dynamic.Runtime": "4.0.10-beta-22816",
-            "System.Linq.Expressions": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
+            "SharpZipLib.Portable": "0.86.0.0002"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/aspnetcore50/Microsoft.CSharp.dll"
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
           ],
           "compileAssemblies": [
-            "lib/contract/Microsoft.CSharp.dll"
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {
+            "SharpZipLib.Portable": "0.86.0.0002"
+          },
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
+          ],
+          "compileAssemblies": [
+            "lib/portable-net45+win+wp80/Nine.Imaging.dll"
           ]
         }
       },
       "files": [
-        "License.rtf",
-        "Microsoft.CSharp.4.0.0-beta-22816.nupkg",
-        "Microsoft.CSharp.4.0.0-beta-22816.nupkg.sha512",
-        "Microsoft.CSharp.nuspec",
-        "lib/aspnetcore50/Microsoft.CSharp.dll",
-        "lib/contract/Microsoft.CSharp.dll",
-        "lib/net45/_._",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/Microsoft.CSharp.dll"
+        "Nine.Imaging.1.0.78-alpha.nupkg",
+        "Nine.Imaging.1.0.78-alpha.nupkg.sha512",
+        "Nine.Imaging.nuspec",
+        "lib/portable-net45+win+wp80/Nine.Imaging.dll"
       ]
     },
     "SharpDX/3.0.0-alpha01": {
@@ -91,537 +86,231 @@
         "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.xml"
       ]
     },
-    "System.Collections/4.0.10-beta-22816": {
+    "SharpDX.Desktop/3.0.0-alpha01": {
       "serviceable": false,
-      "sha": "tkVBx0CH/Xunk18S9LvNzPRqbXdIzsHbcGRtePrZCNZ9EUNuXK0dzzUl5q0KUgsQmeyUCDSw+7mwyG/pDGSpAA==",
+      "sha": "MMR8RzSRj7v7C3eQGIqeA94KKXY6T8RKPTsyiwy50RkGtHjJv5+vcICrIM2abNL0Pa35YCP4Khuf3wU91XW2OQ==",
       "frameworks": {
         "DNX,Version=v4.5.1": {
           "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
+            "SharpDX": "3.0.0-alpha01"
           },
           "frameworkAssemblies": [
-            "mscorlib",
-            "System",
-            "System.Core"
+            "System.Drawing",
+            "System.Windows.Forms"
           ],
           "runtimeAssemblies": [
-            "lib/net45/System.Collections.dll"
+            "lib/net45/SharpDX.Desktop.dll"
           ],
           "compileAssemblies": [
-            "lib/net45/System.Collections.dll"
+            "lib/net45/SharpDX.Desktop.dll"
           ]
         },
         "DNXCore,Version=v5.0": {
           "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
+            "SharpDX": "3.0.0-alpha01"
           },
           "frameworkAssemblies": [],
-          "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Collections.dll"
-          ],
-          "compileAssemblies": [
-            "lib/contract/System.Collections.dll"
-          ]
+          "runtimeAssemblies": [],
+          "compileAssemblies": []
         }
       },
       "files": [
-        "License.rtf",
-        "System.Collections.4.0.10-beta-22816.nupkg",
-        "System.Collections.4.0.10-beta-22816.nupkg.sha512",
-        "System.Collections.nuspec",
-        "lib/aspnetcore50/System.Collections.dll",
-        "lib/contract/System.Collections.dll",
-        "lib/net45/System.Collections.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Collections.dll"
+        "SharpDX.Desktop.3.0.0-alpha01.nupkg",
+        "SharpDX.Desktop.3.0.0-alpha01.nupkg.sha512",
+        "SharpDX.Desktop.nuspec",
+        "lib/net45/SharpDX.Desktop.dll",
+        "lib/net45/SharpDX.Desktop.xml"
       ]
     },
-    "System.Dynamic.Runtime/4.0.10-beta-22816": {
+    "SharpDX.Direct3D12/3.0.0-alpha01": {
       "serviceable": false,
-      "sha": "xPMym5hsntfLf/Gisnvk3t25TaZRvwDF46PaszRlB63WsDbAIUXgrsE4ob8ZKTL7+uyGW1HGwOBVlJCP/J1/hA==",
+      "sha": "TGc/GI9k1/K4pcOe0bv/sUprctPvncCKF7cNV2ChrQk35+HCctShqEYqTlRSP9daTGcfe3NKr/hM7SUroR1CLQ==",
       "frameworks": {
         "DNX,Version=v4.5.1": {
           "dependencies": {
-            "System.Linq.Expressions": "4.0.10-beta-22816",
-            "System.ObjectModel": "4.0.10-beta-22816",
-            "System.Reflection": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
+            "SharpDX": "3.0.0-alpha01",
+            "SharpDX.DXGI": "3.0.0-alpha01"
           },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System.Core"
-          ],
+          "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/net45/System.Dynamic.Runtime.dll"
+            "lib/net45/SharpDX.Direct3D12.dll"
           ],
           "compileAssemblies": [
-            "lib/net45/System.Dynamic.Runtime.dll"
+            "lib/net45/SharpDX.Direct3D12.dll"
           ]
         },
         "DNXCore,Version=v5.0": {
           "dependencies": {
-            "System.Linq.Expressions": "4.0.10-beta-22816",
-            "System.ObjectModel": "4.0.10-beta-22816",
-            "System.Reflection": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
+            "SharpDX": "3.0.0-alpha01",
+            "SharpDX.DXGI": "3.0.0-alpha01"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Dynamic.Runtime.dll"
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Direct3D12.dll"
           ],
           "compileAssemblies": [
-            "lib/contract/System.Dynamic.Runtime.dll"
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Direct3D12.dll"
           ]
         }
       },
       "files": [
-        "License.rtf",
-        "System.Dynamic.Runtime.4.0.10-beta-22816.nupkg",
-        "System.Dynamic.Runtime.4.0.10-beta-22816.nupkg.sha512",
-        "System.Dynamic.Runtime.nuspec",
-        "lib/aspnetcore50/System.Dynamic.Runtime.dll",
-        "lib/contract/System.Dynamic.Runtime.dll",
-        "lib/net45/System.Dynamic.Runtime.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Dynamic.Runtime.dll"
+        "SharpDX.Direct3D12.3.0.0-alpha01.nupkg",
+        "SharpDX.Direct3D12.3.0.0-alpha01.nupkg.sha512",
+        "SharpDX.Direct3D12.nuspec",
+        "lib/net45/SharpDX.Direct3D12.dll",
+        "lib/net45/SharpDX.Direct3D12.xml",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Direct3D12.dll",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Direct3D12.xml"
       ]
     },
-    "System.IO/4.0.10-beta-22816": {
+    "SharpDX.DXGI/3.0.0-alpha01": {
       "serviceable": false,
-      "sha": "/wVhoi2uVXw5IZFU+JrPlyVgKrtMPtzQaYQ3DKUxH9nqiX64BChTFGNDcwZK3iNWTIWESxJhj9JR3lbqbG/PIg==",
+      "sha": "2XUkmCGMtg/AgVt0107/QXb89K/u01tIguKaMzuDdyqXBVcCVErxrTRmerDMqXtcbFxOdnqyD7MOgVlPfYXaVA==",
       "frameworks": {
         "DNX,Version=v4.5.1": {
           "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816",
-            "System.Text.Encoding": "4.0.10-beta-22816",
-            "System.Threading.Tasks": "4.0.10-beta-22816"
+            "SharpDX": "3.0.0-alpha01"
           },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System"
-          ],
+          "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/net45/System.IO.dll"
+            "lib/net45/SharpDX.DXGI.dll"
           ],
           "compileAssemblies": [
-            "lib/net45/System.IO.dll"
+            "lib/net45/SharpDX.DXGI.dll"
           ]
         },
         "DNXCore,Version=v5.0": {
           "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816",
-            "System.Text.Encoding": "4.0.10-beta-22816",
-            "System.Threading.Tasks": "4.0.10-beta-22816"
+            "SharpDX": "3.0.0-alpha01"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/aspnetcore50/System.IO.dll"
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll"
           ],
           "compileAssemblies": [
-            "lib/contract/System.IO.dll"
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll"
           ]
         }
       },
       "files": [
-        "License.rtf",
-        "System.IO.4.0.10-beta-22816.nupkg",
-        "System.IO.4.0.10-beta-22816.nupkg.sha512",
-        "System.IO.nuspec",
-        "lib/aspnetcore50/System.IO.dll",
-        "lib/contract/System.IO.dll",
-        "lib/net45/System.IO.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.IO.dll"
+        "SharpDX.DXGI.3.0.0-alpha01.nupkg",
+        "SharpDX.DXGI.3.0.0-alpha01.nupkg.sha512",
+        "SharpDX.DXGI.nuspec",
+        "lib/net45/SharpDX.DXGI.dll",
+        "lib/net45/SharpDX.DXGI.xml",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.xml"
       ]
     },
-    "System.Linq/4.0.0-beta-22816": {
+    "SharpDX.Mathematics/3.0.0-alpha01": {
       "serviceable": false,
-      "sha": "zBGJfF48L17zFzfs/B8KI1yQklPul0af4a1auQTyUxjdy/HzppkIfoRgrq3yqV+YIPWDkUxu9U9bwjOj90xLXw==",
+      "sha": "HCPoUxgAr7rNe6SuBd1jaSz6UK8f6orGpLj24yNz2jWHr/pcuzc7OlZZ4jrSt93PZLPe9SA3yQ62Tnm0Hkb3Ng==",
       "frameworks": {
         "DNX,Version=v4.5.1": {
           "dependencies": {
-            "System.Collections": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
+            "SharpDX": "3.0.0-alpha01"
           },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System.Core"
-          ],
+          "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/net45/System.Linq.dll"
+            "lib/net45/SharpDX.Mathematics.dll"
           ],
           "compileAssemblies": [
-            "lib/net45/System.Linq.dll"
+            "lib/net45/SharpDX.Mathematics.dll"
           ]
         },
         "DNXCore,Version=v5.0": {
           "dependencies": {
-            "System.Collections": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
+            "SharpDX": "3.0.0-alpha01"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Linq.dll"
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll"
           ],
           "compileAssemblies": [
-            "lib/contract/System.Linq.dll"
+            "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll"
           ]
         }
       },
       "files": [
-        "License.rtf",
-        "System.Linq.4.0.0-beta-22816.nupkg",
-        "System.Linq.4.0.0-beta-22816.nupkg.sha512",
-        "System.Linq.nuspec",
-        "lib/aspnetcore50/System.Linq.dll",
-        "lib/contract/System.Linq.dll",
-        "lib/net45/System.Linq.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Linq.dll"
+        "SharpDX.Mathematics.3.0.0-alpha01.nupkg",
+        "SharpDX.Mathematics.3.0.0-alpha01.nupkg.sha512",
+        "SharpDX.Mathematics.nuspec",
+        "lib/net45/SharpDX.Mathematics.dll",
+        "lib/net45/SharpDX.Mathematics.xml",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.xml"
       ]
     },
-    "System.Linq.Expressions/4.0.10-beta-22816": {
+    "SharpZipLib.Portable/0.86.0.0002": {
       "serviceable": false,
-      "sha": "qTu/alZVoEBZRIrbLzVlFSndQyhIEXY+qoBockbsUu98TDtd1N9gYiyg7FHeW7Qx1vDGfz1PWfUlYBd4G/ZHkg==",
-      "frameworks": {
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "System.Reflection": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System.Core"
-          ],
-          "runtimeAssemblies": [
-            "lib/net45/System.Linq.Expressions.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net45/System.Linq.Expressions.dll"
-          ]
-        },
-        "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.Reflection": "4.0.10-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Linq.Expressions.dll"
-          ],
-          "compileAssemblies": [
-            "lib/contract/System.Linq.Expressions.dll"
-          ]
-        }
-      },
-      "files": [
-        "License.rtf",
-        "System.Linq.Expressions.4.0.10-beta-22816.nupkg",
-        "System.Linq.Expressions.4.0.10-beta-22816.nupkg.sha512",
-        "System.Linq.Expressions.nuspec",
-        "lib/aspnetcore50/System.Linq.Expressions.dll",
-        "lib/contract/System.Linq.Expressions.dll",
-        "lib/net45/System.Linq.Expressions.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Linq.Expressions.dll"
-      ]
-    },
-    "System.ObjectModel/4.0.10-beta-22816": {
-      "serviceable": false,
-      "sha": "Rtu5FLq7JTtignXiSEKx26Q01NHyoO3pTcYYdwF54kFC64VbHEcvs8b586JyVVpM7Wz0zBmdgHDrH9fv2MgeVw==",
-      "frameworks": {
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System"
-          ],
-          "runtimeAssemblies": [
-            "lib/net45/System.ObjectModel.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net45/System.ObjectModel.dll"
-          ]
-        },
-        "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [
-            "lib/aspnetcore50/System.ObjectModel.dll"
-          ],
-          "compileAssemblies": [
-            "lib/contract/System.ObjectModel.dll"
-          ]
-        }
-      },
-      "files": [
-        "License.rtf",
-        "System.ObjectModel.4.0.10-beta-22816.nupkg",
-        "System.ObjectModel.4.0.10-beta-22816.nupkg.sha512",
-        "System.ObjectModel.nuspec",
-        "lib/aspnetcore50/System.ObjectModel.dll",
-        "lib/contract/System.ObjectModel.dll",
-        "lib/net45/System.ObjectModel.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.ObjectModel.dll"
-      ]
-    },
-    "System.Reflection/4.0.10-beta-22816": {
-      "serviceable": false,
-      "sha": "vdH/6euCyI/0el+6baAh/pttTZyWDh/PfL2TebSri3+FvNkjIEcE4httMn7J/5Lqz+NMDcLP7wOlY4Aa5EazNg==",
-      "frameworks": {
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "System.IO": "4.0.10-beta-22816",
-            "System.Reflection.Primitives": "4.0.0-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [
-            "mscorlib"
-          ],
-          "runtimeAssemblies": [
-            "lib/net45/System.Reflection.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net45/System.Reflection.dll"
-          ]
-        },
-        "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.IO": "4.0.10-beta-22816",
-            "System.Reflection.Primitives": "4.0.0-beta-22816",
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Reflection.dll"
-          ],
-          "compileAssemblies": [
-            "lib/contract/System.Reflection.dll"
-          ]
-        }
-      },
-      "files": [
-        "License.rtf",
-        "System.Reflection.4.0.10-beta-22816.nupkg",
-        "System.Reflection.4.0.10-beta-22816.nupkg.sha512",
-        "System.Reflection.nuspec",
-        "lib/aspnetcore50/System.Reflection.dll",
-        "lib/contract/System.Reflection.dll",
-        "lib/net45/System.Reflection.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Reflection.dll"
-      ]
-    },
-    "System.Reflection.Primitives/4.0.0-beta-22816": {
-      "serviceable": false,
-      "sha": "LXGxjPbmTit9COY1WKRG89Eya58UFVqebeNvGDCrX/c/72OP9XX00+wUUE34WFDioKeVBjofOySFdtKMVsDq1Q==",
-      "frameworks": {
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [
-            "mscorlib"
-          ],
-          "runtimeAssemblies": [
-            "lib/net45/System.Reflection.Primitives.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net45/System.Reflection.Primitives.dll"
-          ]
-        },
-        "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Reflection.Primitives.dll"
-          ],
-          "compileAssemblies": [
-            "lib/contract/System.Reflection.Primitives.dll"
-          ]
-        }
-      },
-      "files": [
-        "License.rtf",
-        "System.Reflection.Primitives.4.0.0-beta-22816.nupkg",
-        "System.Reflection.Primitives.4.0.0-beta-22816.nupkg.sha512",
-        "System.Reflection.Primitives.nuspec",
-        "lib/aspnetcore50/System.Reflection.Primitives.dll",
-        "lib/contract/System.Reflection.Primitives.dll",
-        "lib/net45/System.Reflection.Primitives.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Reflection.Primitives.dll"
-      ]
-    },
-    "System.Runtime/4.0.20-beta-22816": {
-      "serviceable": false,
-      "sha": "sDSJEmM6Q5O7Nn9XxHTrsEJ4bv4hsBdeTWjuvyzd9/u9ujl9AWa3q1XFLrdPZetILPOC1P0+1LOCq4kZcsKF5Q==",
+      "sha": "udGFuRKSOMjjZdUKS9y7WRPQeuVuzbZjW2YgLVmQlV53lYNNbToqH9nyYq01md8tHJrL+Iymr2Mr5+oggkrBow==",
       "frameworks": {
         "DNX,Version=v4.5.1": {
           "dependencies": {},
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System",
-            "System.ComponentModel.Composition",
-            "System.Core"
-          ],
+          "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/net45/System.Runtime.dll"
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
           ],
           "compileAssemblies": [
-            "lib/net45/System.Runtime.dll"
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
           ]
         },
         "DNXCore,Version=v5.0": {
           "dependencies": {},
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Runtime.dll"
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
           ],
           "compileAssemblies": [
-            "lib/contract/System.Runtime.dll"
+            "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll"
           ]
         }
       },
       "files": [
-        "License.rtf",
-        "System.Runtime.4.0.20-beta-22816.nupkg",
-        "System.Runtime.4.0.20-beta-22816.nupkg.sha512",
-        "System.Runtime.nuspec",
-        "lib/aspnetcore50/System.Runtime.dll",
-        "lib/contract/System.Runtime.dll",
-        "lib/net45/System.Runtime.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Runtime.dll"
+        "SharpZipLib.Portable.0.86.0.0002.nupkg",
+        "SharpZipLib.Portable.0.86.0.0002.nupkg.sha512",
+        "SharpZipLib.Portable.nuspec",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.dll",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.pdb",
+        "lib/portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid/ICSharpCode.SharpZipLib.Portable.xml"
       ]
     },
-    "System.Text.Encoding/4.0.10-beta-22816": {
-      "serviceable": false,
-      "sha": "QDKTAvat7aDGMWnVkGm6tJvvmc2zSTa/p8M4/OEBBkZKNx4SGkeGEjFUhl7b6AXZ220m4dACygkiAVoB/LqMHw==",
+    "System.Numerics.Vectors/4.0.0": {
+      "serviceable": true,
+      "sha": "H/72pHnKZ5wZk8lMrZ2H10OsBgkRcbQ7sXuLzxAL9/evRB95yYf3j+iXdrRv2JHNGspdmC8oVo7B3RQrY5QBWw==",
       "frameworks": {
         "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [
-            "mscorlib"
-          ],
+          "dependencies": {},
+          "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/net45/System.Text.Encoding.dll"
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
           ],
           "compileAssemblies": [
-            "lib/net45/System.Text.Encoding.dll"
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
           ]
         },
         "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
+          "dependencies": {},
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Text.Encoding.dll"
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
           ],
           "compileAssemblies": [
-            "lib/contract/System.Text.Encoding.dll"
+            "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll"
           ]
         }
       },
       "files": [
-        "License.rtf",
-        "System.Text.Encoding.4.0.10-beta-22816.nupkg",
-        "System.Text.Encoding.4.0.10-beta-22816.nupkg.sha512",
-        "System.Text.Encoding.nuspec",
-        "lib/aspnetcore50/System.Text.Encoding.dll",
-        "lib/contract/System.Text.Encoding.dll",
-        "lib/net45/System.Text.Encoding.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Text.Encoding.dll"
-      ]
-    },
-    "System.Threading/4.0.10-beta-22816": {
-      "serviceable": false,
-      "sha": "tNAZqIJaAhnHpiEJdvGby7EFfirhD3aX+FF6vQBnHrk+bWVv4yAQ3k/skF7FBJIhMozenT41/1QVVwtTSR3HOQ==",
-      "frameworks": {
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816",
-            "System.Threading.Tasks": "4.0.10-beta-22816"
-          },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System",
-            "System.Core"
-          ],
-          "runtimeAssemblies": [
-            "lib/net45/System.Threading.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net45/System.Threading.dll"
-          ]
-        },
-        "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816",
-            "System.Threading.Tasks": "4.0.10-beta-22816"
-          },
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Threading.dll"
-          ],
-          "compileAssemblies": [
-            "lib/contract/System.Threading.dll"
-          ]
-        }
-      },
-      "files": [
-        "License.rtf",
-        "System.Threading.4.0.10-beta-22816.nupkg",
-        "System.Threading.4.0.10-beta-22816.nupkg.sha512",
-        "System.Threading.nuspec",
-        "lib/aspnetcore50/System.Threading.dll",
-        "lib/contract/System.Threading.dll",
-        "lib/net45/System.Threading.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Threading.dll"
-      ]
-    },
-    "System.Threading.Tasks/4.0.10-beta-22816": {
-      "serviceable": false,
-      "sha": "e7TcoQuIPQ4bvkkCY2ulU8NFvj8XqYxsGpD3fAq1KajAlpx5j327Q13lKxlGPb7ouHQydKHCy5G1ZGuydb0DAA==",
-      "frameworks": {
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System.Core"
-          ],
-          "runtimeAssemblies": [
-            "lib/net45/System.Threading.Tasks.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net45/System.Threading.Tasks.dll"
-          ]
-        },
-        "DNXCore,Version=v5.0": {
-          "dependencies": {
-            "System.Runtime": "4.0.20-beta-22816"
-          },
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [
-            "lib/aspnetcore50/System.Threading.Tasks.dll"
-          ],
-          "compileAssemblies": [
-            "lib/contract/System.Threading.Tasks.dll"
-          ]
-        }
-      },
-      "files": [
-        "License.rtf",
-        "System.Threading.Tasks.4.0.10-beta-22816.nupkg",
-        "System.Threading.Tasks.4.0.10-beta-22816.nupkg.sha512",
-        "System.Threading.Tasks.nuspec",
-        "lib/aspnetcore50/System.Threading.Tasks.dll",
-        "lib/contract/System.Threading.Tasks.dll",
-        "lib/net45/System.Threading.Tasks.dll",
-        "lib/portable-wpa81+wp80+win80+net45+aspnetcore50/System.Threading.Tasks.dll"
+        "License-Stable.rtf",
+        "System.Numerics.Vectors.4.0.0.nupkg",
+        "System.Numerics.Vectors.4.0.0.nupkg.sha512",
+        "System.Numerics.Vectors.nuspec",
+        "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.dll",
+        "lib/portable-net45+win8+wpa81/System.Numerics.Vectors.xml",
+        "lib/win8/System.Numerics.Vectors.dll",
+        "lib/win8/System.Numerics.Vectors.WindowsRuntime.dll",
+        "lib/win8/System.Numerics.Vectors.WindowsRuntime.xml",
+        "lib/win8/System.Numerics.Vectors.xml"
       ]
     }
   }
