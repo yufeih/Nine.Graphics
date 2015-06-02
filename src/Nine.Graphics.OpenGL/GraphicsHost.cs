@@ -27,16 +27,24 @@
             {
                 this.window.Visible = true;
             }
+
+            GL.ClearColor(System.Drawing.Color.CornflowerBlue);
         }
 
         public void BeginFrame()
         {
+            window.ProcessEvents();
+
+            // TODO: Check window.IsExiting
+
             GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         public void EndFrame()
         {
+            // TODO: Check window.IsExiting
+
             window.SwapBuffers();
         }
 
