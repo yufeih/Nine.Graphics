@@ -70,7 +70,7 @@
 
             try
             {
-                device = new Device(DriverType.Hardware, DeviceCreationFlags.Debug, FeatureLevel.Level_9_1);
+                device = new Device(DriverType.Hardware, DeviceCreationFlags.None, FeatureLevel.Level_9_1);
                 commandQueue = device.CreateCommandQueue(new CommandQueueDescription(CommandListType.Direct));
                 using (var factory = new Factory1())
                     swapChain = new SwapChain(factory, commandQueue, swapChainDescription);
@@ -109,7 +109,7 @@
             WaitForPrevFrame();
         }
 
-        public void BeginFrame()
+        public bool BeginFrame()
         {
             commandListAllocator.Reset();
             commandList.Reset(commandListAllocator, null);
@@ -123,6 +123,8 @@
             commandList.ResourceBarrierTransition(renderTarget, ResourceUsage.RenderTarget, ResourceUsage.Present);
 
             commandList.Close();
+
+            return true;
         }
 
         public void EndFrame()

@@ -31,20 +31,21 @@
             GL.ClearColor(System.Drawing.Color.CornflowerBlue);
         }
 
-        public void BeginFrame()
+        public bool BeginFrame()
         {
             window.ProcessEvents();
 
-            // TODO: Check window.IsExiting
+            if (window.IsExiting)
+                return false;
 
             GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            return true;
         }
 
         public void EndFrame()
         {
-            // TODO: Check window.IsExiting
-
             window.SwapBuffers();
         }
 
