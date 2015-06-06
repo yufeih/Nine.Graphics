@@ -1,14 +1,12 @@
 ﻿namespace Nine.Graphics.OpenGL
 {
-    using System.Diagnostics;
     using OpenTK.Graphics.OpenGL;
+    using System;
 
     partial class DynamicPrimitive
     {
         static readonly string vertexShaderSource = @"
 #version 140
-
-precision highp float;
 
 uniform mat4 transform;
 
@@ -17,12 +15,12 @@ in vec4 in_color;
 in vec2 in_uv;
 
 out vec2 uv;
-out vec4 color;
+out vec4 out_color;
 
 void main(void)
 {
     uv = in_uv;
-    color = in_color;
+    out_color = in_color;
     gl_Position = transform * vec4(in_position, 1);
 }";
 
@@ -34,13 +32,13 @@ precision highp float;
 uniform sampler2D Texture;
 
 in vec2 uv;
-in vec4 color;
+in vec4 out_color;
 
-out vec4 outColor;
+out vec4 color;
 
 void main(void)
 {
-    outColor = color;
+    color = out_color;// * texture2D(Texture, uv);
 }";
 
         int shaderProgramHandle, transformLocation;
@@ -61,14 +59,19 @@ void main(void)
 
             GL.AttachShader(shaderProgramHandle, vertexShaderHandle);
             GL.AttachShader(shaderProgramHandle, fragmentShaderHandle);
-
+            
             GL.BindAttribLocation(shaderProgramHandle, 0, "in_position");
             GL.BindAttribLocation(shaderProgramHandle, 1, "in_color");
             GL.BindAttribLocation(shaderProgramHandle, 2, "in_uv");
 
             GL.LinkProgram(shaderProgramHandle);
 
-            Debug.WriteLine(GL.GetProgramInfoLog(shaderProgramHandle));
+            GL.DeleteShader(vertexShaderHandle);
+            GL.DeleteShader(fragmentShaderHandle);
+
+            OpenGLExtensions.PrintProgramInfo(shaderProgramHandle);
+            Console.WriteLine(GL.GetProgramInfoLog(shaderProgramHandle));
+
             GL.UseProgram(shaderProgramHandle);
 
             // Set uniforms

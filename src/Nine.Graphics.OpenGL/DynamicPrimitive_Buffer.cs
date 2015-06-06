@@ -25,6 +25,7 @@
         private int baseSegmentVertex;
         private int baseSegmentIndex;
         private int beginSegment;
+        private bool isDirty = true;
 
         private int initialBufferCapacity;
         private int maxBufferSizePerPrimitive;
@@ -65,6 +66,8 @@
             currentBaseIndex = currentIndex;
 
             beginSegment = currentSegment;
+
+            isDirty = true;
         }
 
         /// <summary>
@@ -88,7 +91,14 @@
         /// 
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public void AddVertex(Vector3 position, Vector3 color, Vector2 uv) 
+        public void AddVertex(Vector3 position, Vector3 color, Vector2 uv)
+            => this.AddVertex(position, new Vector4(color, 1.0f), uv);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public void AddVertex(Vector3 position, Vector4 color, Vector2 uv) 
             => this.AddVertex(new Vertex { Position = position, Color = color, TextureCoordinate = uv });
 
         private void AddVertex(Vertex vertex)

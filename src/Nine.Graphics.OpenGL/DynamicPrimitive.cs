@@ -9,10 +9,10 @@
         struct Vertex
         {
             public Vector3 Position;
-            public Vector3 Color;
+            public Vector4 Color;
             public Vector2 TextureCoordinate;
 
-            public const int SizeInBytes = 6 + 6 + 4;
+            public const int SizeInBytes = 12 + 16 + 8;
         }
 
         struct PrimitiveGroupEntry
@@ -84,43 +84,39 @@
             {
                 GL.UseProgram(shaderProgramHandle);
 
-                // TODO: Fix transform & Move transform to batches
-
+                // TODO: Move transform to batches
                 OpenTK.Matrix4 projection = OpenTK.Matrix4.Identity;
-
-                //float scale = 1;
-                //OpenTK.Matrix4.CreateOrthographicOffCenter(
-                //    -host.Width * scale, host.Width * scale,
-                //    -host.Height * scale, host.Height * scale, 0, 1, out projection);
-
+                OpenTK.Matrix4.CreateOrthographicOffCenter(0, host.Width, host.Height, 0, 0, 1, out projection);
                 GL.UniformMatrix4(transformLocation, false, ref projection);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBOid[0]);
-                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexData.Length * Vertex.SizeInBytes), vertexData, BufferUsageHint.StaticDraw);
-
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, VBOid[1]);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indexData.Length * sizeof(ushort)), indexData, BufferUsageHint.StaticDraw);
 
-                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, 0, 0);
-                GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, true, 0, 0);
-                GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, true, 0, 0);
+                if (isDirty)
+                {
+                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexData.Length * Vertex.SizeInBytes), vertexData, BufferUsageHint.StaticDraw);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indexData.Length * sizeof(ushort)), indexData, BufferUsageHint.StaticDraw);
+                    isDirty = false;
+                }
+                
+                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 0);
+                GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 12);
+                GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 28);
 
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
-                
+
                 for (int i = 0; i < count; ++i)
                     DrawBatch(batches[i]);
 
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
                 GL.DisableVertexAttribArray(0);
                 GL.DisableVertexAttribArray(1);
                 GL.DisableVertexAttribArray(2);
             }
-
-            GL.Flush();
         }
 
         private void DrawBatch(PrimitiveGroupEntry entry)
