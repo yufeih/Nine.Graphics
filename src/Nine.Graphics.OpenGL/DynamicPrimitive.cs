@@ -28,49 +28,21 @@
             public int Segment;
         }
 
+        readonly TextureFactory textureFactory;
+
         /// <summary>
         /// 
         /// </summary>
-        public DynamicPrimitive(int initialBufferCapacity = 32, int maxBufferSizePerPrimitive = 32768)
+        public DynamicPrimitive(TextureFactory textureFactory, int initialBufferCapacity = 32, int maxBufferSizePerPrimitive = 32768)
         {
+            if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
+
+            this.textureFactory = textureFactory;
             this.CreateBuffers(initialBufferCapacity, maxBufferSizePerPrimitive);
             this.CreateShaders();
             this.Clear();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void AddRectangle(Vector2 min, Vector2 max, Vector3 color)
-        {
-            this.BeginPrimitive(OpenTK.Graphics.OpenGL.PrimitiveType.Triangles, null); // Lines
-            {
-                this.AddVertex(new Vector3(min.X, min.Y, 0), color, new Vector2());
-                this.AddVertex(new Vector3(min.X, max.Y, 0), color, new Vector2());
-                this.AddVertex(new Vector3(max.X, max.Y, 0), color, new Vector2());
-
-                this.AddVertex(new Vector3(min.X, min.Y, 0), color, new Vector2());
-                this.AddVertex(new Vector3(max.X, min.Y, 0), color, new Vector2());
-                this.AddVertex(new Vector3(max.X, max.Y, 0), color, new Vector2());
-
-
-                //this.AddVertex(new Vector3(min.X, min.Y, 0), color, new Vector2());
-                //this.AddVertex(new Vector3(min.X, max.Y, 0), color, new Vector2());
-                //this.AddVertex(new Vector3(max.X, max.Y, 0), color, new Vector2());
-                //this.AddVertex(new Vector3(max.X, min.Y, 0), color, new Vector2());
-
-                //this.AddIndex(0);
-                //this.AddIndex(1);
-                //this.AddIndex(1);
-                //this.AddIndex(2);
-                //this.AddIndex(2);
-                //this.AddIndex(3);
-                //this.AddIndex(3);
-                //this.AddIndex(0);
-            }
-            this.EndPrimitive();
-        }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -107,8 +79,18 @@
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
 
+                GL.Enable(EnableCap.DepthTest);
+                //GL.Enable(EnableCap.Blend);
+
+                //GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
                 for (int i = 0; i < count; ++i)
                     DrawBatch(batches[i]);
+
+                GL.LineWidth(1.0f);
+
+                GL.Disable(EnableCap.DepthTest);
+                //GL.Disable(EnableCap.Blend);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
@@ -123,7 +105,19 @@
         {
             if (entry.VertexCount <= 0 && entry.IndexCount <= 0)
                 return;
-            
+
+            GL.LineWidth(entry.LineWidth);
+
+            if (entry.Texture != null)
+            {
+                var texture = textureFactory.GetTexture(entry.Texture.Value);
+                GL.BindTexture(TextureTarget.Texture2D, (texture == null) ? blankTexture : texture.Texture);
+            }
+            else
+            {
+                GL.BindTexture(TextureTarget.Texture2D, blankTexture);
+            }
+
             if (entry.IndexCount > 0)
             {
                 GL.DrawElements(entry.PrimitiveType, entry.IndexCount, DrawElementsType.UnsignedShort, entry.StartIndex * sizeof(ushort));
@@ -136,7 +130,8 @@
 
         public void Dispose()
         {
-            DisposeBuffers();
+            this.DisposeBuffers();
+            this.DisposeShaders();
         }
     }
 }

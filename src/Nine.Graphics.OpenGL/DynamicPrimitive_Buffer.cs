@@ -87,9 +87,18 @@
             batches.Add(currentPrimitive);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public void AddVertex(Vector3 position, Nine.Imaging.Color color)
+            => this.AddVertex(position, color, Vector2.Zero);
+
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public void AddVertex(Vector3 position, Nine.Imaging.Color color, Vector2 uv)
+            => this.AddVertex(position, new Vector4(color.R / 255, color.G / 255, color.B / 255, 1.0f), uv);
+
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public void AddVertex(Vector3 position, Vector3 color)
+            => this.AddVertex(position, new Vector4(color, 1.0f), Vector2.Zero);
+        
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void AddVertex(Vector3 position, Vector3 color, Vector2 uv)
             => this.AddVertex(position, new Vector4(color, 1.0f), uv);

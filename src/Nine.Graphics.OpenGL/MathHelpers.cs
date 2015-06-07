@@ -2,6 +2,8 @@
 {
     static class MathHelpers
     {
+        public static float TwoPi => (float)(System.Math.PI * 2);
+
         public static int NextPowerOfTwo(int num)
         {
             var n = num > 0 ? num - 1 : 0;

@@ -38,10 +38,11 @@ out vec4 color;
 
 void main(void)
 {
-    color = out_color;// * texture2D(Texture, uv);
+    color = out_color * texture2D(Texture, uv);
 }";
 
         int shaderProgramHandle, transformLocation;
+        int blankTexture;
 
         void CreateShaders()
         {
@@ -76,6 +77,21 @@ void main(void)
 
             // Set uniforms
             transformLocation = GL.GetUniformLocation(shaderProgramHandle, "transform");
+
+            // Create blank texture
+            byte[] blankTextureData = { 255, 255, 255, 255 };
+            blankTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, blankTexture);
+            GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, 1, 1);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, blankTextureData);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, 0x2600);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 0x2600);
+        }
+
+        void DisposeShaders()
+        {
+            GL.DeleteProgram(shaderProgramHandle);
+            GL.DeleteTexture(blankTexture);
         }
     }
 }

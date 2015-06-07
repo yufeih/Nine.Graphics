@@ -46,7 +46,7 @@
 
         public void EndFrame()
         {
-            window.SwapBuffers();
+            window?.SwapBuffers();
         }
 
         public TextureContent GetTexture()
