@@ -2,6 +2,8 @@ version: 1.0.{build}
 os: Visual Studio 2015 RC
 environment:
   VisualStudioVersion: 14.0
+init:
+  - cmd: dnvm upgrade
 install:
   - dnu restore
 test_script:
