@@ -1,13 +1,13 @@
 version: 1.0.{build}
 os: Visual Studio 2015 RC
-init:
-  - ps: dnvm upgrade
 environment:
   VisualStudioVersion: 14.0
+init:
+  - cmd: dnvm upgrade
 install:
   - dnu restore
 test_script:
-  - ps: dnx test\Nine.Graphics.Test test
+  - cmd: dnx test\Nine.Graphics.Test test
 deploy:
 - provider: NuGet
   api_key:
