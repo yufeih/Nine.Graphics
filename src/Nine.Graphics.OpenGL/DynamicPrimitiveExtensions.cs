@@ -6,13 +6,24 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Numerics;
-    
+
+    public enum Flip
+    {
+        None,
+        Horizontally,
+        Vertically,
+        Both
+    }
+
     /// <summary>
     /// Contains extension method for <see cref="DynamicPrimitive"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class DynamicPrimitiveExtensions
     {
+        // TODO: Add more advanced texture rectangles
+        //       Like texture region and texture rotation
+
         public static void AddRectangle(this DynamicPrimitive dynamicPrimitive, Vector2 min, Vector2 max, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             dynamicPrimitive.BeginPrimitive(PrimitiveType.Lines, null, world, lineWidth);
@@ -56,6 +67,13 @@
             }
             dynamicPrimitive.EndPrimitive();
         }
+
+        // TODO: Add with Nine.Geometry
+        //public static void AddSolidRectangle(this DynamicPrimitive dynamicPrimitive, BoundingRectangle rectangle, Color color, TextureId? texture = null, Matrix4x4? world = null)
+        //    => AddSolidRectangle(dynamicPrimitive, new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Bottom), color, texture, world);
+
+        public static void AddSolidRectangle(this DynamicPrimitive dynamicPrimitive, Rectangle rectangle, Color color, TextureId? texture = null, Matrix4x4? world = null)
+            => AddSolidRectangle(dynamicPrimitive, new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Bottom), color, texture, world);
 
         public static void AddSolidRectangle(this DynamicPrimitive dynamicPrimitive, Vector2 min, Vector2 max, Color color, TextureId? texture = null, Matrix4x4? world = null)
         {
@@ -195,5 +213,41 @@
             }
             dynamicPrimitive.EndPrimitive();
         }
+
+        //static Vector2[] GetTextureCoords(Flip flip)
+        //{
+        //    switch (flip)
+        //    {
+        //        case Flip.None:
+        //            return new Vector2[] {
+        //                new Vector2(1, 0),
+        //                new Vector2(1, 1),
+        //                new Vector2(0, 1),
+        //                new Vector2(0, 0)
+        //            };
+        //        case Flip.Horizontally:
+        //            return new Vector2[] {
+        //                new Vector2(0, 0),
+        //                new Vector2(0, 1),
+        //                new Vector2(1, 1),
+        //                new Vector2(1, 0)
+        //            };
+        //        case Flip.Vertically:
+        //            return new Vector2[] {
+        //                new Vector2(1, 1),
+        //                new Vector2(1, 0),
+        //                new Vector2(0, 0),
+        //                new Vector2(0, 1)
+        //            };
+        //        case Flip.Both:
+        //            return new Vector2[] {
+        //                new Vector2(0, 1),
+        //                new Vector2(0, 0),
+        //                new Vector2(1, 0),
+        //                new Vector2(1, 1)
+        //            };
+        //    }
+        //    throw new System.ArgumentNullException("flip");
+        //}
     }
 }

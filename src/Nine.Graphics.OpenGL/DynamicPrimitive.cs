@@ -42,11 +42,17 @@
             this.CreateShaders();
             this.Clear();
         }
-        
-        /// <summary>
-        /// 
-        /// </summary>
+
         public void Draw(IGraphicsHost host)
+        {
+            // TODO: Camera system
+            OpenTK.Matrix4 projection = OpenTK.Matrix4.Identity;
+            OpenTK.Matrix4.CreateOrthographicOffCenter(0, host.Width, host.Height, 0, 0, 1, out projection);
+
+            this.Draw(projection);
+        }
+
+        public void Draw(OpenTK.Matrix4 wvp)
         {
             if (hasPrimitiveBegin)
                 throw new InvalidOperationException("Begin cannot be called until End has been successfully called.");
@@ -54,16 +60,17 @@
             var count = batches.Count;
             if (count > 0)
             {
+                // Apply shaders
                 GL.UseProgram(shaderProgramHandle);
 
-                // TODO: Move transform to batches
-                OpenTK.Matrix4 projection = OpenTK.Matrix4.Identity;
-                OpenTK.Matrix4.CreateOrthographicOffCenter(0, host.Width, host.Height, 0, 0, 1, out projection);
-                GL.UniformMatrix4(transformLocation, false, ref projection);
+                // Set shader paramaters
+                GL.UniformMatrix4(transformLocation, false, ref wvp);
 
+                // Bind buffers
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBOid[0]);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, VBOid[1]);
 
+                // if dirty update buffers
                 if (isDirty)
                 {
                     GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexData.Length * Vertex.SizeInBytes), vertexData, BufferUsageHint.StaticDraw);
@@ -71,26 +78,26 @@
                     isDirty = false;
                 }
                 
+                // Apply vertex layout
                 GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 0);
                 GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 12);
                 GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 28);
 
+                // Enable vertex layout
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
 
+                // Enable depth
                 GL.Enable(EnableCap.DepthTest);
-                //GL.Enable(EnableCap.Blend);
-
-                //GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
+                
+                // Draw batches
                 for (int i = 0; i < count; ++i)
                     DrawBatch(batches[i]);
 
+                // Reset features
                 GL.LineWidth(1.0f);
-
                 GL.Disable(EnableCap.DepthTest);
-                //GL.Disable(EnableCap.Blend);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
@@ -106,8 +113,11 @@
             if (entry.VertexCount <= 0 && entry.IndexCount <= 0)
                 return;
 
+            // TODO: Add entry transform matrix
+
             GL.LineWidth(entry.LineWidth);
 
+            // Apply texture
             if (entry.Texture != null)
             {
                 var texture = textureFactory.GetTexture(entry.Texture.Value);
@@ -118,6 +128,7 @@
                 GL.BindTexture(TextureTarget.Texture2D, blankTexture);
             }
 
+            // Draw geometry
             if (entry.IndexCount > 0)
             {
                 GL.DrawElements(entry.PrimitiveType, entry.IndexCount, DrawElementsType.UnsignedShort, entry.StartIndex * sizeof(ushort));
