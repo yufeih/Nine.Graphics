@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using Xunit;
 
+    [Trait("ci", "false")]
     public class SpriteRendererTest : GraphicsTest
     {
         public static readonly TheoryData<Type, Type, string> Dimensions = new TheoryData<Type, Type, string>
