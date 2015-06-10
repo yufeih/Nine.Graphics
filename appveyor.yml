@@ -1,10 +1,8 @@
-version: 1.0.{build}
 os: Visual Studio 2015 RC
 environment:
   VisualStudioVersion: 14.0
-init:
-  - cmd: dnvm upgrade
 install:
+  - dnvm install 1.0.0-beta4
   - dnu restore
 test_script:
   - cmd: dnx test\Nine.Graphics.Test test
