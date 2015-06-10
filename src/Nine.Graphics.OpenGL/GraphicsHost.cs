@@ -14,6 +14,8 @@
         public int Width => window.Width;
         public int Height => window.Height;
 
+        public IntPtr WindowHandle => window.WindowInfo.Handle;
+
         public GraphicsHost(int width, int height, GraphicsMode mode = null, bool hidden = false)
             : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow), hidden)
         { }

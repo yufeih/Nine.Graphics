@@ -38,6 +38,8 @@
         public int Width => window.Width;
         public int Height => window.Height;
 
+        public IntPtr WindowHandle => window.Handle;
+
         public GraphicsHost(int width, int height, bool hidden = false) // FormBorderStyle = FormBorderStyle.FixedSingle
             : this(new RenderForm("Nine.Graphics") { Width = width, Height = height }, hidden)
         { }
