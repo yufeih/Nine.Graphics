@@ -11,6 +11,8 @@
 
         public int Count => End - Begin;
 
+        public T this[int index] => Items[Begin + index];
+
         public Slice(T[] items)
         {
             Debug.Assert(items != null);

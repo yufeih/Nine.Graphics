@@ -3,7 +3,7 @@
     using System;
     using OpenTK;
     using OpenTK.Graphics;
-    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Graphics.OpenGL;
 
     public class GraphicsHost : IGraphicsHost
     {
@@ -13,6 +13,8 @@
 
         public int Width => window.Width;
         public int Height => window.Height;
+
+        public IntPtr WindowHandle => window.WindowInfo.Handle;
 
         public GraphicsHost(int width, int height, GraphicsMode mode = null, bool hidden = false)
             : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow), hidden)
@@ -27,17 +29,26 @@
             {
                 this.window.Visible = true;
             }
+
+            GL.ClearColor(System.Drawing.Color.CornflowerBlue);
         }
 
-        public void BeginFrame()
+        public bool BeginFrame()
         {
+            window.ProcessEvents();
+
+            if (window.IsExiting)
+                return false;
+
             GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            return true;
         }
 
         public void EndFrame()
         {
-            window.SwapBuffers();
+            window?.SwapBuffers();
         }
 
         public TextureContent GetTexture()

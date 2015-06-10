@@ -1,21 +1,22 @@
 ﻿{
-    "version": "1.0.0-*",
-    "description": "The openGL renderer for Nine.Graphics",
-    "authors": [ "Yufei Huang" ],
-    "tags": [ "graphics, realtime rendering, 3d" ],
-    "projectUrl": "https://github.com/studio-nine/Nine.Graphics",
-    "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
+  "version": "1.0.0-*",
+  "description": "The openGL renderer for Nine.Graphics",
+  "authors": [ "Yufei Huang" ],
+  "tags": [ "graphics, realtime rendering, 3d" ],
+  "projectUrl": "https://github.com/studio-nine/Nine.Graphics",
+  "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
-    "dependencies": {
-        "OpenTK": "1.1.1589.5942",
-        "Nine.Graphics": ""
-    },
+  "dependencies": {
+    "OpenTK": "1.1.1589.5942",
+    "Nine.Graphics": ""
+  },
 
-    "frameworks": {
-        "dnx451": {
-            "frameworkAssemblies": {
-                "System.Drawing": "4.0.0.0"
-            }
-        }
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.10.0",
+        "System.Drawing": "4.0.0.0"
+      }
     }
+  }
 }

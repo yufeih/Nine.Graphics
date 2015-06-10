@@ -7,7 +7,9 @@
         int Width { get; }
         int Height { get; }
 
-        void BeginFrame();
+        IntPtr WindowHandle { get; }
+
+        bool BeginFrame();
         void EndFrame();
 
         TextureContent GetTexture();

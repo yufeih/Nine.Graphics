@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Graphics.OpenGL;
 
     public class TextureFactory
     {
