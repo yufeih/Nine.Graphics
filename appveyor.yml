@@ -1,6 +1,7 @@
 os: Visual Studio 2015 RC
 environment:
   VisualStudioVersion: 14.0
+  DNX_FEED: https://www.nuget.org/api/v2 
 install:
   - dnvm install 1.0.0-beta4
   - dnu restore
