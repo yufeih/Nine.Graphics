@@ -19,7 +19,7 @@
             using (Frame(hostType))
             {
                 var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
-                renderer.Draw(new[] { new Sprite(texture) });
+                renderer.Draw(new[] { new Sprite(texture) }, null);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿namespace Nine.Graphics.OpenGL
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Numerics;
     using OpenTK.Graphics.OpenGL;
@@ -16,7 +17,7 @@
             public const int SizeInBytes = 6 + 4 + 4;
         }
 
-        readonly TextureFactory textureFactory;
+        private readonly TextureFactory textureFactory;
 
         public SpriteRenderer(TextureFactory textureFactory, int initialSpriteCapacity = 2048)
         {
@@ -25,6 +26,17 @@
             this.textureFactory = textureFactory;
             this.CreateBuffers(initialSpriteCapacity);
             this.CreateShaders();
+        }
+
+        public void Draw(IEnumerable<Sprite> input, ObjectPool output)
+        {
+            var array = input as Sprite[];
+            if (array != null)
+                Draw(array);
+            else if (input is Slice<Sprite>)
+                Draw((Slice<Sprite>)input);
+            else
+                throw new NotImplementedException();
         }
 
         public void Draw(Slice<Sprite> sprites, Slice<Matrix3x2> transforms)
@@ -66,7 +78,7 @@
             GL.DrawElements(BeginMode.Triangles, i / 4 * 6, DrawElementsType.UnsignedShort, 0);
         }
 
-        void ExtractVertex(
+        private void ExtractVertex(
             Sprite sprite, TextureSlice texture,
             ref Vertex tl, ref Vertex tr, ref Vertex bl, ref Vertex br)
         {
@@ -107,7 +119,7 @@
             br.TextureCoordinate.Y = texture.Bottom;
         }
 
-        static void PopulateIndex(int start, int spriteCount)
+        private static void PopulateIndex(int start, int spriteCount)
         {
             for (var i = start; i < spriteCount; i++)
             {

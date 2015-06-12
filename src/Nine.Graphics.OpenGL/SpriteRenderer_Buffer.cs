@@ -8,22 +8,22 @@
 
     partial class SpriteRenderer
     {
-        Vertex[] vertexBuffer;
-        GCHandle pinnedVertexBuffer;
+        private Vertex[] vertexBuffer;
+        private GCHandle pinnedVertexBuffer;
 
-        static ushort[] indexBuffer;
+        private static ushort[] indexBuffer;
 
         // Pin indexBuffer to the memory for the whole lifetime of the app.
-        static GCHandle pinnedIndexBuffer;
-        static object indexBufferLock = new object();
+        private static GCHandle pinnedIndexBuffer;
+        private static object indexBufferLock = new object();
 
-        void CreateBuffers(int initialSpriteCapacity)
+        private void CreateBuffers(int initialSpriteCapacity)
         {
             this.vertexBuffer = new Vertex[initialSpriteCapacity * 4];
             this.pinnedVertexBuffer = GCHandle.Alloc(vertexBuffer, GCHandleType.Pinned);
         }
 
-        void EnsureBufferCapacity(int spriteCount)
+        private void EnsureBufferCapacity(int spriteCount)
         {
             if (spriteCount * 4 > vertexBuffer.Length)
             {
@@ -55,7 +55,7 @@
             }
         }
 
-        void DisposeBuffers()
+        private void DisposeBuffers()
         {
             if (vertexBuffer != null)
             {

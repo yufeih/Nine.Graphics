@@ -18,6 +18,10 @@
     }
   },
 
+  "compilationOptions": {
+    "allowUnsafe": true
+  },
+
   "commands": {
     "test": "xunit.runner.dnx"
   }

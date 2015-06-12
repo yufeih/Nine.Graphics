@@ -2,12 +2,12 @@
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Threading;
 
     public struct TextureId : IEquatable<TextureId>
     {
-        public readonly string Name;
         public readonly int Id;
+
+        public string Name => names[Id];
 
         public bool IsMissing => Id == 0;
 
@@ -15,13 +15,31 @@
 
         public static int Count => count;
 
-        private static int count;
+        private static int count = 1;
+        private static string[] names = new string[128];
         private static readonly ConcurrentDictionary<string, int> textureIds = new ConcurrentDictionary<string, int>();
 
         public TextureId(string name)
         {
-            this.Name = name;
-            this.Id = textureIds.GetOrAdd(name, key => Interlocked.Increment(ref count) + 1);
+            if (string.IsNullOrEmpty(name))
+            {
+                this.Id = 0;
+            }
+            else
+            {
+                this.Id = textureIds.GetOrAdd(name, key =>
+                {
+                    lock (textureIds)
+                    {
+                        if (names.Length <= count)
+                        {
+                            Array.Resize(ref names, count);
+                        }
+                        names[count] = name;
+                        return count++;
+                    }
+                });
+            }
         }
 
         public static implicit operator TextureId(string name) => new TextureId(name);

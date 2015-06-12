@@ -11,6 +11,10 @@
     "Nine.Graphics": ""
   },
 
+  "compilationOptions": {
+    "allowUnsafe": true
+  },
+
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {

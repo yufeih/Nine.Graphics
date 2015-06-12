@@ -11,6 +11,10 @@
     "Nine.Imaging": "1.0.78-alpha"
   },
 
+  "compilationOptions": {
+    "allowUnsafe": true
+  },
+
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {

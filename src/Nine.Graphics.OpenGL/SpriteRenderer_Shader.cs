@@ -5,7 +5,7 @@
 
     partial class SpriteRenderer
     {
-        static readonly string vertexShaderSource = @"
+        private static readonly string vertexShaderSource = @"
 #version 140
 
 precision highp float;
@@ -41,9 +41,9 @@ void main(void)
     gl_FragColor = color * texture2D(Texture, uv);
 }";
 
-        int shaderProgramHandle, transformLocation;
+        private int shaderProgramHandle, transformLocation;
 
-        void CreateShaders()
+        private void CreateShaders()
         {
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);

@@ -24,7 +24,7 @@
         {
             if (textureId.Id <= 0) return null;
 
-            if (textures.Length < textureId.Id)
+            if (textures.Length <= textureId.Id)
             {
                 Array.Resize(ref textures, MathHelpers.NextPowerOfTwo(TextureId.Count));
             }
