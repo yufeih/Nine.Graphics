@@ -1,15 +1,16 @@
 ﻿namespace Nine.Graphics
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Diagnostics;
 
-    public struct Slice<T> : IEquatable<Slice<T>>
+    public struct Slice<T> : IEquatable<Slice<T>>, IReadOnlyList<T>
     {
         public readonly T[] Items;
         public readonly int Begin;
         public readonly int End;
-
-        public int Count => End - Begin;
+        public readonly int Count;
 
         public T this[int index] => Items[Begin + index];
 
@@ -20,6 +21,7 @@
             this.Items = items;
             this.Begin = 0;
             this.End = items.Length;
+            this.Count = End - Begin;
         }
 
         public Slice(T[] items, int begin)
@@ -30,18 +32,19 @@
             this.Items = items;
             this.Begin = begin;
             this.End = items.Length;
+            this.Count = End - Begin;
         }
 
-        public Slice(T[] items, int begin, int end)
+        public Slice(T[] items, int begin, int count)
         {
             Debug.Assert(items != null);
             Debug.Assert(begin >= 0 && begin < items.Length);
-            Debug.Assert(end >= 0 && end < items.Length);
-            Debug.Assert(end >= begin);
+            Debug.Assert(count >= 0 && count <= items.Length - begin);
 
             this.Items = items;
             this.Begin = begin;
-            this.End = end;
+            this.End = begin + count;
+            this.Count = count;
         }
 
         public static implicit operator Slice<T>(T[] array) => new Slice<T>(array);
@@ -51,5 +54,29 @@
         public override int GetHashCode() => Items.GetHashCode() ^ (Begin.GetHashCode() << 8) ^ (End.GetHashCode() << 16);
 
         public override string ToString() => $"{ typeof(T[]).Name } [{ Count }]({ Begin } - { End })";
+
+        public Enumerator GetEnumerator() => new Enumerator { index = Begin - 1, items = Items, begin = Begin, end = End };
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        int IReadOnlyCollection<T>.Count => Count;
+
+        public struct Enumerator : IEnumerator<T>
+        {
+            internal T[] items;
+            internal int index;
+            internal int begin;
+            internal int end;
+
+            public T Current => items[index];
+
+            object IEnumerator.Current => items[index];
+
+            public bool MoveNext() => ++index < end;
+            public void Reset() => index = begin;
+
+            public void Dispose() { }
+        }
     }
 }
