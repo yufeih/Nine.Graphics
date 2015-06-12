@@ -52,24 +52,26 @@
 
             var vertexCount = 0;
 
-            fixed (Sprite* pBegin = &sprites.Items[sprites.Begin])
+            fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
             {
-                Sprite* sprite = pBegin;
-
-                for (int i = 0; i < sprites.Count; i++)
+                fixed (Vertex* pVertex = vertexBuffer)
                 {
-                    if (!sprite->IsVisible || sprite->Texture.Id == 0) continue;
+                    Sprite* sprite = pSprite;
+                    Vertex* vertex = pVertex;
 
-                    var texture = textureFactory.GetTexture(sprite->Texture);
+                    for (int i = 0; i < sprites.Count; i++)
+                    {
+                        if (!sprite->IsVisible || sprite->Texture.Id == 0) continue;
 
-                    if (texture == null) continue;
+                        var texture = textureFactory.GetTexture(sprite->Texture);
 
-                    ExtractVertex(sprite, texture,
-                        ref vertexBuffer[i + 0], ref vertexBuffer[i + 1],
-                        ref vertexBuffer[i + 2], ref vertexBuffer[i + 3]);
+                        if (texture == null) continue;
 
-                    vertexCount += 4;
-                    sprite++;
+                        ExtractVertex(sprite, texture, vertex++, vertex++, vertex++, vertex++);
+
+                        vertexCount += 4;
+                        sprite++;
+                    }
                 }
             }
 
@@ -84,7 +86,7 @@
 
         private unsafe void ExtractVertex(
             Sprite* sprite, TextureSlice texture,
-            ref Vertex tl, ref Vertex tr, ref Vertex bl, ref Vertex br)
+            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
             var x = sprite->Position.X + (sprite->Origin.X * texture.Width) * sprite->Scale.X;
             var y = sprite->Position.Y + (sprite->Origin.Y * texture.Height) * sprite->Scale.Y;
@@ -94,33 +96,33 @@
 
             // TODO: Rotate
 
-            tl.Position.X = x;
-            tl.Position.Y = y;
-            tl.Position.Z = sprite->Depth;
-            tl.Color = sprite->Color;
-            tl.TextureCoordinate.X = texture.Left;
-            tl.TextureCoordinate.Y = texture.Top;
+            tl->Position.X = x;
+            tl->Position.Y = y;
+            tl->Position.Z = sprite->Depth;
+            tl->Color = sprite->Color;
+            tl->TextureCoordinate.X = texture.Left;
+            tl->TextureCoordinate.Y = texture.Top;
 
-            tr.Position.X = x + w;
-            tr.Position.Y = y;
-            tr.Position.Z = sprite->Depth;
-            tr.Color = sprite->Color;
-            tr.TextureCoordinate.X = texture.Right;
-            tr.TextureCoordinate.Y = texture.Top;
+            tr->Position.X = x + w;
+            tr->Position.Y = y;
+            tr->Position.Z = sprite->Depth;
+            tr->Color = sprite->Color;
+            tr->TextureCoordinate.X = texture.Right;
+            tr->TextureCoordinate.Y = texture.Top;
 
-            bl.Position.X = x;
-            bl.Position.Y = y + h;
-            bl.Position.Z = sprite->Depth;
-            bl.Color = sprite->Color;
-            bl.TextureCoordinate.X = texture.Left;
-            bl.TextureCoordinate.Y = texture.Bottom;
+            bl->Position.X = x;
+            bl->Position.Y = y + h;
+            bl->Position.Z = sprite->Depth;
+            bl->Color = sprite->Color;
+            bl->TextureCoordinate.X = texture.Left;
+            bl->TextureCoordinate.Y = texture.Bottom;
 
-            br.Position.X = x + w;
-            br.Position.Y = y + h;
-            br.Position.Z = sprite->Depth;
-            br.Color = sprite->Color;
-            br.TextureCoordinate.X = texture.Right;
-            br.TextureCoordinate.Y = texture.Bottom;
+            br->Position.X = x + w;
+            br->Position.Y = y + h;
+            br->Position.Z = sprite->Depth;
+            br->Color = sprite->Color;
+            br->TextureCoordinate.X = texture.Right;
+            br->TextureCoordinate.Y = texture.Bottom;
         }
 
         private static void PopulateIndex(int start, int spriteCount)
