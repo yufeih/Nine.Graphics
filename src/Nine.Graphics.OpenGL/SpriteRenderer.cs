@@ -44,77 +44,81 @@
             Debug.Assert(sprites.Count == transforms.Count);
         }
 
-        public void Draw(Slice<Sprite> sprites)
+        public unsafe void Draw(Slice<Sprite> sprites)
         {
             var spriteCount = sprites.Count;
 
             EnsureBufferCapacity(spriteCount);
 
-            var i = 0;
+            var vertexCount = 0;
 
-            for (var iSprite = sprites.Begin; iSprite < sprites.End; iSprite++)
+            fixed (Sprite* pBegin = &sprites.Items[sprites.Begin])
             {
-                var sprite = sprites.Items[iSprite];
+                Sprite* sprite = pBegin;
 
-                if (!sprite.IsVisible || sprite.Texture.Id == 0) continue;
+                for (int i = 0; i < sprites.Count; i++)
+                {
+                    if (!sprite->IsVisible || sprite->Texture.Id == 0) continue;
 
-                var texture = textureFactory.GetTexture(sprite.Texture);
+                    var texture = textureFactory.GetTexture(sprite->Texture);
 
-                if (texture == null) continue;
+                    if (texture == null) continue;
 
-                ExtractVertex(sprite, texture,
-                    ref vertexBuffer[i + 0], ref vertexBuffer[i + 1], 
-                    ref vertexBuffer[i + 2], ref vertexBuffer[i + 3]);
+                    ExtractVertex(sprite, texture,
+                        ref vertexBuffer[i + 0], ref vertexBuffer[i + 1],
+                        ref vertexBuffer[i + 2], ref vertexBuffer[i + 3]);
 
-                i += 4;
+                    vertexCount += 4;
+                    sprite++;
+                }
             }
 
-            if (i <= 0) return;
+            if (vertexCount <= 0) return;
 
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, 0, 0);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, 0, 0);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, true, 0, 0);
 
-            GL.DrawElements(BeginMode.Triangles, i / 4 * 6, DrawElementsType.UnsignedShort, 0);
+            GL.DrawElements(BeginMode.Triangles, vertexCount / 4 * 6, DrawElementsType.UnsignedShort, 0);
         }
 
-        private void ExtractVertex(
-            Sprite sprite, TextureSlice texture,
+        private unsafe void ExtractVertex(
+            Sprite* sprite, TextureSlice texture,
             ref Vertex tl, ref Vertex tr, ref Vertex bl, ref Vertex br)
         {
-            var x = sprite.Position.X + (sprite.Origin.X * texture.Width) * sprite.Scale.X;
-            var y = sprite.Position.Y + (sprite.Origin.Y * texture.Height) * sprite.Scale.Y;
+            var x = sprite->Position.X + (sprite->Origin.X * texture.Width) * sprite->Scale.X;
+            var y = sprite->Position.Y + (sprite->Origin.Y * texture.Height) * sprite->Scale.Y;
 
-            var w = texture.Width * sprite.Scale.X;
-            var h = texture.Height * sprite.Scale.Y;
+            var w = texture.Width * sprite->Scale.X;
+            var h = texture.Height * sprite->Scale.Y;
 
             // TODO: Rotate
 
             tl.Position.X = x;
             tl.Position.Y = y;
-            tl.Position.Z = sprite.Depth;
-            tl.Color = sprite.Color;
+            tl.Position.Z = sprite->Depth;
+            tl.Color = sprite->Color;
             tl.TextureCoordinate.X = texture.Left;
             tl.TextureCoordinate.Y = texture.Top;
 
             tr.Position.X = x + w;
             tr.Position.Y = y;
-            tr.Position.Z = sprite.Depth;
-            tr.Color = sprite.Color;
+            tr.Position.Z = sprite->Depth;
+            tr.Color = sprite->Color;
             tr.TextureCoordinate.X = texture.Right;
             tr.TextureCoordinate.Y = texture.Top;
 
             bl.Position.X = x;
             bl.Position.Y = y + h;
-            bl.Position.Z = sprite.Depth;
-            bl.Color = sprite.Color;
+            bl.Position.Z = sprite->Depth;
+            bl.Color = sprite->Color;
             bl.TextureCoordinate.X = texture.Left;
             bl.TextureCoordinate.Y = texture.Bottom;
 
             br.Position.X = x + w;
             br.Position.Y = y + h;
-            br.Position.Z = sprite.Depth;
-            br.Color = sprite.Color;
+            br.Position.Z = sprite->Depth;
+            br.Color = sprite->Color;
             br.TextureCoordinate.X = texture.Right;
             br.TextureCoordinate.Y = texture.Bottom;
         }
