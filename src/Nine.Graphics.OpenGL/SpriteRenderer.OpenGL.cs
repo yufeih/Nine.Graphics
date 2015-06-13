@@ -116,6 +116,7 @@ void main(void)
         private void PlatformDispose()
         {
             GL.DeleteBuffer(vertexBufferId);
+            GL.DeleteProgram(shaderProgramHandle);
         }
     }
 }

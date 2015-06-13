@@ -179,5 +179,10 @@
         {
             PlatformDispose();
         }
+
+        public override string ToString()
+        {
+            return $"{ nameof(SpriteRenderer) }: { vertexData.Length } vertices, { indexData.Length } shared indices";
+        }
     }
 }

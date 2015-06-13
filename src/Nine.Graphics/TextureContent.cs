@@ -18,5 +18,10 @@
             this.Height = height;
             this.Pixels = pixels;
         }
+
+        public override string ToString()
+        {
+            return $"{ Width }x{ Height }, { Pixels?.Length / 1000 }k";
+        }
     }
 }

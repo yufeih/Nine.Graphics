@@ -42,5 +42,14 @@
             this.Top = (float)top / sourceHeight;
             this.Bottom = (float)bottom / sourceHeight;
         }
+
+        public override string ToString()
+        {
+            if (Width == SourceWidth && Height == SourceHeight)
+            {
+                return $"{ Width }x{ Height }, glTexture:{ Texture } ";
+            }
+            return $"{ Width }x{ Height }, source:{ SourceWidth }x{ SourceHeight }, glTexture:{ Texture }";
+        }
     }
 }

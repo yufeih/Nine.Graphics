@@ -6,8 +6,15 @@
 
     public class TextureFactory
     {
-        enum LoadState { None, Loading, Loaded, Failed }
-        struct Entry { public LoadState LoadState; public TextureSlice Slice; }
+        enum LoadState { None, Loading, Loaded, Failed, Missing }
+
+        struct Entry
+        {
+            public LoadState LoadState;
+            public TextureSlice Slice;
+
+            public override string ToString() => $"{ LoadState }: { Slice }";
+        }
 
         private readonly ITextureLoader loader;
         private Entry[] textures;
@@ -51,6 +58,14 @@
                 textures[textureId.Id].LoadState = LoadState.Loading;
 
                 var data = await loader.Load(textureId.Name);
+                if (data == null)
+                {
+                    await LoadTexture(TextureId.Missing);
+                    textures[textureId.Id].Slice = textures[TextureId.Missing.Id].Slice;
+                    textures[textureId.Id].LoadState = LoadState.Missing;
+                    return;
+                }
+
                 var texture = GL.GenTexture();
                 
                 GL.BindTexture(TextureTarget.Texture2D, texture);
@@ -59,14 +74,13 @@
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Pixels);
 
                 textures[textureId.Id].Slice = new TextureSlice(texture, data.Width, data.Height, 0, data.Width, 0, data.Height);
+                textures[textureId.Id].LoadState = LoadState.Loaded;
             }
             catch
             {
+                await LoadTexture(TextureId.Error);
+                textures[textureId.Id].Slice = textures[TextureId.Error.Id].Slice;
                 textures[textureId.Id].LoadState = LoadState.Failed;
-            }
-            finally
-            {
-                textures[textureId.Id].LoadState = LoadState.Loaded;
             }
         }
     }

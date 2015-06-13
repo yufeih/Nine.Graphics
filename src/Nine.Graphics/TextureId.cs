@@ -11,13 +11,18 @@
 
         public bool IsMissing => Id == 0;
 
-        public static readonly TextureId Missing = new TextureId();
-
         public static int Count => count;
 
         private static int count = 1;
         private static string[] names = new string[128];
         private static readonly ConcurrentDictionary<string, int> textureIds = new ConcurrentDictionary<string, int>();
+
+        public static readonly TextureId None = new TextureId();
+        public static readonly TextureId White = new TextureId("n:white");
+        public static readonly TextureId Black = new TextureId("n:black");
+        public static readonly TextureId Error = new TextureId("n:error");
+        public static readonly TextureId Missing = new TextureId("n:missing");
+        public static readonly TextureId Transparent = new TextureId("n:transparent");
 
         public TextureId(string name)
         {
