@@ -4,6 +4,7 @@ environment:
   VisualStudioVersion: 14.0
   DNX_FEED: https://www.nuget.org/api/v2 
 install:
+  - git submodule -q update --init
   - dnvm install 1.0.0-beta4
   - dnu restore
 test_script:
