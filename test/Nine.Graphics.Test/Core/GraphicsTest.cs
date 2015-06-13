@@ -17,7 +17,7 @@
             Container
                 .Map<IContentLoader, ContentLoader>()
                 .Map<ITextureLoader, TextureLoader>()
-                .Map(new OpenGL.GraphicsHost(1024, 768, null, true));
+                .Map(new OpenGL.GraphicsHost(1024, 768, null, false));
         }
 
         public IDisposable Frame(Type hostType, [CallerMemberName]string name = null)

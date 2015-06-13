@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Numerics;
-    using OpenTK.Graphics.OpenGL;
 
     public sealed partial class SpriteRenderer : IRenderer<Sprite>, IDisposable
     {
@@ -19,13 +18,19 @@
 
         private readonly TextureFactory textureFactory;
 
+        private Vertex[] vertexData;
+
+        private static ushort[] indexData;
+        private static object indexDataLock = new object();
+
         public SpriteRenderer(TextureFactory textureFactory, int initialSpriteCapacity = 2048)
         {
             if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
 
             this.textureFactory = textureFactory;
             this.CreateBuffers(initialSpriteCapacity);
-            this.CreateShaders();
+            this.PlatformCreateBuffers();
+            this.PlatformCreateShaders();
         }
 
         public void Draw(IEnumerable<Sprite> input, ObjectPool output)
@@ -52,9 +57,11 @@
 
             var vertexCount = 0;
 
-            fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
+            fixed (Vertex* pVertex = vertexData)
             {
-                fixed (Vertex* pVertex = vertexBuffer)
+                TextureSlice texture = null; // TODO:
+
+                fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
                 {
                     Sprite* sprite = pSprite;
                     Vertex* vertex = pVertex;
@@ -63,7 +70,7 @@
                     {
                         if (!sprite->IsVisible || sprite->Texture.Id == 0) continue;
 
-                        var texture = textureFactory.GetTexture(sprite->Texture);
+                        texture = textureFactory.GetTexture(sprite->Texture);
 
                         if (texture == null) continue;
 
@@ -73,15 +80,44 @@
                         sprite++;
                     }
                 }
+
+                if (vertexCount <= 0) return;
+
+                fixed (ushort * pIndex = indexData)
+                {
+                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, texture);
+                }
+            }
+        }
+
+        private void CreateBuffers(int initialSpriteCapacity)
+        {
+            this.vertexData = new Vertex[initialSpriteCapacity * 4];
+        }
+
+        private void EnsureBufferCapacity(int spriteCount)
+        {
+            if (spriteCount * 4 > vertexData.Length)
+            {
+                Array.Resize(ref vertexData, spriteCount * 4);
             }
 
-            if (vertexCount <= 0) return;
+            if (indexData == null || spriteCount * 6 > indexData.Length)
+            {
+                lock (indexDataLock)
+                {
+                    var start = 0;
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, 0, 0);
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, 0, 0);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, true, 0, 0);
+                    if (indexData != null)
+                    {
+                        start = indexData.Length / 6;
+                    }
 
-            GL.DrawElements(BeginMode.Triangles, vertexCount / 4 * 6, DrawElementsType.UnsignedShort, 0);
+                    Array.Resize(ref indexData, spriteCount * 6);
+
+                    PopulateIndex(start, spriteCount);
+                }
+            }
         }
 
         private unsafe void ExtractVertex(
@@ -129,19 +165,19 @@
         {
             for (var i = start; i < spriteCount; i++)
             {
-                indexBuffer[i * 6 + 0] = (ushort)(i * 4);
-                indexBuffer[i * 6 + 1] = (ushort)(i * 4 + 1);
-                indexBuffer[i * 6 + 2] = (ushort)(i * 4 + 2);
+                indexData[i * 6 + 0] = (ushort)(i * 4);
+                indexData[i * 6 + 1] = (ushort)(i * 4 + 1);
+                indexData[i * 6 + 2] = (ushort)(i * 4 + 2);
 
-                indexBuffer[i * 6 + 3] = (ushort)(i * 4 + 1);
-                indexBuffer[i * 6 + 4] = (ushort)(i * 4 + 3);
-                indexBuffer[i * 6 + 5] = (ushort)(i * 4 + 2);
+                indexData[i * 6 + 3] = (ushort)(i * 4 + 1);
+                indexData[i * 6 + 4] = (ushort)(i * 4 + 3);
+                indexData[i * 6 + 5] = (ushort)(i * 4 + 2);
             }
         }
 
         public void Dispose()
         {
-            DisposeBuffers();
+            PlatformDispose();
         }
     }
 }

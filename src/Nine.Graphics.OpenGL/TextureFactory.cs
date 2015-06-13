@@ -30,14 +30,18 @@
             }
 
             var entry = textures[textureId.Id];
-            if (entry.LoadState >= LoadState.Loading)
+            if (entry.LoadState == LoadState.None)
             {
-                return entry.Slice;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                LoadTexture(textureId);
+#pragma warning restore CS4014
+
+                // Ensures the method returns a valid result when the
+                // async load method succeeded synchroniously.
+                entry = textures[textureId.Id];
             }
 
-            LoadTexture(textureId);
-
-            return null;
+            return entry.LoadState != LoadState.None ? entry.Slice : null;
         }
 
         public async Task LoadTexture(TextureId textureId)

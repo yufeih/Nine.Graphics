@@ -2,6 +2,7 @@
 {
     using System.Diagnostics;
     using OpenTK.Graphics.OpenGL;
+    using System;
 
     partial class SpriteRenderer
     {
@@ -42,8 +43,15 @@ void main(void)
 }";
 
         private int shaderProgramHandle, transformLocation;
+        private int vertexBufferId;
+        private static int indexBufferId = GL.GenBuffer();
+        
+        private void PlatformCreateBuffers()
+        {
+            vertexBufferId = GL.GenBuffer();
+        }
 
-        private void CreateShaders()
+        private void PlatformCreateShaders()
         {
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
@@ -71,6 +79,30 @@ void main(void)
 
             // Set uniforms
             transformLocation = GL.GetUniformLocation(shaderProgramHandle, "transform");
+        }
+
+        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, TextureSlice texture)
+        {
+            GL.UseProgram(shaderProgramHandle);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
+
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexCount * Vertex.SizeInBytes), (IntPtr)pVertex, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indexCount * sizeof(ushort)), (IntPtr)pIndex, BufferUsageHint.StaticDraw);
+
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, 0, 0);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, 0, 0);
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, true, 0, 0);
+
+            GL.BindTexture(TextureTarget.Texture2D, texture.Texture);
+
+            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, 0);
+        }
+
+        private void PlatformDispose()
+        {
+            GL.DeleteBuffer(vertexBufferId);
         }
     }
 }

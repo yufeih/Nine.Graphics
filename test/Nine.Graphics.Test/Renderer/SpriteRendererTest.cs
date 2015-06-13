@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Nine.Injection;
     using Xunit;
 
     [Trait("ci", "false")]
@@ -16,6 +17,8 @@
         [MemberData(nameof(Dimensions))]
         public async Task draw_an_image(Type hostType, Type rendererType, string texture)
         {
+            await Container.Get<ITextureLoader>().Load(texture);
+
             using (Frame(hostType))
             {
                 var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
