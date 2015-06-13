@@ -8,6 +8,7 @@
         public readonly float Opacity;
         public readonly Vector2 Position;
         public readonly Vector2 Scale;
+        public readonly Vector2 Size;
         public readonly float Rotation;
         public readonly Vector2 Origin;
         public readonly TextureId Texture;
@@ -21,6 +22,7 @@
             Vector2 position = default(Vector2),
             float opacity = 1.0f,
             Vector2? scale = null,
+            Vector2? size = null,
             float rotation = 0,
             Vector2 origin = default(Vector2),
             bool isVisible = true,
@@ -33,6 +35,7 @@
             this.Position = position;
             this.Scale = scale ?? Vector2.One;
             this.Rotation = rotation;
+            this.Size = size ?? Vector2.Zero;
             this.Origin = origin;
             this.Depth = depth;
             this.Color = color;

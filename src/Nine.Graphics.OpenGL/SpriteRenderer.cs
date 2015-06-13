@@ -13,7 +13,7 @@
             public int Color;
             public Vector2 TextureCoordinate;
 
-            public const int SizeInBytes = 6 + 4 + 4;
+            public const int SizeInBytes = 12 + 4 + 8;
         }
 
         private readonly TextureFactory textureFactory;
@@ -124,11 +124,11 @@
             Sprite* sprite, TextureSlice texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
-            var x = sprite->Position.X + (sprite->Origin.X * texture.Width) * sprite->Scale.X;
-            var y = sprite->Position.Y + (sprite->Origin.Y * texture.Height) * sprite->Scale.Y;
+            var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
+            var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
 
-            var w = texture.Width * sprite->Scale.X;
-            var h = texture.Height * sprite->Scale.Y;
+            var x = sprite->Position.X + sprite->Origin.X * w;
+            var y = sprite->Position.Y + sprite->Origin.Y * h;
 
             // TODO: Rotate
 

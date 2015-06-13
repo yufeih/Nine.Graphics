@@ -84,20 +84,33 @@ void main(void)
         private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, TextureSlice texture)
         {
             GL.UseProgram(shaderProgramHandle);
-
+            
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
 
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexCount * Vertex.SizeInBytes), (IntPtr)pVertex, BufferUsageHint.StaticDraw);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indexCount * sizeof(ushort)), (IntPtr)pIndex, BufferUsageHint.StaticDraw);
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, 0, 0);
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, 0, 0);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, true, 0, 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 0);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, Vertex.SizeInBytes, 12);
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 12 + 4);
+
+            GL.EnableVertexAttribArray(0);
+            GL.EnableVertexAttribArray(1);
+            GL.EnableVertexAttribArray(2);
 
             GL.BindTexture(TextureTarget.Texture2D, texture.Texture);
 
+            OpenTK.Matrix4 projection = OpenTK.Matrix4.Identity;
+            OpenTK.Matrix4.CreateOrthographicOffCenter(0, 1024, 768, 0, 0, 1, out projection);
+
+            GL.UniformMatrix4(transformLocation, false, ref projection);
+            
             GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, 0);
+
+            GL.DisableVertexAttribArray(0);
+            GL.DisableVertexAttribArray(1);
+            GL.DisableVertexAttribArray(2);
         }
 
         private void PlatformDispose()
