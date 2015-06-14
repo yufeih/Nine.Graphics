@@ -22,7 +22,10 @@
             {
                 new Sprite(textures[0], size:new Vector2(100, 50)),
                 new Sprite(textures[0], size:new Vector2(100, 100), position:new Vector2(100, 0)),
-                new Sprite(textures[0], position:new Vector2(300, 500), rotation: 100),
+                new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(200, 200), rotation:(float)(Math.PI * 0.01)),
+                new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(200, 200), rotation:(float)(Math.PI * 0.02)),
+                new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(300, 300), scale:new Vector2(2), rotation:(float)(Math.PI * 0.52)),
+                new Sprite(textures[0], size:new Vector2(200, 50), position:new Vector2(300, 300), scale:new Vector2(2), rotation:(float)(Math.PI * 0.02), origin:new Vector2(0.333f, 0.666f)),
             },
         };
 

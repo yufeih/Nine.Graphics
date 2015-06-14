@@ -74,7 +74,14 @@
 
                         if (texture == null) continue;
 
-                        ExtractVertex(sprite, texture, vertex++, vertex++, vertex++, vertex++);
+                        if (sprite->Rotation == 0)
+                        {
+                            PopulateVertex(sprite, texture, vertex++, vertex++, vertex++, vertex++);
+                        }
+                        else
+                        {
+                            PopulateVertexWithRotation(sprite, texture, vertex++, vertex++, vertex++, vertex++);
+                        }
 
                         vertexCount += 4;
                         sprite++;
@@ -120,18 +127,16 @@
             }
         }
 
-        private unsafe void ExtractVertex(
+        private unsafe void PopulateVertex(
             Sprite* sprite, TextureSlice texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
 
-            var x = sprite->Position.X + sprite->Origin.X * w;
-            var y = sprite->Position.Y + sprite->Origin.Y * h;
-
-            // TODO: Rotate
-
+            var x = sprite->Position.X - sprite->Origin.X * w;
+            var y = sprite->Position.Y - sprite->Origin.Y * h;
+            
             tl->Position.X = x;
             tl->Position.Y = y;
             tl->Position.Z = sprite->Depth;
@@ -155,6 +160,51 @@
 
             br->Position.X = x + w;
             br->Position.Y = y + h;
+            br->Position.Z = sprite->Depth;
+            br->Color = sprite->Color;
+            br->TextureCoordinate.X = texture.Right;
+            br->TextureCoordinate.Y = texture.Bottom;
+        }
+
+        private unsafe void PopulateVertexWithRotation(
+            Sprite* sprite, TextureSlice texture,
+            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
+        {
+            var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
+            var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
+
+            var x = sprite->Position.X;
+            var y = sprite->Position.Y;
+
+            var dx = -sprite->Origin.X * w;
+            var dy = -sprite->Origin.Y * h;
+
+            var cos = Math.Cos(sprite->Rotation);
+            var sin = Math.Sin(sprite->Rotation);
+
+            tl->Position.X = (float)(x + dx * cos - dy * sin);
+            tl->Position.Y = (float)(y + dx * sin + dy * cos);
+            tl->Position.Z = sprite->Depth;
+            tl->Color = sprite->Color;
+            tl->TextureCoordinate.X = texture.Left;
+            tl->TextureCoordinate.Y = texture.Top;
+
+            tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
+            tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
+            tr->Position.Z = sprite->Depth;
+            tr->Color = sprite->Color;
+            tr->TextureCoordinate.X = texture.Right;
+            tr->TextureCoordinate.Y = texture.Top;
+
+            bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
+            bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
+            bl->Position.Z = sprite->Depth;
+            bl->Color = sprite->Color;
+            bl->TextureCoordinate.X = texture.Left;
+            bl->TextureCoordinate.Y = texture.Bottom;
+
+            br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
+            br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
             br->Position.Z = sprite->Depth;
             br->Color = sprite->Color;
             br->TextureCoordinate.X = texture.Right;
