@@ -1,7 +1,8 @@
 ﻿namespace Nine.Graphics
 {
+    using Nine.Imaging;
     using System.Numerics;
-    
+
     public struct Sprite
     {
         public readonly bool IsVisible;
@@ -13,7 +14,7 @@
         public readonly Vector2 Origin;
         public readonly TextureId Texture;
         public readonly float Depth;
-        public readonly int Color; // TODO: Turn into Color
+        public readonly Color Color;
 
         public static readonly Sprite Default = new Sprite(default(TextureId));
         
@@ -27,7 +28,7 @@
             Vector2 origin = default(Vector2),
             bool isVisible = true,
             float depth = 0,
-            int color = -1)
+            Color? color = null)
         {
             this.Texture = texture;
             this.IsVisible = isVisible;
@@ -38,7 +39,7 @@
             this.Size = size ?? Vector2.Zero;
             this.Origin = origin;
             this.Depth = depth;
-            this.Color = color;
+            this.Color = color ?? Color.White;
         }
     }
 }

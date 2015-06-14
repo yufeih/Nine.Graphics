@@ -39,7 +39,7 @@ uniform sampler2D Texture;
 
 void main(void)
 {
-    gl_FragColor = color * texture2D(Texture, uv);
+    gl_FragColor = color.bgra * texture2D(Texture, uv);
 }";
 
         private int shaderProgramHandle, transformLocation;

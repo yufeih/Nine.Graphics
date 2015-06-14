@@ -6,6 +6,7 @@
     using Nine.Injection;
     using Xunit;
     using System.Linq;
+    using Nine.Imaging;
 
     [Trait("ci", "false")]
     public class SpriteRendererTest : GraphicsTest
@@ -21,7 +22,9 @@
             new [] 
             {
                 new Sprite(textures[0], size:new Vector2(100, 50)),
-                new Sprite(textures[0], size:new Vector2(100, 100), position:new Vector2(100, 0)),
+                new Sprite(textures[0], size:new Vector2(100, 100), position:new Vector2(100, 0), color:new Color(r:255, g:0, b:0)),
+                new Sprite(textures[0], size:new Vector2(100, 100), position:new Vector2(200, 0), color:new Color(r:0, g:255, b:0)),
+                new Sprite(textures[0], size:new Vector2(100, 100), position:new Vector2(300, 0), color:new Color(r:0, g:0, b:255)),
                 new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(200, 200), rotation:(float)(Math.PI * 0.01)),
                 new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(200, 200), rotation:(float)(Math.PI * 0.02)),
                 new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(300, 300), scale:new Vector2(2), rotation:(float)(Math.PI * 0.52)),
