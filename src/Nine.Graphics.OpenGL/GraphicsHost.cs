@@ -16,8 +16,8 @@
 
         public IntPtr WindowHandle => window.WindowInfo.Handle;
 
-        public GraphicsHost(int width, int height, GraphicsMode mode = null, bool hidden = false)
-            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow), hidden)
+        public GraphicsHost(int width, int height, GraphicsMode mode = null, bool hidden = false, bool vSync = true)
+            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow) { VSync = vSync ? VSyncMode.On : VSyncMode.Off }, hidden)
         { }
 
         public GraphicsHost(GameWindow window, bool hidden = false)

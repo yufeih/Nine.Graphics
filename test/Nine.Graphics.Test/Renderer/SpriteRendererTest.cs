@@ -2,13 +2,9 @@
 {
     using System;
     using System.Numerics;
-    using System.Threading.Tasks;
-    using Nine.Injection;
     using Xunit;
-    using System.Linq;
     using Nine.Imaging;
 
-    [Trait("ci", "false")]
     public class SpriteRendererTest : GraphicsTest
     {
         public static readonly string[] textures =
@@ -39,21 +35,15 @@
 
         [Theory]
         [MemberData(nameof(Dimensions))]
-        public async Task draw_an_image(Type hostType, Type rendererType)
+        public void draw_an_image(Type hostType, Type rendererType)
         {
-            var contentLoader = Container.Get<IContentLoader>();
-
-            try
-            {
-                await Task.WhenAll(textures.Select(contentLoader.Load));
-            }
-            catch { }
+            LoadContents(textures);
 
             var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
 
             foreach (var scene in scenes)
             {
-                Draw(hostType, () =>
+                Frame(hostType, () =>
                 {
                     renderer.Draw(scene, null);
                 });
