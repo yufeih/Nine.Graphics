@@ -26,6 +26,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Imaging", "dep\Nine.Im
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Geometry", "dep\Nine.Geometry\src\Nine.Geometry.xproj", "{0E06199E-10CE-4FB6-976D-8A0616C7ACF9}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics.Common", "src\Nine.Graphics.Common\Nine.Graphics.Common.xproj", "{F5C9B144-B46F-40B0-87F0-9615542AAF89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{0E06199E-10CE-4FB6-976D-8A0616C7ACF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E06199E-10CE-4FB6-976D-8A0616C7ACF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E06199E-10CE-4FB6-976D-8A0616C7ACF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +73,6 @@ Global
 		{21AD05CA-931C-49DE-9929-634888EAE1B8} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
 		{824DCEA3-0A75-4A8D-B9E0-FB4E50840F3C} = {45BC76D1-F5E6-43FF-A17D-3A0275603245}
 		{0E06199E-10CE-4FB6-976D-8A0616C7ACF9} = {45BC76D1-F5E6-43FF-A17D-3A0275603245}
+		{F5C9B144-B46F-40B0-87F0-9615542AAF89} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
 	EndGlobalSection
 EndGlobal

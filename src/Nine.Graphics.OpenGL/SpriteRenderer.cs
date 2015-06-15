@@ -90,7 +90,7 @@
 
                 if (vertexCount <= 0) return;
 
-                fixed (ushort * pIndex = indexData)
+                fixed (ushort* pIndex = indexData)
                 {
                     PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, texture);
                 }
@@ -136,7 +136,7 @@
 
             var x = sprite->Position.X - sprite->Origin.X * w;
             var y = sprite->Position.Y - sprite->Origin.Y * h;
-            
+
             tl->Position.X = x;
             tl->Position.Y = y;
             tl->Position.Z = sprite->Depth;

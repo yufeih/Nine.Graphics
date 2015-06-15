@@ -33,7 +33,7 @@
 
             if (textures.Length <= textureId.Id)
             {
-                Array.Resize(ref textures, MathHelpers.NextPowerOfTwo(TextureId.Count));
+                Array.Resize(ref textures, MathHelper.NextPowerOfTwo(TextureId.Count));
             }
 
             var entry = textures[textureId.Id];

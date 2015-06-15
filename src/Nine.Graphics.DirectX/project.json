@@ -9,6 +9,7 @@
   "dependencies": {
     "SharpDX": "3.0.0-alpha01",
     "Nine.Graphics": "1.0.0-*",
+    "Nine.Graphics.Common": { "version": "1.0.0-*", "type": "build" },
     "SharpDX.Direct3D12": "3.0.0-alpha01",
     "SharpDX.DXGI": "3.0.0-alpha01",
     "SharpDX.Desktop": "3.0.0-alpha01",
