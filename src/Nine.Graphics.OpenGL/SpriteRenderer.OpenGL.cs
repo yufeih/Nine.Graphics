@@ -35,11 +35,13 @@ precision highp float;
 in vec2 uv;
 in vec4 color;
 
+out vec4 out_color;
+
 uniform sampler2D Texture;
 
 void main(void)
 {
-    gl_FragColor = color.bgra * texture2D(Texture, uv);
+    out_color = color.bgra * texture2D(Texture, uv);
 }";
 
         private int shaderProgramHandle, transformLocation;
