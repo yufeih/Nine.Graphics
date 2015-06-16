@@ -2,16 +2,33 @@
 {
     using OpenTK.Graphics.OpenGL;
     using System;
+    using System.Diagnostics;
     using System.Text;
+    using System.Threading;
 
-    static class OpenGLExtensions
+    static class GLDebug
     {
+        static Thread glThread;
+
+        [Conditional("DEBUG")]
+        public static void CheckAccess()
+        {
+            var currentThread = Thread.CurrentThread;
+            var thread = Interlocked.CompareExchange(ref glThread, currentThread, null);
+            if (thread != null && thread != currentThread)
+            {
+                throw new InvalidOperationException("GL method is called from an incorrect thread");
+            }
+        }
+
+        [Conditional("DEBUG")]
         public static void PrintProgramInfo(int program)
         {
             PrintProgramAttributes(program);
             PrintProgramUniforms(program);
         }
 
+        [Conditional("DEBUG")]
         public static void PrintProgramAttributes(int program)
         {
             int count = 0;
@@ -34,6 +51,7 @@
             }
         }
 
+        [Conditional("DEBUG")]
         public static void PrintProgramUniforms(int program)
         {
             int count = 0;

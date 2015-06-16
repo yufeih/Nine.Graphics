@@ -25,6 +25,8 @@
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
+            GLDebug.CheckAccess();
+
             this.window = window;
             if (!hidden)
             {
@@ -36,6 +38,8 @@
 
         public bool BeginFrame()
         {
+            GLDebug.CheckAccess();
+
             window.ProcessEvents();
 
             if (window.IsExiting)
@@ -49,16 +53,25 @@
 
         public void EndFrame()
         {
+            GLDebug.CheckAccess();
+
             window?.SwapBuffers();
         }
 
         public TextureContent GetTexture()
         {
+            GLDebug.CheckAccess();
+
             framePixels = framePixels ?? new byte[Width * Height * 4];
             GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, framePixels);
             return new TextureContent(Width, Height, framePixels);
         }
 
-        public void Dispose() => window?.Dispose();
+        public void Dispose()
+        {
+            GLDebug.CheckAccess();
+
+            window?.Dispose();
+        }
     }
 }
