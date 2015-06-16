@@ -1,6 +1,7 @@
 ﻿namespace Nine.Graphics.OpenGL
 {
     using System;
+    using Nine.Graphics.Content;
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;

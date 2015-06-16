@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Nine.Graphics.Content;
     using OpenTK.Graphics.OpenGL;
 
     public class TextureFactory
@@ -16,10 +17,10 @@
             public override string ToString() => $"{ LoadState }: { Slice }";
         }
 
-        private readonly ITextureLoader loader;
+        private readonly IContentLoader<TextureContent> loader;
         private Entry[] textures;
 
-        public TextureFactory(ITextureLoader loader, int capacity = 1024)
+        public TextureFactory(IContentLoader<TextureContent> loader, int capacity = 1024)
         {
             if (loader == null) throw new ArgumentNullException(nameof(loader));
 

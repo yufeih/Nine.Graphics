@@ -9,7 +9,10 @@
     {
         public static readonly string[] textures =
         {
+            "http://findicons.com/files/icons/1700/2d/512/game.png",
+            "https://avatars0.githubusercontent.com/u/511355?v=3&s=460",
             "Content/Logo.png",
+            TextureId.White.Name,
         };
 
         public static readonly Sprite[][] scenes =
@@ -37,7 +40,7 @@
         [MemberData(nameof(Dimensions))]
         public void draw_an_image(Type hostType, Type rendererType)
         {
-            LoadContents(textures);
+            LoadTextures(textures);
 
             var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
 

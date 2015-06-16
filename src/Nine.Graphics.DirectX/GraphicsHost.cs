@@ -7,6 +7,7 @@
     using SharpDX.Windows;
     using System;
     using System.Threading;
+    using Nine.Graphics.Content;
 
     using Device = SharpDX.Direct3D12.Device;
     using Resource = SharpDX.Direct3D12.Resource;

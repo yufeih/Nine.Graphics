@@ -8,6 +8,7 @@
     using System.Threading.Tasks;
     using Nine.Imaging;
     using Nine.Injection;
+    using Nine.Graphics.Content;
     using Xunit;
 
     /// <summary>
@@ -53,31 +54,34 @@
             {
                 initialized = true;
                 Container
-                   .Map<IContentLoader, ContentLoader>()
-                   .Map<ITextureLoader, TextureLoader>()
+                   .Map<IContentLocator, ContentLocator>()
+                   .Map<IContentLoader<TextureContent>, TextureLoader>()
                    .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
             }
         }
 
-        public void LoadContents(string[] contents)
+        public void LoadTextures(string[] textures)
         {
-            var contentLoader = Container.Get<IContentLoader>();
+            var contentLoader = Container.Get<IContentLoader<TextureContent>>();
             var load = new Func<string, Task>(async name =>
             {
+                var color = Console.ForegroundColor;
                 try
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"Loading { name }");
+                    Console.ForegroundColor = color;
                     if (await contentLoader.Load(name) == null) throw new FileNotFoundException();
                 }
                 catch
                 {
-                    var color = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine($"Error loading: { name }");
                     Console.ForegroundColor = color;
                 }
             });
 
-            Task.WaitAll(contents.Select(load).ToArray());
+            Task.WaitAll(textures.Select(load).ToArray());
         }
 
         public void Frame(Type hostType, Action draw, [CallerMemberName]string name = null)
