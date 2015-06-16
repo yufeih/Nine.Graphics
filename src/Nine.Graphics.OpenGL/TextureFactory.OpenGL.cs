@@ -7,6 +7,8 @@
     {
         private TextureSlice PlatformCreateTexture(TextureContent data)
         {
+            GLDebug.CheckAccess();
+
             var texture = GL.GenTexture();
 
             GL.BindTexture(TextureTarget.Texture2D, texture);

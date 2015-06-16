@@ -50,11 +50,15 @@ void main(void)
         
         private void PlatformCreateBuffers()
         {
+            GLDebug.CheckAccess();
+
             vertexBufferId = GL.GenBuffer();
         }
 
         private void PlatformCreateShaders()
         {
+            GLDebug.CheckAccess();
+
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
@@ -85,6 +89,8 @@ void main(void)
 
         private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, TextureSlice texture)
         {
+            GLDebug.CheckAccess();
+
             GL.UseProgram(shaderProgramHandle);
             
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
@@ -117,6 +123,8 @@ void main(void)
 
         private void PlatformDispose()
         {
+            GLDebug.CheckAccess();
+
             GL.DeleteBuffer(vertexBufferId);
             GL.DeleteProgram(shaderProgramHandle);
         }
