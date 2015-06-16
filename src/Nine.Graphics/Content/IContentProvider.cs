@@ -3,8 +3,11 @@
     using System.IO;
     using System.Threading.Tasks;
 
-    public interface IContentLocator
+    public interface IContentProvider
     {
+        /// <summary>
+        /// Opens a stream for the given content name.
+        /// </summary>
         Task<Stream> Open(string name);
     }
 }

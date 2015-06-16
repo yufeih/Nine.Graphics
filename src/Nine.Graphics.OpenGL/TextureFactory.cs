@@ -1,12 +1,17 @@
 ﻿namespace Nine.Graphics.OpenGL
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Nine.Graphics.Content;
     using OpenTK.Graphics.OpenGL;
 
-    public class TextureFactory
+    public class TextureFactory : ITexturePreloader
     {
+        private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
+
         enum LoadState { None, Loading, Loaded, Failed, Missing }
 
         struct Entry
@@ -17,10 +22,10 @@
             public override string ToString() => $"{ LoadState }: { Slice }";
         }
 
-        private readonly IContentLoader<TextureContent> loader;
+        private readonly ITextureLoader loader;
         private Entry[] textures;
 
-        public TextureFactory(IContentLoader<TextureContent> loader, int capacity = 1024)
+        public TextureFactory(ITextureLoader loader, int capacity = 1024)
         {
             if (loader == null) throw new ArgumentNullException(nameof(loader));
 
@@ -52,7 +57,20 @@
             return entry.LoadState != LoadState.None ? entry.Slice : null;
         }
 
-        public async Task LoadTexture(TextureId textureId)
+        public Task Preload(IEnumerable<TextureId> textures)
+        {
+            if (!textures.Any()) return Task.FromResult(0);
+
+            var maxId = textures.Max(texture => texture.Id);
+            if (this.textures.Length <= maxId)
+            {
+                Array.Resize(ref this.textures, MathHelper.NextPowerOfTwo(TextureId.Count));
+            }
+
+            return Task.WhenAll(textures.Select(texture => LoadTexture(texture)));
+        }
+
+        private async Task LoadTexture(TextureId textureId)
         {
             try
             {
@@ -67,14 +85,15 @@
                     return;
                 }
 
-                var texture = GL.GenTexture();
-                
-                GL.BindTexture(TextureTarget.Texture2D, texture);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Pixels);
-
-                textures[textureId.Id].Slice = new TextureSlice(texture, data.Width, data.Height, 0, data.Width, 0, data.Height);
+                if (syncContext != null)
+                {
+                    // Ensure PlatformCreateTexture is called on the thread that creates this TextureFactory
+                    textures[textureId.Id].Slice = await CreateTexture(data).ConfigureAwait(false);
+                }
+                else
+                {
+                    textures[textureId.Id].Slice = PlatformCreateTexture(data);
+                }
                 textures[textureId.Id].LoadState = LoadState.Loaded;
             }
             catch
@@ -83,6 +102,35 @@
                 textures[textureId.Id].Slice = textures[TextureId.Error.Id].Slice;
                 textures[textureId.Id].LoadState = LoadState.Failed;
             }
+        }
+
+        private Task<TextureSlice> CreateTexture(TextureContent data)
+        {
+            var tcs = new TaskCompletionSource<TextureSlice>();
+            syncContext.Post(x =>
+            {
+                try
+                {
+                    tcs.SetResult(PlatformCreateTexture(data));
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+            }, null);
+            return tcs.Task;
+        }
+
+        private TextureSlice PlatformCreateTexture(TextureContent data)
+        {
+            var texture = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Pixels);
+
+            return new TextureSlice(texture, data.Width, data.Height, 0, data.Width, 0, data.Height);
         }
     }
 }

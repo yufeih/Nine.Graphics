@@ -4,18 +4,18 @@
     using System.Threading.Tasks;
     using Nine.Imaging;
     
-    public class TextureLoader : ContentLoader<TextureContent>
+    public class TextureLoader : ITextureLoader
     {
-        private readonly IContentLocator contentLocator;
+        private readonly IContentProvider contentLocator;
 
-        public TextureLoader(IContentLocator contentLocator)
+        public TextureLoader(IContentProvider contentLocator)
         {
             if (contentLocator == null) throw new ArgumentNullException(nameof(contentLocator));
 
             this.contentLocator = contentLocator;
         }
 
-        protected async override Task<TextureContent> LoadContent(string name)
+        public async Task<TextureContent> Load(string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
 

@@ -4,6 +4,7 @@
     using System.Numerics;
     using Xunit;
     using Nine.Imaging;
+    using System.Threading.Tasks;
 
     public class SpriteRendererTest : GraphicsTest
     {
@@ -38,9 +39,9 @@
 
         [Theory]
         [MemberData(nameof(Dimensions))]
-        public void draw_an_image(Type hostType, Type rendererType)
+        public async Task draw_an_image(Type hostType, Type rendererType)
         {
-            LoadTextures(textures);
+            await PreloadTextures(textures);
 
             var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
 

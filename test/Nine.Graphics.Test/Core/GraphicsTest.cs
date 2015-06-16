@@ -32,7 +32,6 @@
     /// 
     /// </summary>
     [Trait("ci", "false")]
-    [Collection("Graphics")]
     public class GraphicsTest
     {
         public static bool Hide;
@@ -50,38 +49,22 @@
 
         public GraphicsTest()
         {
-            if (!initialized)
-            {
-                initialized = true;
-                Container
-                   .Map<IContentLocator, ContentLocator>()
-                   .Map<IContentLoader<TextureContent>, TextureLoader>()
-                   .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
-            }
+            if (initialized) return;
+            initialized = true;
+
+            Container
+               .Map<IContentProvider, ContentProvider>()
+               .Map<ITextureLoader, TextureLoader>()
+               .Map<ITexturePreloader, OpenGL.TextureFactory>()
+               .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
         }
 
-        public void LoadTextures(string[] textures)
+        public async Task PreloadTextures(string[] textures)
         {
-            var contentLoader = Container.Get<IContentLoader<TextureContent>>();
-            var load = new Func<string, Task>(async name =>
+            foreach (var texturePreloader in Container.GetAll<ITexturePreloader>())
             {
-                var color = Console.ForegroundColor;
-                try
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine($"Loading { name }");
-                    Console.ForegroundColor = color;
-                    if (await contentLoader.Load(name) == null) throw new FileNotFoundException();
-                }
-                catch
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine($"Error loading: { name }");
-                    Console.ForegroundColor = color;
-                }
-            });
-
-            Task.WaitAll(textures.Select(load).ToArray());
+                await texturePreloader.Preload(textures.Select(name => new TextureId(name)));
+            }
         }
 
         public void Frame(Type hostType, Action draw, [CallerMemberName]string name = null)

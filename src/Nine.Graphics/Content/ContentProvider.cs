@@ -5,11 +5,11 @@
     using System.Threading.Tasks;
     using System.Net.Http;
 
-    public class ContentLocator : IContentLocator
+    public class ContentProvider : IContentProvider
     {
         private readonly Lazy<HttpClient> http;
 
-        public ContentLocator(HttpMessageHandler messageHandler = null)
+        public ContentProvider(HttpMessageHandler messageHandler = null)
         {
             http = new Lazy<HttpClient>(() => new HttpClient(messageHandler ?? new HttpClientHandler()));
         }
