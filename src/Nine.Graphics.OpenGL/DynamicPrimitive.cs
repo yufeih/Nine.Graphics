@@ -118,15 +118,8 @@
             GL.LineWidth(entry.LineWidth);
 
             // Apply texture
-            if (entry.Texture != null)
-            {
-                var texture = textureFactory.GetTexture(entry.Texture.Value);
-                GL.BindTexture(TextureTarget.Texture2D, (texture == null) ? blankTexture : texture.Texture);
-            }
-            else
-            {
-                GL.BindTexture(TextureTarget.Texture2D, blankTexture);
-            }
+            var texture = textureFactory.GetTexture(entry.Texture ?? TextureId.White);
+            GL.BindTexture(TextureTarget.Texture2D, texture.Texture);
 
             // Draw geometry
             if (entry.IndexCount > 0)
