@@ -1,4 +1,8 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿#if DX
+namespace Nine.Graphics.DirectX
+#else
+namespace Nine.Graphics.OpenGL
+#endif
 {
     using System;
     using System.Collections.Generic;
@@ -6,9 +10,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Nine.Graphics.Content;
-    using OpenTK.Graphics.OpenGL;
 
-    public class TextureFactory : ITexturePreloader
+    public partial class TextureFactory : ITexturePreloader
     {
         private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
 
@@ -119,18 +122,6 @@
                 }
             }, null);
             return tcs.Task;
-        }
-
-        private TextureSlice PlatformCreateTexture(TextureContent data)
-        {
-            var texture = GL.GenTexture();
-
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Pixels);
-
-            return new TextureSlice(texture, data.Width, data.Height, 0, data.Width, 0, data.Height);
         }
     }
 }

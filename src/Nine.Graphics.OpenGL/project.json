@@ -13,7 +13,8 @@
   },
 
   "compilationOptions": {
-    "allowUnsafe": true
+    "allowUnsafe": true,
+    "define": [ "GL" ]
   },
 
   "frameworks": {

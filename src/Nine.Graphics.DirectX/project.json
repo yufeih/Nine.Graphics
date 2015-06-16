@@ -17,7 +17,8 @@
   },
 
   "compilationOptions": {
-    "allowUnsafe": true
+    "allowUnsafe": true,
+    "define": [ "DX" ]
   },
 
   "frameworks": {
