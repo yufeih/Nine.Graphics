@@ -60,9 +60,9 @@ namespace Nine.Graphics.OpenGL
             return entry.LoadState != LoadState.None ? entry.Slice : null;
         }
 
-        public Task Preload(IEnumerable<TextureId> textures)
+        public Task Preload(params TextureId[] textures)
         {
-            if (!textures.Any()) return Task.FromResult(0);
+            if (textures.Length <= 0) return Task.FromResult(0);
 
             var maxId = textures.Max(texture => texture.Id);
             if (this.textures.Length <= maxId)

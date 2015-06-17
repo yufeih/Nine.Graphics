@@ -8,8 +8,7 @@
 
   "dependencies": {
     "System.Numerics.Vectors": "4.0.0",
-    "Microsoft.Framework.Caching.Memory": "1.0.0-beta4",
-    "Nine.Imaging": "1.0.78-alpha"
+    "Nine.Imaging": "1.1.0-*"
   },
 
   "compilationOptions": {

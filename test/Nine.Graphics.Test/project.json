@@ -4,7 +4,7 @@
     "Nine.Graphics": "1.0.0-*",
     "Nine.Graphics.DirectX": "1.0.0-*",
     "Nine.Graphics.OpenGL": "1.0.0-*",
-    "Nine.Imaging": "1.0.78-alpha",
+    "Nine.Imaging": "1.1.0-*",
     "Nine.Injection": "1.1.66-alpha",
     "System.Numerics.Vectors": "4.0.0",
     "xunit": "2.1.0-beta2-*",
@@ -25,7 +25,7 @@
   },
 
   "commands": {
-    "test": "xunit.runner.dnx",
+    "test": "Nine.Graphics.Test --verify --hide --repeat 2",
     "run": "Nine.Graphics.Test"
   }
 }

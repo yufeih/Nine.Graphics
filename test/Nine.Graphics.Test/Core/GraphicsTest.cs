@@ -63,7 +63,14 @@
         {
             foreach (var texturePreloader in Container.GetAll<ITexturePreloader>())
             {
-                await texturePreloader.Preload(textures.Select(name => new TextureId(name)));
+                foreach (var texture in textures)
+                {
+                    var color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"Loading { texture }");
+                    Console.ForegroundColor = color;
+                    await texturePreloader.Preload(texture);
+                }
             }
         }
 
