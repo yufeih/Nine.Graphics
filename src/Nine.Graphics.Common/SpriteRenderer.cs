@@ -13,11 +13,11 @@ namespace Nine.Graphics.OpenGL
     {
         struct Vertex
         {
-            public Vector3 Position;
+            public Vector2 Position;
             public int Color;
             public Vector2 TextureCoordinate;
 
-            public const int SizeInBytes = 12 + 4 + 8;
+            public const int SizeInBytes = 8 + 4 + 8;
         }
 
         private readonly TextureFactory textureFactory;
@@ -143,31 +143,36 @@ namespace Nine.Graphics.OpenGL
 
             tl->Position.X = x;
             tl->Position.Y = y;
-            tl->Position.Z = sprite->Depth;
             tl->Color = sprite->Color.Bgra;
             tl->TextureCoordinate.X = texture.Left;
             tl->TextureCoordinate.Y = texture.Top;
 
             tr->Position.X = x + w;
             tr->Position.Y = y;
-            tr->Position.Z = sprite->Depth;
             tr->Color = sprite->Color.Bgra;
             tr->TextureCoordinate.X = texture.Right;
             tr->TextureCoordinate.Y = texture.Top;
 
             bl->Position.X = x;
             bl->Position.Y = y + h;
-            bl->Position.Z = sprite->Depth;
             bl->Color = sprite->Color.Bgra;
             bl->TextureCoordinate.X = texture.Left;
             bl->TextureCoordinate.Y = texture.Bottom;
 
             br->Position.X = x + w;
             br->Position.Y = y + h;
-            br->Position.Z = sprite->Depth;
             br->Color = sprite->Color.Bgra;
             br->TextureCoordinate.X = texture.Right;
             br->TextureCoordinate.Y = texture.Bottom;
+
+            if (sprite->HasTransform)
+            {
+                // https://github.com/dotnet/corefx/issues/313 
+                //tl->Position = Vector2.Transform(tl->Position, sprite->Transform);
+                //tr->Position = Vector2.Transform(tr->Position, sprite->Transform);
+                //bl->Position = Vector2.Transform(bl->Position, sprite->Transform);
+                //br->Position = Vector2.Transform(br->Position, sprite->Transform);
+            }
         }
 
         private unsafe void PopulateVertexWithRotation(
@@ -188,31 +193,36 @@ namespace Nine.Graphics.OpenGL
 
             tl->Position.X = (float)(x + dx * cos - dy * sin);
             tl->Position.Y = (float)(y + dx * sin + dy * cos);
-            tl->Position.Z = sprite->Depth;
             tl->Color = sprite->Color.Bgra;
             tl->TextureCoordinate.X = texture.Left;
             tl->TextureCoordinate.Y = texture.Top;
 
             tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
             tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
-            tr->Position.Z = sprite->Depth;
             tr->Color = sprite->Color.Bgra;
             tr->TextureCoordinate.X = texture.Right;
             tr->TextureCoordinate.Y = texture.Top;
 
             bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
             bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
-            bl->Position.Z = sprite->Depth;
             bl->Color = sprite->Color.Bgra;
             bl->TextureCoordinate.X = texture.Left;
             bl->TextureCoordinate.Y = texture.Bottom;
 
             br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
             br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
-            br->Position.Z = sprite->Depth;
             br->Color = sprite->Color.Bgra;
             br->TextureCoordinate.X = texture.Right;
             br->TextureCoordinate.Y = texture.Bottom;
+
+            if (sprite->HasTransform)
+            {
+                // https://github.com/dotnet/corefx/issues/313 
+                //tl->Position = Vector2.Transform(tl->Position, sprite->Transform);
+                //tr->Position = Vector2.Transform(tr->Position, sprite->Transform);
+                //bl->Position = Vector2.Transform(bl->Position, sprite->Transform);
+                //br->Position = Vector2.Transform(br->Position, sprite->Transform);
+            }
         }
 
         private static void PopulateIndex(int start, int spriteCount)

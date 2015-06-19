@@ -27,6 +27,7 @@
                 new Sprite(textures[0], size:new Vector2(100, 100), position:new Vector2(300, 0), color:new Color(r:0, g:0, b:255)),
                 new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(200, 200), rotation:(float)(Math.PI * 0.01)),
                 new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(200, 200), rotation:(float)(Math.PI * 0.02)),
+                new Sprite(textures[0], size:new Vector2(100, 50), transform:Matrix3x2.CreateTranslation(200, 200), rotation:-(float)(Math.PI * 0.02)),
                 new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(300, 300), scale:new Vector2(2), rotation:(float)(Math.PI * 0.52)),
                 new Sprite(textures[0], size:new Vector2(200, 50), position:new Vector2(300, 300), scale:new Vector2(2), rotation:(float)(Math.PI * 0.02), origin:new Vector2(0.333f, 0.666f)),
             },
