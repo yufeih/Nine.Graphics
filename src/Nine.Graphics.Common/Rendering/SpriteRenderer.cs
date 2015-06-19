@@ -190,19 +190,19 @@ namespace Nine.Graphics.Rendering.OpenGL
 
             tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
             tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
-            tl->Color = color.Bgra;
+            tr->Color = color.Bgra;
             tr->TextureCoordinate.X = texture.Right;
             tr->TextureCoordinate.Y = texture.Top;
 
             bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
             bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
-            tl->Color = color.Bgra;
+            bl->Color = color.Bgra;
             bl->TextureCoordinate.X = texture.Left;
             bl->TextureCoordinate.Y = texture.Bottom;
 
             br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
             br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
-            tl->Color = color.Bgra;
+            br->Color = color.Bgra;
             br->TextureCoordinate.X = texture.Right;
             br->TextureCoordinate.Y = texture.Bottom;
 
