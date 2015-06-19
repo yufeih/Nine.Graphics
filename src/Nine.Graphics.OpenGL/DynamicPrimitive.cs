@@ -2,6 +2,7 @@
 {
     using System;
     using System.Numerics;
+    using Nine.Graphics.Content.OpenGL;
     using OpenTK.Graphics.OpenGL;
 
     public partial class DynamicPrimitive : IDisposable

@@ -1,7 +1,7 @@
 ﻿#if DX
-namespace Nine.Graphics.DirectX
+namespace Nine.Graphics.Content.DirectX
 #else
-namespace Nine.Graphics.OpenGL
+namespace Nine.Graphics.Content.OpenGL
 #endif
 {
     using System.Diagnostics;

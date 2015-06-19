@@ -1,6 +1,7 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿namespace Nine.Graphics.Content.OpenGL
 {
     using Nine.Graphics.Content;
+    using Nine.Graphics.OpenGL;
     using OpenTK.Graphics.OpenGL;
 
     partial class TextureFactory

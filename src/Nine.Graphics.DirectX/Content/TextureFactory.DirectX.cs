@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Content.DirectX
 {
     using Nine.Graphics.Content;
 

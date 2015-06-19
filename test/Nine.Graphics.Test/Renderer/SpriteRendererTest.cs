@@ -5,6 +5,7 @@
     using Xunit;
     using Nine.Imaging;
     using System.Threading.Tasks;
+    using Nine.Graphics.Rendering;
 
     public class SpriteRendererTest : GraphicsTest
     {
@@ -35,7 +36,7 @@
 
         public static readonly TheoryData<Type, Type> Dimensions = new TheoryData<Type, Type>()
         {
-            { typeof(OpenGL.GraphicsHost), typeof(OpenGL.SpriteRenderer) },
+            { typeof(OpenGL.GraphicsHost), typeof(Rendering.OpenGL.SpriteRenderer) },
         };
 
         [Theory]
@@ -50,7 +51,7 @@
             {
                 Frame(hostType, () =>
                 {
-                    renderer.Draw(scene, null);
+                    renderer.Draw(scene);
                 });
             }
         }

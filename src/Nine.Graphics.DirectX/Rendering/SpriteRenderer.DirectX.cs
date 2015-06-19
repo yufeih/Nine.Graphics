@@ -1,7 +1,8 @@
-﻿namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering.DirectX
 {
     using System.Diagnostics;
     using System;
+    using Nine.Graphics.Content.DirectX;
 
     partial class SpriteRenderer
     {

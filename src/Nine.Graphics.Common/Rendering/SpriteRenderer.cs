@@ -1,9 +1,12 @@
 ﻿#if DX
-namespace Nine.Graphics.DirectX
-#else
-namespace Nine.Graphics.OpenGL
-#endif
+namespace Nine.Graphics.Rendering.DirectX
 {
+    using Nine.Graphics.Content.DirectX;
+#else
+namespace Nine.Graphics.Rendering.OpenGL
+{
+    using Nine.Graphics.Content.OpenGL;
+#endif
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -35,22 +38,6 @@ namespace Nine.Graphics.OpenGL
             this.CreateBuffers(initialSpriteCapacity);
             this.PlatformCreateBuffers();
             this.PlatformCreateShaders();
-        }
-
-        public void Draw(IEnumerable<Sprite> input, ObjectPool output)
-        {
-            var array = input as Sprite[];
-            if (array != null)
-                Draw(array);
-            else if (input is Slice<Sprite>)
-                Draw((Slice<Sprite>)input);
-            else
-                throw new NotImplementedException();
-        }
-
-        public void Draw(Slice<Sprite> sprites, Slice<Matrix3x2> transforms)
-        {
-            Debug.Assert(sprites.Count == transforms.Count);
         }
 
         public unsafe void Draw(Slice<Sprite> sprites)

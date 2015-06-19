@@ -1,8 +1,10 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿namespace Nine.Graphics.Rendering.OpenGL
 {
     using System.Diagnostics;
     using OpenTK.Graphics.OpenGL;
     using System;
+    using Nine.Graphics.Content.OpenGL;
+    using Nine.Graphics.OpenGL;
 
     partial class SpriteRenderer
     {
