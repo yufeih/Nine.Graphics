@@ -5,7 +5,6 @@ namespace Nine.Graphics.OpenGL
 #endif
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -60,19 +59,6 @@ namespace Nine.Graphics.OpenGL
             return entry.LoadState != LoadState.None ? entry.Slice : null;
         }
 
-        public Task Preload(params TextureId[] textures)
-        {
-            if (textures.Length <= 0) return Task.FromResult(0);
-
-            var maxId = textures.Max(texture => texture.Id);
-            if (this.textures.Length <= maxId)
-            {
-                Array.Resize(ref this.textures, MathHelper.NextPowerOfTwo(TextureId.Count));
-            }
-
-            return Task.WhenAll(textures.Select(texture => LoadTexture(texture)));
-        }
-
         private async Task LoadTexture(TextureId textureId)
         {
             try
@@ -88,15 +74,7 @@ namespace Nine.Graphics.OpenGL
                     return;
                 }
 
-                if (syncContext != null)
-                {
-                    // Ensure PlatformCreateTexture is called on the thread that creates this TextureFactory
-                    textures[textureId.Id].Slice = await CreateTexture(data).ConfigureAwait(false);
-                }
-                else
-                {
-                    textures[textureId.Id].Slice = PlatformCreateTexture(data);
-                }
+                textures[textureId.Id].Slice = PlatformCreateTexture(data);
                 textures[textureId.Id].LoadState = LoadState.Loaded;
             }
             catch
@@ -107,20 +85,29 @@ namespace Nine.Graphics.OpenGL
             }
         }
 
-        private Task<TextureSlice> CreateTexture(TextureContent data)
+        Task ITexturePreloader.Preload(params TextureId[] textures)
         {
-            var tcs = new TaskCompletionSource<TextureSlice>();
-            syncContext.Post(x =>
+            if (textures.Length <= 0) return Task.FromResult(0);
+            if (syncContext == null) throw new InvalidOperationException("Cannot preload textures when TextureFactory is created on a thread without SynchronizationContext.");
+
+            var tcs = new TaskCompletionSource<int>();
+
+            syncContext.Post(async _ =>
             {
-                try
+                var maxId = textures.Max(texture => texture.Id);
+                if (this.textures.Length <= maxId)
                 {
-                    tcs.SetResult(PlatformCreateTexture(data));
+                    Array.Resize(ref this.textures, MathHelper.NextPowerOfTwo(TextureId.Count));
                 }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
+
+                await Task.WhenAll(textures
+                    .Where(textureId => this.textures[textureId.Id].LoadState == LoadState.None)
+                    .Select(LoadTexture));
+
+                tcs.SetResult(0);
+
             }, null);
+
             return tcs.Task;
         }
     }
