@@ -179,8 +179,10 @@ namespace Nine.Graphics.Rendering.OpenGL
             var dx = -sprite->Origin.X * w;
             var dy = -sprite->Origin.Y * h;
 
-            var cos = Math.Cos(sprite->Rotation);
-            var sin = Math.Sin(sprite->Rotation);
+            var radius = MathHelper.ToRadius(sprite->Rotation);
+
+            var cos = Math.Cos(radius);
+            var sin = Math.Sin(radius);
 
             tl->Position.X = (float)(x + dx * cos - dy * sin);
             tl->Position.Y = (float)(y + dx * sin + dy * cos);

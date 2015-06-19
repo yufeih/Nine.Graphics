@@ -8,6 +8,16 @@
         public const float PI = (float)Math.PI;
         public const float TwoPI = (float)(Math.PI * 2);
 
+        public static float ToRadius(float degrees)
+        {
+            return degrees * PI / 180;
+        }
+
+        public static float ToDegrees(float radius)
+        {
+            return radius * 180 / PI;
+        }
+
         public static int NextPowerOfTwo(int num)
         {
             var n = num > 0 ? num - 1 : 0;
