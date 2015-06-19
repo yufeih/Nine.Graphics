@@ -21,7 +21,9 @@ namespace Nine.Graphics.Content.OpenGL
         public readonly float Top;
         public readonly float Bottom;
 
-        public TextureSlice(int texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom)
+        public readonly bool IsTransparent;
+
+        public TextureSlice(int texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom, bool isTransparent)
         {
             Debug.Assert(sourceWidth > 0);
             Debug.Assert(sourceHeight > 0);
@@ -45,6 +47,8 @@ namespace Nine.Graphics.Content.OpenGL
             this.Right = (float)right / sourceWidth;
             this.Top = (float)top / sourceHeight;
             this.Bottom = (float)bottom / sourceHeight;
+
+            this.IsTransparent = isTransparent;
         }
 
         public override string ToString()

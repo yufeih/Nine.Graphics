@@ -111,16 +111,18 @@ void main(void)
 
             GL.BindTexture(TextureTarget.Texture2D, texture.Texture);
 
+            if (texture.IsTransparent)
+            {
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
+            }
+
             OpenTK.Matrix4 projection = OpenTK.Matrix4.Identity;
             OpenTK.Matrix4.CreateOrthographicOffCenter(0, 1024, 768, 0, 0, 1, out projection);
 
             GL.UniformMatrix4(transformLocation, false, ref projection);
             
             GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, 0);
-
-            GL.DisableVertexAttribArray(0);
-            GL.DisableVertexAttribArray(1);
-            GL.DisableVertexAttribArray(2);
         }
 
         private void PlatformDispose()

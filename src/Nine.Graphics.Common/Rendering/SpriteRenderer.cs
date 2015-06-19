@@ -122,6 +122,8 @@ namespace Nine.Graphics.Rendering.OpenGL
             Sprite* sprite, TextureSlice texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
+            var color = sprite->Opacity >= 1.0 ? sprite->Color : sprite->Color * sprite->Opacity;
+
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
 
@@ -130,25 +132,25 @@ namespace Nine.Graphics.Rendering.OpenGL
 
             tl->Position.X = x;
             tl->Position.Y = y;
-            tl->Color = sprite->Color.Bgra;
+            tl->Color = color.Bgra;
             tl->TextureCoordinate.X = texture.Left;
             tl->TextureCoordinate.Y = texture.Top;
 
             tr->Position.X = x + w;
             tr->Position.Y = y;
-            tr->Color = sprite->Color.Bgra;
+            tr->Color = color.Bgra;
             tr->TextureCoordinate.X = texture.Right;
             tr->TextureCoordinate.Y = texture.Top;
 
             bl->Position.X = x;
             bl->Position.Y = y + h;
-            bl->Color = sprite->Color.Bgra;
+            bl->Color = color.Bgra;
             bl->TextureCoordinate.X = texture.Left;
             bl->TextureCoordinate.Y = texture.Bottom;
 
             br->Position.X = x + w;
             br->Position.Y = y + h;
-            br->Color = sprite->Color.Bgra;
+            br->Color = color.Bgra;
             br->TextureCoordinate.X = texture.Right;
             br->TextureCoordinate.Y = texture.Bottom;
 
@@ -166,6 +168,8 @@ namespace Nine.Graphics.Rendering.OpenGL
             Sprite* sprite, TextureSlice texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
+            var color = sprite->Opacity >= 1.0 ? sprite->Color : sprite->Color * sprite->Opacity;
+
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
 
@@ -180,25 +184,25 @@ namespace Nine.Graphics.Rendering.OpenGL
 
             tl->Position.X = (float)(x + dx * cos - dy * sin);
             tl->Position.Y = (float)(y + dx * sin + dy * cos);
-            tl->Color = sprite->Color.Bgra;
+            tl->Color = color.Bgra;
             tl->TextureCoordinate.X = texture.Left;
             tl->TextureCoordinate.Y = texture.Top;
 
             tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
             tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
-            tr->Color = sprite->Color.Bgra;
+            tl->Color = color.Bgra;
             tr->TextureCoordinate.X = texture.Right;
             tr->TextureCoordinate.Y = texture.Top;
 
             bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
             bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
-            bl->Color = sprite->Color.Bgra;
+            tl->Color = color.Bgra;
             bl->TextureCoordinate.X = texture.Left;
             bl->TextureCoordinate.Y = texture.Bottom;
 
             br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
             br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
-            br->Color = sprite->Color.Bgra;
+            tl->Color = color.Bgra;
             br->TextureCoordinate.X = texture.Right;
             br->TextureCoordinate.Y = texture.Bottom;
 

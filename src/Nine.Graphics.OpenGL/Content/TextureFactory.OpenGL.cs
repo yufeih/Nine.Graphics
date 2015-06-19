@@ -17,7 +17,7 @@
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Pixels);
 
-            return new TextureSlice(texture, data.Width, data.Height, 0, data.Width, 0, data.Height);
+            return new TextureSlice(texture, data.Width, data.Height, 0, data.Width, 0, data.Height, data.IsTransparent);
         }
     }
 }

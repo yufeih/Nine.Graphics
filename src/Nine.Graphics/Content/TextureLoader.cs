@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using Nine.Imaging;
-    
+
     public class TextureLoader : ITextureLoader
     {
         private readonly IContentProvider contentLocator;
@@ -30,7 +30,7 @@
                 if (name == TextureId.Missing.Name)
                     return new TextureContent(2, 2, new byte[] { 255, 0, 255, 255 });
                 if (name == TextureId.Error.Name)
-                    return new TextureContent(2, 2, new byte[] { 255, 0, 0, 255,  0, 255, 0, 255,  0, 0, 255, 255,  0, 0, 0, 255 });
+                    return new TextureContent(2, 2, new byte[] { 255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255 });
             }
 
             using (var stream = await contentLocator.Open(name).ConfigureAwait(false))
@@ -38,8 +38,42 @@
                 if (stream == null) return null;
 
                 var image = new Image(stream);
-                return new TextureContent(image.PixelWidth, image.PixelHeight, image.Pixels);
+                var isTransparent = PremultiplyAlpha(image.Pixels);
+                return new TextureContent(image.PixelWidth, image.PixelHeight, image.Pixels, isTransparent);
             }
+        }
+
+        private unsafe bool PremultiplyAlpha(byte[] pixels)
+        {
+            if (pixels == null || pixels.Length < 4)
+            {
+                return false;
+            }
+
+            bool isTransparent = false;
+
+            fixed (byte* pBegin = pixels)
+            {
+                byte* pEnd = pBegin + pixels.Length;
+                byte* ptr = pBegin + 3;
+
+                while (ptr <= pEnd)
+                {
+                    var a = *ptr;
+                    if (a < 0xFF)
+                    {
+                        isTransparent = true;
+
+                        *(ptr - 1) = (byte)(*(ptr - 1) * a / 255.0);
+                        *(ptr - 2) = (byte)(*(ptr - 2) * a / 255.0);
+                        *(ptr - 3) = (byte)(*(ptr - 3) * a / 255.0);
+                    }
+
+                    ptr += 4;
+                }
+            }
+
+            return isTransparent;
         }
     }
 }
