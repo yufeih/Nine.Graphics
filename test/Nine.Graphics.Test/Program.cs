@@ -4,13 +4,20 @@
     using System.Diagnostics;
     using Microsoft.Framework.Runtime;
     using Microsoft.Framework.Runtime.Common.CommandLine;
+    using Nine.Injection;
 
     public class Program
     {
         private readonly Xunit.Runner.Dnx.Program xunitRunner;
 
-        public Program(IApplicationEnvironment appEnv, IServiceProvider services)
+        public Program(
+            IApplicationEnvironment appEnv, IServiceProvider services, NuGetDependencyResolver nuget)
         {
+            GraphicsTest.Setup = container =>
+            {
+                container.Map(nuget).Map(appEnv);
+            };
+
             xunitRunner = new Xunit.Runner.Dnx.Program(appEnv, services);
         }
 

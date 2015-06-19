@@ -44,19 +44,23 @@
 
         private int frameCounter = 0;
 
-        private static bool initialized;
-        public static readonly IContainer Container = new Container();
+        public static Action<IContainer> Setup;
+        public static IContainer Container => containerFunc.Value;
 
-        public GraphicsTest()
+        private static readonly Lazy<IContainer> containerFunc = new Lazy<IContainer>(CreateContainer);
+
+        public static IContainer CreateContainer()
         {
-            if (initialized) return;
-            initialized = true;
-
-            Container
+            var container = new Container();
+            container
                .Map<IContentProvider, ContentProvider>()
                .Map<ITextureLoader, TextureLoader>()
                .Map<ITexturePreloader, Content.OpenGL.TextureFactory>()
                .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
+
+            Setup(container);
+            container.Freeze();
+            return container;
         }
 
         public async Task PreloadTextures(string[] textures)
