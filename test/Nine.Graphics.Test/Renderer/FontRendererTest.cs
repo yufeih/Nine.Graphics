@@ -16,7 +16,7 @@
         public void build_font_face()
         {
             var fontLoader = Container.Get<Content.OpenGL.FontLoader>();
-            
+            fontLoader.LoadGlyph('a', null);
         }
     }
 }

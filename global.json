@@ -3,6 +3,7 @@
     "src",
     "test",
     "dep/Nine.Imaging/src",
+    "dep/Nine.Injection/src",
     "dep/Nine.Geometry/src"
   ],
   "sdk": {
