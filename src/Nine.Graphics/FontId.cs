@@ -4,7 +4,7 @@
 
     public struct FontId : IEquatable<FontId>
     {
-        public readonly int Id;
+        public readonly short Id;
 
         public string Name => map[Id];
 
@@ -12,7 +12,7 @@
 
         private static readonly IdMap map = new IdMap();
 
-        public FontId(string name) { Id = map[name]; }
+        public FontId(string name) { Id = (short)map[name]; }
 
         public static implicit operator FontId(string name) => new FontId(name);
         public static implicit operator string(FontId textureId) => textureId.Name;

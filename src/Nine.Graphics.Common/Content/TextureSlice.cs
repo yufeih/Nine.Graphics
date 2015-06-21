@@ -23,6 +23,10 @@ namespace Nine.Graphics.Content.OpenGL
 
         public readonly bool IsTransparent;
 
+        public TextureSlice(int texture, int width, int height, bool isTransparent)
+            : this(texture, width, height, 0, width, 0, height, isTransparent)
+        { }
+
         public TextureSlice(int texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom, bool isTransparent)
         {
             Debug.Assert(sourceWidth > 0);

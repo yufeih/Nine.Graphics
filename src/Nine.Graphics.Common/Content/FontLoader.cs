@@ -4,13 +4,15 @@ namespace Nine.Graphics.Content.DirectX
 namespace Nine.Graphics.Content.OpenGL
 #endif
 {
-    using System;
-    using System.IO;
-    using System.Linq;
     using Microsoft.Framework.Runtime;
     using SharpFont;
-    using Library = SharpFont.Library;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
     using System.Text;
+    using System.Drawing;
+    using Library = SharpFont.Library;
 
     public sealed class FontLoader : IDisposable
     {
@@ -20,6 +22,9 @@ namespace Nine.Graphics.Content.OpenGL
         private readonly string defaultFont;
         private readonly int textureSize;
         private readonly Fixed26Dot6 baseFontSize;
+
+        private readonly RectanglePacker packer;
+        private readonly Dictionary<int, TextureSlice> charactorMap = new Dictionary<int, TextureSlice>();
 
         public bool UseSystemFonts { get; set; } = true;
 
@@ -36,6 +41,7 @@ namespace Nine.Graphics.Content.OpenGL
             this.contentProvider = contentProvider;
             this.baseFontSize = baseFontSize;
             this.textureSize = textureSize;
+            this.packer = new RectanglePacker(textureSize, textureSize);
             this.freetype = new Lazy<Library>(CreateFreeType);
         }
 
@@ -55,24 +61,45 @@ namespace Nine.Graphics.Content.OpenGL
             }
         }
 
-        public TextureSlice LoadGlyph(char text, FontId font)
+        private TextureSlice LoadGlyph(char charactor, FontId font)
         {
-            var pixels = new byte[textureSize * textureSize];
-            FillGlyph(text, font, pixels, textureSize, 0, 0);
-            return null;
+            TextureSlice slice;
+
+            var hash = (font.Id << 16) | charactor;
+            if (!charactorMap.TryGetValue(hash, out slice))
+            {
+                charactorMap[hash] = slice = CreateGlyph(charactor, font);
+            }
+
+            return slice;
         }
 
-        public unsafe void FillGlyph(char text, FontId font, byte[] pixels, int width, int startX, int startY)
+        private TextureSlice CreateGlyph(char charactor, FontId font)
         {
-            var face = CreateFont(font);
-            var glyph = face.GetCharIndex(text);
+            var face = CreateFontFace(font);
+            var glyph = face.GetCharIndex(charactor);
             if (glyph == 0)
             {
-                return;
+                return null;
             }
 
             face.SetCharSize(baseFontSize, baseFontSize, 72, 72);
             face.LoadGlyph(glyph, LoadFlags.Default, LoadTarget.Normal);
+
+            Point point;
+            var metrics = face.Glyph.Metrics;
+            if (packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+            {
+                var pixels = new byte[textureSize * textureSize];
+                FillGlyph(face, pixels, textureSize, 0, 0);
+            }
+
+            return new TextureSlice(0, textureSize, textureSize, true);
+        }
+
+        private unsafe void FillGlyph(Face face, byte[] pixels, int width, int startX, int startY)
+        {
+            // Use default for 8-bit anti-aliased pixmap ??
             face.Glyph.RenderGlyph(RenderMode.Mono);
 
             using (var bitmap = face.Glyph.Bitmap)
@@ -87,7 +114,7 @@ namespace Nine.Graphics.Content.OpenGL
                 for (var y = 0; y < bitmap.Rows; y++)
                 {
                     var destY = (startY + y) * width;
-                    
+
                     for (var x = 0; x < bitmap.Pitch; x++)
                     {
                         var src = *pSrc;
@@ -113,7 +140,7 @@ namespace Nine.Graphics.Content.OpenGL
             return null;
         }
 
-        private Face CreateFont(string font)
+        private Face CreateFontFace(string font)
         {
             font = string.IsNullOrEmpty(font) ? defaultFont : font;
 
