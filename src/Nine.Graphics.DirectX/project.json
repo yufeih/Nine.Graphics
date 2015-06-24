@@ -13,7 +13,8 @@
     "SharpDX.Direct3D12": "3.0.0-alpha02",
     "SharpDX.DXGI": "3.0.0-alpha02",
     "SharpDX.Desktop": "3.0.0-alpha02",
-    "SharpDX.Mathematics": "3.0.0-alpha02"
+    "SharpDX.Mathematics": "3.0.0-alpha02",
+    "SharpDX.D3DCompiler": "3.0.0-alpha02" 
   },
 
   "compilationOptions": {
