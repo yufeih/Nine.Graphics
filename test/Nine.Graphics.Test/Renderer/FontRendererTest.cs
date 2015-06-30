@@ -13,12 +13,13 @@
     public class FontRendererTest : GraphicsTest
     {
         [Fact]
-        public void build_font_face()
+        public async Task build_font_face()
         {
-            var fontLoader = Container.Get<FontLoader>();
+            var fontLoader = Container.Get<IFontLoader>();
 
-            var slices = new string[100];
-            fontLoader.LoadGlyph("gAbstractg", null, slices, 0);
+            var glyphs = new TextureContent[100];
+            var font = await fontLoader.LoadFont();
+            font.LoadGlyph("gAbstractg", glyphs, 0);
         }
     }
 }
