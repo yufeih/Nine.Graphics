@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.Primitives
+﻿namespace Nine.Graphics
 {
     using Nine.Imaging;
     using System.Numerics;

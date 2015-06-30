@@ -6,7 +6,6 @@
     using Nine.Imaging;
     using System.Threading.Tasks;
     using Nine.Graphics.Rendering;
-    using Nine.Graphics.Primitives;
 
     public class SpriteRendererTest : GraphicsTest
     {

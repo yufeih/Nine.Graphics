@@ -9,7 +9,6 @@ namespace Nine.Graphics.Rendering.OpenGL
 #endif
     using System;
     using System.Numerics;
-    using Nine.Graphics.Primitives;
 
     public sealed partial class SpriteRenderer : ISpriteRenderer, IDisposable
     {
