@@ -58,7 +58,8 @@
                 Frame(hostType, () => renderer.Draw(scene));
             }
 
-            // Frame(hostType, () => renderer.Draw(scenes[2], Matrix3x2.CreateScale(2) * Matrix3x2.CreateTranslation(-100, -100)));
+            // TODO: Patch GAC.
+            Frame(hostType, () => renderer.Draw(scenes[2], Matrix3x2.CreateScale(2) * Matrix3x2.CreateTranslation(-100, -100)));
         }
     }
 }

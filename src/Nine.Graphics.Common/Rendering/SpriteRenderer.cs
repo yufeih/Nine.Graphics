@@ -47,16 +47,8 @@ namespace Nine.Graphics.Rendering.OpenGL
 
             EnsureBufferCapacity(spriteCount);
 
-            Matrix4x4 camera4x4;
-            if (camera != null)
-            {
-                camera4x4 = new Matrix4x4(camera.Value);
-                Matrix4x4.Invert(camera4x4, out camera4x4);
-            }
-            else
-            {
-                camera4x4 = Matrix4x4.Identity;
-            }
+            Matrix4x4 projection;
+            GetProjection(camera, out projection);
 
             fixed (Vertex* pVertex = vertexData)
             fixed (ushort* pIndex = indexData)
@@ -89,7 +81,7 @@ namespace Nine.Graphics.Rendering.OpenGL
                     }
                     else if (currentTexture.PlatformTexture != previousTexture.PlatformTexture)
                     {
-                        PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref camera4x4);
+                        PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref projection);
 
                         vertexCount = 0;
                         vertex = pVertex;
@@ -129,8 +121,25 @@ namespace Nine.Graphics.Rendering.OpenGL
 
                 if (vertexCount > 0)
                 {
-                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref camera4x4);
+                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref projection);
                 }
+            }
+        }
+
+        private unsafe void GetProjection(Matrix3x2? camera, out Matrix4x4 projection)
+        {
+            var viewport = stackalloc int[4];
+            PlatformGetViewport(viewport);
+
+            projection = Matrix4x4.CreateOrthographicOffCenter(
+                *viewport, *viewport + *(viewport + 2),
+                *(viewport + 1) + *(viewport + 4), *(viewport + 1), 0, 1);
+
+            if (camera != null)
+            {
+                Matrix4x4 view = new Matrix4x4(camera.Value);
+                Matrix4x4.Invert(view, out view);
+                projection = view * projection;
             }
         }
 

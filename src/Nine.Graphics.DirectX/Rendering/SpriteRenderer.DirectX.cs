@@ -83,6 +83,11 @@ float4 main(PS_IN input) : SV_Target
             //pixelShaderByteCode.Dispose();
         }
 
+        private unsafe void PlatformGetViewport(int* viewport)
+        {
+
+        }
+
         private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture, ref Matrix4x4 camera)
         {
             //context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertices, 32, 0));

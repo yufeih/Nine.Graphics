@@ -1,7 +1,6 @@
 ﻿namespace Nine.Graphics.Rendering.OpenGL
 {
     using Nine.Graphics.OpenGL;
-    using OpenTK;
     using OpenTK.Graphics.OpenGL;
     using System;
     using System.Diagnostics;
@@ -90,7 +89,12 @@ void main(void)
             transformLocation = GL.GetUniformLocation(shaderProgramHandle, "transform");
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture, ref Matrix4x4 camera)
+        private unsafe void PlatformGetViewport(int* viewport)
+        {
+            GL.GetInteger(GetPName.Viewport, viewport);
+        }
+
+        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture, ref Matrix4x4 projection)
         {
             GLDebug.CheckAccess();
 
@@ -117,16 +121,12 @@ void main(void)
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
             }
-
-            Matrix4 view;
-            Matrix4 projection;
-            Matrix4.CreateOrthographicOffCenter(0, 1024, 768, 0, 0, 1, out projection);
-
-            GLHelper.ToMatrix4(ref camera, out view);
-            Matrix4.Mult(ref view, ref projection, out projection);
-
-            GL.UniformMatrix4(transformLocation, false, ref projection);
             
+            fixed (float* ptr = &projection.M11)
+            {
+                GL.UniformMatrix4(transformLocation, 16, false, ptr);
+            }
+
             GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, 0);
         }
 
