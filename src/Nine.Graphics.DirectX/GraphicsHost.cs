@@ -16,6 +16,13 @@
     {
         private readonly RenderForm window;
 
+        public int Width => window.Width;
+        public int Height => window.Height;
+
+        public IntPtr WindowHandle => window.Handle;
+
+        public Device Device => device;
+
         private Device device;
         private SwapChain swapChain;
 
@@ -35,11 +42,6 @@
 
         private const int SwapBufferCount = 2;
         private int indexLastSwapBuf;
-
-        public int Width => window.Width;
-        public int Height => window.Height;
-
-        public IntPtr WindowHandle => window.Handle;
 
         public GraphicsHost(int width, int height, bool hidden = false) // FormBorderStyle = FormBorderStyle.FixedSingle
             : this(new RenderForm("Nine.Graphics") { Width = width, Height = height }, hidden)
@@ -66,25 +68,33 @@
                 ModeDescription = new ModeDescription(Format.R8G8B8A8_UNorm),
                 Usage = Usage.RenderTargetOutput,
                 OutputHandle = window.Handle,
-                SwapEffect = SwapEffect.FlipSequential,
+                SwapEffect = SwapEffect.FlipDiscard,
                 SampleDescription = new SampleDescription(1, 0),
                 IsWindowed = true
             };
 
+#if DEBUG
+            // Enable the D3D12 debug layer.
+            // DebugInterface.Get().EnableDebugLayer();
+#endif
+
             try
             {
-                device = new Device(DriverType.Hardware, DeviceCreationFlags.None, FeatureLevel.Level_9_1);
+                // null == DriverType.Hardware
+                device = new Device(null, FeatureLevel.Level_11_0);
                 commandQueue = device.CreateCommandQueue(new CommandQueueDescription(CommandListType.Direct));
-                using (var factory = new Factory1())
-                    swapChain = new SwapChain(factory, commandQueue, swapChainDescription);
             }
             catch (SharpDXException)
             {
-                device = new Device(DriverType.Warp, DeviceCreationFlags.None, FeatureLevel.Level_9_1);
-                commandQueue = device.CreateCommandQueue(new CommandQueueDescription(CommandListType.Direct));
-                using (var factory = new Factory1())
-                    swapChain = new SwapChain(factory, commandQueue, swapChainDescription);
+                using (var factory = new Factory4())
+                {
+                    device = new Device(factory.GetWarpAdapter(), FeatureLevel.Level_11_0);
+                    commandQueue = device.CreateCommandQueue(new CommandQueueDescription(CommandListType.Direct));
+                }
             }
+
+            using (var factory = new Factory1())
+                swapChain = new SwapChain(factory, commandQueue, swapChainDescription);
 
             commandListAllocator = device.CreateCommandAllocator(CommandListType.Direct);
 
@@ -102,7 +112,7 @@
             viewport = new ViewportF(0, 0, this.Width, this.Height);
             scissorRectangle = new Rectangle(0, 0, this.Width, this.Height);
 
-            fence = device.CreateFence(0, FenceMiscFlags.None);
+            fence = device.CreateFence(0, FenceFlags.None);
             currentFence = 1;
 
             commandList.Close();
@@ -120,10 +130,10 @@
             commandList.SetViewport(viewport);
             commandList.SetScissorRectangles(scissorRectangle);
 
-            commandList.ResourceBarrierTransition(renderTarget, ResourceUsage.Present, ResourceUsage.RenderTarget);
+            commandList.ResourceBarrierTransition(renderTarget, ResourceStates.Present, ResourceStates.RenderTarget);
 
-            commandList.ClearRenderTargetView(descriptorHeap.CPUDescriptorHandleForHeapStart, new Color4(1.0f, 1.0f, 1.0f, 1.0f), null, 0);
-            commandList.ResourceBarrierTransition(renderTarget, ResourceUsage.RenderTarget, ResourceUsage.Present);
+            commandList.ClearRenderTargetView(descriptorHeap.CPUDescriptorHandleForHeapStart, new Color4(1.0f, 1.0f, 1.0f, 1.0f), 0, null);
+            commandList.ResourceBarrierTransition(renderTarget, ResourceStates.RenderTarget, ResourceStates.Present);
 
             commandList.Close();
 

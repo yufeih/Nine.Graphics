@@ -15,12 +15,12 @@ in vec4 in_color;
 in vec2 in_uv;
 
 out vec2 uv;
-out vec4 out_color;
+out vec4 color;
 
 void main(void)
 {
     uv = in_uv;
-    out_color = in_color;
+    color = in_color;
     gl_Position = transform * vec4(in_position, 1);
 }";
 
@@ -32,13 +32,13 @@ precision highp float;
 uniform sampler2D Texture;
 
 in vec2 uv;
-in vec4 out_color;
+in vec4 color;
 
-out vec4 color;
+out vec4 out_color;
 
 void main(void)
 {
-    color = out_color * texture2D(Texture, uv);
+    out_color = color * texture2D(Texture, uv);
 }";
 
         int shaderProgramHandle, transformLocation;

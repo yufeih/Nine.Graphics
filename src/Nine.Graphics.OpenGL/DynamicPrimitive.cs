@@ -2,8 +2,8 @@
 {
     using System;
     using System.Numerics;
-    using Nine.Graphics.Content.OpenGL;
     using OpenTK.Graphics.OpenGL;
+    using Nine.Graphics.Content.OpenGL;
 
     public partial class DynamicPrimitive : IDisposable
     {
@@ -120,7 +120,10 @@
 
             // Apply texture
             var texture = textureFactory.GetTexture(entry.Texture ?? TextureId.White);
-            GL.BindTexture(TextureTarget.Texture2D, texture.Texture);
+            if (texture == null)
+                return;
+
+            GL.BindTexture(TextureTarget.Texture2D, texture.PlatformTexture);
 
             // Draw geometry
             if (entry.IndexCount > 0)

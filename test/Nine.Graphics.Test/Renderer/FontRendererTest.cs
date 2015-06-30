@@ -17,7 +17,7 @@
         {
             var fontLoader = Container.Get<Content.OpenGL.FontLoader>();
 
-            var slices = new Content.OpenGL.TextureSlice[100];
+            var slices = new Content.OpenGL.Texture[100];
             fontLoader.LoadGlyph("gAbstractg", null, slices, 0);
         }
     }

@@ -24,7 +24,7 @@ namespace Nine.Graphics.Content.OpenGL
         private readonly Fixed26Dot6 baseFontSize;
 
         private readonly RectanglePacker packer;
-        private readonly Dictionary<int, TextureSlice> charactorMap = new Dictionary<int, TextureSlice>();
+        private readonly Dictionary<int, Texture> charactorMap = new Dictionary<int, Texture>();
 
         public bool UseSystemFonts { get; set; } = true;
 
@@ -45,7 +45,7 @@ namespace Nine.Graphics.Content.OpenGL
             this.freetype = new Lazy<Library>(CreateFreeType);
         }
 
-        public void LoadGlyph(string text, FontId font, TextureSlice[] result, int startIndex)
+        public void LoadGlyph(string text, FontId font, Texture[] result, int startIndex)
         {
             for (var i = 0; i < text.Length; i++)
             {
@@ -53,7 +53,7 @@ namespace Nine.Graphics.Content.OpenGL
             }
         }
 
-        public void LoadGlyph(StringBuilder text, FontId font, TextureSlice[] result, int startIndex)
+        public void LoadGlyph(StringBuilder text, FontId font, Texture[] result, int startIndex)
         {
             for (var i = 0; i < text.Length; i++)
             {
@@ -61,9 +61,9 @@ namespace Nine.Graphics.Content.OpenGL
             }
         }
 
-        private TextureSlice LoadGlyph(char charactor, FontId font)
+        private Texture LoadGlyph(char charactor, FontId font)
         {
-            TextureSlice slice;
+            Texture slice;
 
             var hash = (font.Id << 16) | charactor;
             if (!charactorMap.TryGetValue(hash, out slice))
@@ -74,7 +74,7 @@ namespace Nine.Graphics.Content.OpenGL
             return slice;
         }
 
-        private TextureSlice CreateGlyph(char charactor, FontId font)
+        private Texture CreateGlyph(char charactor, FontId font)
         {
             var face = CreateFontFace(font);
             var glyph = face.GetCharIndex(charactor);
@@ -94,7 +94,8 @@ namespace Nine.Graphics.Content.OpenGL
                 FillGlyph(face, pixels, textureSize, 0, 0);
             }
 
-            return new TextureSlice(0, textureSize, textureSize, true);
+            // return new Texture(0, textureSize, textureSize, true);
+            return null;
         }
 
         private unsafe void FillGlyph(Face face, byte[] pixels, int width, int startX, int startY)
@@ -135,7 +136,7 @@ namespace Nine.Graphics.Content.OpenGL
             }
         }
 
-        private TextureSlice PlatformCreateTexture(int width, int height, byte[] bitmap)
+        private Texture PlatformCreateTexture(int width, int height, byte[] bitmap)
         {
             return null;
         }

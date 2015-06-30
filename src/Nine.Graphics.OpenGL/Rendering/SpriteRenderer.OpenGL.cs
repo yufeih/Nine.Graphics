@@ -89,7 +89,7 @@ void main(void)
             transformLocation = GL.GetUniformLocation(shaderProgramHandle, "transform");
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, TextureSlice texture)
+        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture)
         {
             GLDebug.CheckAccess();
 
@@ -109,7 +109,7 @@ void main(void)
             GL.EnableVertexAttribArray(1);
             GL.EnableVertexAttribArray(2);
 
-            GL.BindTexture(TextureTarget.Texture2D, texture.Texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture.PlatformTexture);
 
             if (texture.IsTransparent)
             {

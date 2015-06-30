@@ -8,11 +8,10 @@ namespace Nine.Graphics.Rendering.OpenGL
     using Nine.Graphics.Content.OpenGL;
 #endif
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Numerics;
+    using Nine.Graphics.Primitives;
 
-    public sealed partial class SpriteRenderer : IRenderer<Sprite>, IDisposable
+    public sealed partial class SpriteRenderer : ISpriteRenderer, IDisposable
     {
         struct Vertex
         {
@@ -40,50 +39,94 @@ namespace Nine.Graphics.Rendering.OpenGL
             this.PlatformCreateShaders();
         }
 
-        public unsafe void Draw(Slice<Sprite> sprites)
+        public unsafe void Draw(Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null, TextureId texture = default(TextureId))
         {
-            var spriteCount = sprites.Count;
+            var spriteCount = (indices != null ? indices.Value.Count : sprites.Count);
+            if (spriteCount <= 0)
+            {
+                return;
+            }
 
             EnsureBufferCapacity(spriteCount);
 
-            var vertexCount = 0;
-
             fixed (Vertex* pVertex = vertexData)
+            fixed (ushort* pIndex = indexData)
+            fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
             {
-                TextureSlice texture = null; // TODO:
+                var vertexCount = 0;
+                var previousTexture = (Texture)null;
 
-                fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
+                Vertex* vertex = pVertex;
+                Sprite* sprite = pSprite;
+
+                for (var i = 0; i < spriteCount; i++)
                 {
-                    Sprite* sprite = pSprite;
-                    Vertex* vertex = pVertex;
-
-                    for (int i = 0; i < sprites.Count; i++)
+                    var iIndexed = i;
+                    if (indices != null)
                     {
-                        if (!sprite->IsVisible || sprite->Texture.Id == 0) continue;
+                        iIndexed = indices.Value[i];
+                        sprite += iIndexed;
+                    }
 
-                        texture = textureFactory.GetTexture(sprite->Texture);
+                    var textureToUse = (texture.Id != 0 ? texture : sprite->Texture);
+                    if (textureToUse.Id == 0)
+                    {
+                        continue;
+                    }
 
-                        if (texture == null) continue;
+                    var currentTexture = textureFactory.GetTexture(sprite->Texture);
+                    if (currentTexture == null)
+                    {
+                        continue;
+                    }
 
-                        if (sprite->Rotation == 0)
+                    if (previousTexture == null)
+                    {
+                        previousTexture = currentTexture;
+                    }
+                    else if (currentTexture.PlatformTexture != previousTexture.PlatformTexture)
+                    {
+                        PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture);
+
+                        vertexCount = 0;
+                        vertex = pVertex;
+                        previousTexture = currentTexture;
+                    }
+
+                    if (sprite->Rotation == 0)
+                    {
+                        if (transforms == null)
                         {
-                            PopulateVertex(sprite, texture, vertex++, vertex++, vertex++, vertex++);
+                            PopulateVertex(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++);
                         }
                         else
                         {
-                            PopulateVertexWithRotation(sprite, texture, vertex++, vertex++, vertex++, vertex++);
+                            PopulateVertexWithTransform(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++, transforms.Value[iIndexed]);
                         }
+                    }
+                    else
+                    {
+                        if (transforms == null)
+                        {
+                            PopulateVertexWithRotation(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++);
+                        }
+                        else
+                        {
+                            PopulateVertexWithRotationAndTransform(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++, transforms.Value[iIndexed]);
+                        }
+                    }
 
-                        vertexCount += 4;
+                    vertexCount += 4;
+
+                    if (indices == null)
+                    {
                         sprite++;
                     }
                 }
 
-                if (vertexCount <= 0) return;
-
-                fixed (ushort* pIndex = indexData)
+                if (vertexCount > 0)
                 {
-                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, texture);
+                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture);
                 }
             }
         }
@@ -119,11 +162,9 @@ namespace Nine.Graphics.Rendering.OpenGL
         }
 
         private unsafe void PopulateVertex(
-            Sprite* sprite, TextureSlice texture,
+            Sprite* sprite, Texture texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
-            var color = sprite->Opacity >= 1.0 ? sprite->Color : sprite->Color * sprite->Opacity;
-
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
 
@@ -132,44 +173,73 @@ namespace Nine.Graphics.Rendering.OpenGL
 
             tl->Position.X = x;
             tl->Position.Y = y;
-            tl->Color = color.Bgra;
+            tl->Color = sprite->Color.Bgra;
             tl->TextureCoordinate.X = texture.Left;
             tl->TextureCoordinate.Y = texture.Top;
 
             tr->Position.X = x + w;
             tr->Position.Y = y;
-            tr->Color = color.Bgra;
+            tr->Color = sprite->Color.Bgra;
             tr->TextureCoordinate.X = texture.Right;
             tr->TextureCoordinate.Y = texture.Top;
 
             bl->Position.X = x;
             bl->Position.Y = y + h;
-            bl->Color = color.Bgra;
+            bl->Color = sprite->Color.Bgra;
             bl->TextureCoordinate.X = texture.Left;
             bl->TextureCoordinate.Y = texture.Bottom;
 
             br->Position.X = x + w;
             br->Position.Y = y + h;
-            br->Color = color.Bgra;
+            br->Color = sprite->Color.Bgra;
+            br->TextureCoordinate.X = texture.Right;
+            br->TextureCoordinate.Y = texture.Bottom;
+        }
+
+        private unsafe void PopulateVertexWithTransform(
+            Sprite* sprite, Texture texture,
+            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br, Matrix3x2 transform)
+        {
+            var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
+            var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
+
+            var x = sprite->Position.X - sprite->Origin.X * w;
+            var y = sprite->Position.Y - sprite->Origin.Y * h;
+
+            tl->Position.X = x;
+            tl->Position.Y = y;
+            tl->Color = sprite->Color.Bgra;
+            tl->TextureCoordinate.X = texture.Left;
+            tl->TextureCoordinate.Y = texture.Top;
+
+            tr->Position.X = x + w;
+            tr->Position.Y = y;
+            tr->Color = sprite->Color.Bgra;
+            tr->TextureCoordinate.X = texture.Right;
+            tr->TextureCoordinate.Y = texture.Top;
+
+            bl->Position.X = x;
+            bl->Position.Y = y + h;
+            bl->Color = sprite->Color.Bgra;
+            bl->TextureCoordinate.X = texture.Left;
+            bl->TextureCoordinate.Y = texture.Bottom;
+
+            br->Position.X = x + w;
+            br->Position.Y = y + h;
+            br->Color = sprite->Color.Bgra;
             br->TextureCoordinate.X = texture.Right;
             br->TextureCoordinate.Y = texture.Bottom;
 
-            if (sprite->HasTransform)
-            {
-                // https://github.com/dotnet/corefx/issues/313 
-                //tl->Position = Vector2.Transform(tl->Position, sprite->Transform);
-                //tr->Position = Vector2.Transform(tr->Position, sprite->Transform);
-                //bl->Position = Vector2.Transform(bl->Position, sprite->Transform);
-                //br->Position = Vector2.Transform(br->Position, sprite->Transform);
-            }
+            tl->Position = Vector2.Transform(tl->Position, transform);
+            tr->Position = Vector2.Transform(tr->Position, transform);
+            bl->Position = Vector2.Transform(bl->Position, transform);
+            br->Position = Vector2.Transform(br->Position, transform);
         }
 
         private unsafe void PopulateVertexWithRotation(
-            Sprite* sprite, TextureSlice texture,
+            Sprite* sprite, Texture texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
-            var color = sprite->Opacity >= 1.0 ? sprite->Color : sprite->Color * sprite->Opacity;
-
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
 
@@ -186,36 +256,75 @@ namespace Nine.Graphics.Rendering.OpenGL
 
             tl->Position.X = (float)(x + dx * cos - dy * sin);
             tl->Position.Y = (float)(y + dx * sin + dy * cos);
-            tl->Color = color.Bgra;
+            tl->Color = sprite->Color.Bgra;
             tl->TextureCoordinate.X = texture.Left;
             tl->TextureCoordinate.Y = texture.Top;
 
             tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
             tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
-            tr->Color = color.Bgra;
+            tr->Color = sprite->Color.Bgra;
             tr->TextureCoordinate.X = texture.Right;
             tr->TextureCoordinate.Y = texture.Top;
 
             bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
             bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
-            bl->Color = color.Bgra;
+            bl->Color = sprite->Color.Bgra;
             bl->TextureCoordinate.X = texture.Left;
             bl->TextureCoordinate.Y = texture.Bottom;
 
             br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
             br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
-            br->Color = color.Bgra;
+            br->Color = sprite->Color.Bgra;
+            br->TextureCoordinate.X = texture.Right;
+            br->TextureCoordinate.Y = texture.Bottom;
+        }
+
+        private unsafe void PopulateVertexWithRotationAndTransform(
+            Sprite* sprite, Texture texture,
+            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br, Matrix3x2 transform)
+        {
+            var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
+            var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
+
+            var x = sprite->Position.X;
+            var y = sprite->Position.Y;
+
+            var dx = -sprite->Origin.X * w;
+            var dy = -sprite->Origin.Y * h;
+
+            var radius = MathHelper.ToRadius(sprite->Rotation);
+
+            var cos = Math.Cos(radius);
+            var sin = Math.Sin(radius);
+
+            tl->Position.X = (float)(x + dx * cos - dy * sin);
+            tl->Position.Y = (float)(y + dx * sin + dy * cos);
+            tl->Color = sprite->Color.Bgra;
+            tl->TextureCoordinate.X = texture.Left;
+            tl->TextureCoordinate.Y = texture.Top;
+
+            tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
+            tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
+            tr->Color = sprite->Color.Bgra;
+            tr->TextureCoordinate.X = texture.Right;
+            tr->TextureCoordinate.Y = texture.Top;
+
+            bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
+            bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
+            bl->Color = sprite->Color.Bgra;
+            bl->TextureCoordinate.X = texture.Left;
+            bl->TextureCoordinate.Y = texture.Bottom;
+
+            br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
+            br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
+            br->Color = sprite->Color.Bgra;
             br->TextureCoordinate.X = texture.Right;
             br->TextureCoordinate.Y = texture.Bottom;
 
-            if (sprite->HasTransform)
-            {
-                // https://github.com/dotnet/corefx/issues/313 
-                //tl->Position = Vector2.Transform(tl->Position, sprite->Transform);
-                //tr->Position = Vector2.Transform(tr->Position, sprite->Transform);
-                //bl->Position = Vector2.Transform(bl->Position, sprite->Transform);
-                //br->Position = Vector2.Transform(br->Position, sprite->Transform);
-            }
+            tl->Position = Vector2.Transform(tl->Position, transform);
+            tr->Position = Vector2.Transform(tr->Position, transform);
+            bl->Position = Vector2.Transform(bl->Position, transform);
+            br->Position = Vector2.Transform(br->Position, transform);
         }
 
         private static void PopulateIndex(int start, int spriteCount)

@@ -6,6 +6,7 @@
     using Nine.Imaging;
     using System.Threading.Tasks;
     using Nine.Graphics.Rendering;
+    using Nine.Graphics.Primitives;
 
     public class SpriteRendererTest : GraphicsTest
     {
@@ -31,6 +32,13 @@
                 new Sprite(textures[0], size:new Vector2(100, 50), position:new Vector2(300, 300), scale:new Vector2(2), rotation:100),
                 new Sprite(textures[0], size:new Vector2(200, 50), position:new Vector2(300, 300), scale:new Vector2(2), rotation:10, origin:new Vector2(0.333f, 0.666f)),
             },
+            new []
+            {
+                new Sprite(textures[0], size:new Vector2(80, 80)),
+                new Sprite(textures[1], size:new Vector2(80, 80), position:new Vector2(80, 0)),
+                new Sprite(textures[2], size:new Vector2(80, 80), position:new Vector2(160, 0)),
+                new Sprite(textures[3], size:new Vector2(80, 80), position:new Vector2(240, 0)),
+            },
         };
 
         public static readonly TheoryData<Type, Type> Dimensions = new TheoryData<Type, Type>()
@@ -44,7 +52,7 @@
         {
             await PreloadTextures(textures);
 
-            var renderer = Container.Get(rendererType) as IRenderer<Sprite>;
+            var renderer = Container.Get(rendererType) as ISpriteRenderer;
 
             foreach (var scene in scenes)
             {

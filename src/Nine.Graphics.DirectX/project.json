@@ -7,12 +7,14 @@
   "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
   "dependencies": {
+    "Nine.Graphics": "1.0.0-*",
     "Nine.Graphics.Common": { "version": "1.0.0-*", "type": "build" },
-    "SharpDX": "3.0.0-alpha01",
-    "SharpDX.Desktop": "3.0.0-alpha01",
-    "SharpDX.Direct3D12": "3.0.0-alpha01",
-    "SharpDX.DXGI": "3.0.0-alpha01",
-    "SharpDX.Mathematics": "3.0.0-alpha01"
+    "SharpDX": "3.0.0-alpha02",
+    "SharpDX.Direct3D12": "3.0.0-alpha02",
+    "SharpDX.DXGI": "3.0.0-alpha02",
+    "SharpDX.Desktop": "3.0.0-alpha02",
+    "SharpDX.Mathematics": "3.0.0-alpha02",
+    "SharpDX.D3DCompiler": "3.0.0-alpha02" 
   },
 
   "compilationOptions": {
