@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using Nine.Graphics.Primitives;
 
     public class ObjectPool
     {
