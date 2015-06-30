@@ -2,7 +2,6 @@
 {
     using System.Diagnostics;
     using System;
-    using Nine.Graphics.Content.DirectX;
     using SharpDX.D3DCompiler;
     using SharpDX.Direct3D12;
     using SharpDX.DXGI;

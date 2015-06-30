@@ -55,7 +55,7 @@
             container
                .Map<IContentProvider, ContentProvider>()
                .Map<ITextureLoader, TextureLoader>()
-               .Map<ITexturePreloader, Content.OpenGL.TextureFactory>()
+               .Map<ITexturePreloader, Rendering.OpenGL.TextureFactory>()
                .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
 
             Setup(container);

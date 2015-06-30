@@ -1,14 +1,13 @@
 ﻿#if DX
 namespace Nine.Graphics.Rendering.DirectX
 {
-    using Nine.Graphics.Content.DirectX;
 #else
 namespace Nine.Graphics.Rendering.OpenGL
 {
-    using Nine.Graphics.Content.OpenGL;
 #endif
     using System;
     using System.Numerics;
+    using Nine.Graphics.Content;
 
     public sealed partial class SpriteRenderer : ISpriteRenderer, IDisposable
     {

@@ -1,8 +1,4 @@
-﻿#if DX
-namespace Nine.Graphics.Content.DirectX
-#else
-namespace Nine.Graphics.Content.OpenGL
-#endif
+﻿namespace Nine.Graphics.Content
 {
     using System;
     using System.Drawing;

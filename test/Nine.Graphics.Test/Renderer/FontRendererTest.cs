@@ -15,9 +15,9 @@
         [Fact]
         public void build_font_face()
         {
-            var fontLoader = Container.Get<Content.OpenGL.FontLoader>();
+            var fontLoader = Container.Get<FontLoader>();
 
-            var slices = new Content.OpenGL.Texture[100];
+            var slices = new string[100];
             fontLoader.LoadGlyph("gAbstractg", null, slices, 0);
         }
     }

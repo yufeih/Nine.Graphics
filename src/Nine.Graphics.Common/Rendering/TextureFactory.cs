@@ -1,7 +1,7 @@
 ﻿#if DX
-namespace Nine.Graphics.Content.DirectX
+namespace Nine.Graphics.Rendering.DirectX
 #else
-namespace Nine.Graphics.Content.OpenGL
+namespace Nine.Graphics.Rendering.OpenGL
 #endif
 {
     using System;

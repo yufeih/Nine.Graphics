@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.Content.OpenGL
+﻿namespace Nine.Graphics.Rendering.OpenGL
 {
     using Nine.Graphics.Content;
     using Nine.Graphics.OpenGL;

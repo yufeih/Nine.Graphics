@@ -1,6 +1,5 @@
 ﻿namespace Nine.Graphics
 {
-    using Nine.Imaging;
     using System.Numerics;
 
     public struct TextSprite

@@ -1,9 +1,9 @@
 ﻿#if DX
-namespace Nine.Graphics.Content.DirectX
+namespace Nine.Graphics.Rendering.DirectX
 {
     using PlatformTexture = SharpDX.Direct3D12.Resource;
 #else
-namespace Nine.Graphics.Content.OpenGL
+namespace Nine.Graphics.Rendering.OpenGL
 {
     using PlatformTexture = System.Int32;
 #endif

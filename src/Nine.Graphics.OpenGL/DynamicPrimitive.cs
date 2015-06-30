@@ -3,7 +3,7 @@
     using System;
     using System.Numerics;
     using OpenTK.Graphics.OpenGL;
-    using Nine.Graphics.Content.OpenGL;
+    using Nine.Graphics.Rendering.OpenGL;
 
     public partial class DynamicPrimitive : IDisposable
     {

@@ -24,7 +24,7 @@
 
 #endregion
 
-namespace Nine.Graphics
+namespace Nine.Graphics.Content
 {
     using System;
     using System.Drawing;

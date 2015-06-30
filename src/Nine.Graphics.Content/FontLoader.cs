@@ -1,8 +1,4 @@
-﻿#if DX
-namespace Nine.Graphics.Content.DirectX
-#else
-namespace Nine.Graphics.Content.OpenGL
-#endif
+﻿namespace Nine.Graphics.Content
 {
     using Microsoft.Framework.Runtime;
     using SharpFont;
@@ -13,6 +9,8 @@ namespace Nine.Graphics.Content.OpenGL
     using System.Text;
     using System.Drawing;
     using Library = SharpFont.Library;
+
+    using Texture = System.String;//TODO:
 
     public sealed class FontLoader : IDisposable
     {
