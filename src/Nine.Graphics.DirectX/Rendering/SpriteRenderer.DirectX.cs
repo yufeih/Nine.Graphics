@@ -5,6 +5,7 @@
     using SharpDX.D3DCompiler;
     using SharpDX.Direct3D12;
     using SharpDX.DXGI;
+    using System.Numerics;
 
     // TODO: DirectX requires access to the device
 
@@ -82,7 +83,7 @@ float4 main(PS_IN input) : SV_Target
             //pixelShaderByteCode.Dispose();
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture)
+        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture, ref Matrix4x4 camera)
         {
             //context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertices, 32, 0));
         }

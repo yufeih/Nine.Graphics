@@ -37,7 +37,7 @@ namespace Nine.Graphics.Rendering.OpenGL
             this.PlatformCreateShaders();
         }
 
-        public unsafe void Draw(Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null)
+        public unsafe void Draw(Slice<Sprite> sprites, Matrix3x2? camera = null, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null)
         {
             var spriteCount = (indices != null ? indices.Value.Count : sprites.Count);
             if (spriteCount <= 0)
@@ -46,6 +46,17 @@ namespace Nine.Graphics.Rendering.OpenGL
             }
 
             EnsureBufferCapacity(spriteCount);
+
+            Matrix4x4 camera4x4;
+            if (camera != null)
+            {
+                camera4x4 = new Matrix4x4(camera.Value);
+                Matrix4x4.Invert(camera4x4, out camera4x4);
+            }
+            else
+            {
+                camera4x4 = Matrix4x4.Identity;
+            }
 
             fixed (Vertex* pVertex = vertexData)
             fixed (ushort* pIndex = indexData)
@@ -78,7 +89,7 @@ namespace Nine.Graphics.Rendering.OpenGL
                     }
                     else if (currentTexture.PlatformTexture != previousTexture.PlatformTexture)
                     {
-                        PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture);
+                        PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref camera4x4);
 
                         vertexCount = 0;
                         vertex = pVertex;
@@ -118,7 +129,7 @@ namespace Nine.Graphics.Rendering.OpenGL
 
                 if (vertexCount > 0)
                 {
-                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture);
+                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref camera4x4);
                 }
             }
         }
