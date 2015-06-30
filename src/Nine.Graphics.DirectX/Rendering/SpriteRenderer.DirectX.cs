@@ -83,7 +83,7 @@ float4 main(PS_IN input) : SV_Target
             //pixelShaderByteCode.Dispose();
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, TextureSlice texture)
+        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture)
         {
             //context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertices, 32, 0));
         }

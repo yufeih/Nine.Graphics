@@ -4,7 +4,7 @@
 
     partial class TextureFactory
     {
-        private TextureSlice PlatformCreateTexture(TextureContent data)
+        private Texture PlatformCreateTexture(TextureContent data)
         {
             return null;
         }

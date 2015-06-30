@@ -6,7 +6,7 @@
 
     partial class TextureFactory
     {
-        private TextureSlice PlatformCreateTexture(TextureContent data)
+        private Texture PlatformCreateTexture(TextureContent data)
         {
             GLDebug.CheckAccess();
 
@@ -17,7 +17,7 @@
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Pixels);
 
-            return new TextureSlice(texture, data.Width, data.Height, data.Left, data.Right, data.Top, data.Bottom, data.IsTransparent);
+            return new Texture(texture, data.Width, data.Height, data.Left, data.Right, data.Top, data.Bottom, data.IsTransparent);
         }
     }
 }

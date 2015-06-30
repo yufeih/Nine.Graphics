@@ -54,7 +54,7 @@ namespace Nine.Graphics.Rendering.OpenGL
             fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
             {
                 var vertexCount = 0;
-                var previousTexture = (TextureSlice)null;
+                var previousTexture = (Texture)null;
 
                 Vertex* vertex = pVertex;
                 Sprite* sprite = pSprite;
@@ -84,7 +84,7 @@ namespace Nine.Graphics.Rendering.OpenGL
                     {
                         previousTexture = currentTexture;
                     }
-                    else if (currentTexture.Texture != previousTexture.Texture)
+                    else if (currentTexture.PlatformTexture != previousTexture.PlatformTexture)
                     {
                         PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture);
 
@@ -162,7 +162,7 @@ namespace Nine.Graphics.Rendering.OpenGL
         }
 
         private unsafe void PopulateVertex(
-            Sprite* sprite, TextureSlice texture,
+            Sprite* sprite, Texture texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
@@ -197,7 +197,7 @@ namespace Nine.Graphics.Rendering.OpenGL
         }
 
         private unsafe void PopulateVertexWithTransform(
-            Sprite* sprite, TextureSlice texture,
+            Sprite* sprite, Texture texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br, Matrix3x2 transform)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
@@ -237,7 +237,7 @@ namespace Nine.Graphics.Rendering.OpenGL
         }
 
         private unsafe void PopulateVertexWithRotation(
-            Sprite* sprite, TextureSlice texture,
+            Sprite* sprite, Texture texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
@@ -280,7 +280,7 @@ namespace Nine.Graphics.Rendering.OpenGL
         }
 
         private unsafe void PopulateVertexWithRotationAndTransform(
-            Sprite* sprite, TextureSlice texture,
+            Sprite* sprite, Texture texture,
             Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br, Matrix3x2 transform)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;

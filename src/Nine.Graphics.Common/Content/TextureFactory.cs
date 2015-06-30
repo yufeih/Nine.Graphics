@@ -19,7 +19,7 @@ namespace Nine.Graphics.Content.OpenGL
         struct Entry
         {
             public LoadState LoadState;
-            public TextureSlice Slice;
+            public Texture Slice;
 
             public override string ToString() => $"{ LoadState }: { Slice }";
         }
@@ -35,7 +35,7 @@ namespace Nine.Graphics.Content.OpenGL
             this.textures = new Entry[capacity];
         }
 
-        public TextureSlice GetTexture(TextureId textureId)
+        public Texture GetTexture(TextureId textureId)
         {
             if (textureId.Id <= 0) return null;
 

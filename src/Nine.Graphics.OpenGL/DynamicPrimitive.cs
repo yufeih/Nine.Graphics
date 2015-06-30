@@ -123,7 +123,7 @@
             if (texture == null)
                 return;
 
-            GL.BindTexture(TextureTarget.Texture2D, texture.Texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture.PlatformTexture);
 
             // Draw geometry
             if (entry.IndexCount > 0)
