@@ -5,10 +5,6 @@
 
     public interface ISpriteRenderer
     {
-        void Draw(
-            Slice<Sprite> sprites,
-            Slice<Matrix3x2>? transforms = null,
-            Slice<int>? indices = null,
-            TextureId texture = default(TextureId));
+        void Draw(Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null);
     }
 }

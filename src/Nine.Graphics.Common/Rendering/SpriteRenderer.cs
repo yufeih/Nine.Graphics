@@ -39,7 +39,7 @@ namespace Nine.Graphics.Rendering.OpenGL
             this.PlatformCreateShaders();
         }
 
-        public unsafe void Draw(Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null, TextureId texture = default(TextureId))
+        public unsafe void Draw(Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null)
         {
             var spriteCount = (indices != null ? indices.Value.Count : sprites.Count);
             if (spriteCount <= 0)
@@ -66,12 +66,6 @@ namespace Nine.Graphics.Rendering.OpenGL
                     {
                         iIndexed = indices.Value[i];
                         sprite += iIndexed;
-                    }
-
-                    var textureToUse = (texture.Id != 0 ? texture : sprite->Texture);
-                    if (textureToUse.Id == 0)
-                    {
-                        continue;
                     }
 
                     var currentTexture = textureFactory.GetTexture(sprite->Texture);
