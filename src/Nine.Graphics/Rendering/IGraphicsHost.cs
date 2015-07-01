@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics
+﻿namespace Nine.Graphics.Rendering
 {
     using System;
     using Nine.Graphics.Content;

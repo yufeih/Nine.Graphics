@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.Rendering.OpenGL
+﻿namespace Nine.Graphics.OpenGL
 {
     using Nine.Graphics.OpenGL;
     using OpenTK.Graphics.OpenGL;

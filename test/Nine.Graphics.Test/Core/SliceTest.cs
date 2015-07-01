@@ -1,5 +1,6 @@
 ﻿namespace Nine.Graphics
 {
+    using System;
     using System.Linq;
     using Xunit;
 

@@ -3,10 +3,13 @@
     using System;
     using System.Numerics;
     using OpenTK.Graphics.OpenGL;
-    using Nine.Graphics.Rendering.OpenGL;
-
-    public partial class DynamicPrimitive : IDisposable
+    using Nine.Graphics.OpenGL;
+    using Nine.Graphics.Rendering;
+    
+    partial class DynamicPrimitive : IDisposable
     {
+        // This interface needs rework to use with immutable structs.
+
         struct Vertex
         {
             public Vector3 Position;

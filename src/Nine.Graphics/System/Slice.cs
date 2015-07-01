@@ -1,16 +1,18 @@
-﻿namespace Nine.Graphics
+﻿namespace System
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
 
+    /// <summary>
+    /// https://github.com/dotnet/roslyn/issues/120
+    /// </summary>
     public struct Slice<T> : IEquatable<Slice<T>>, IReadOnlyList<T>
     {
         public readonly T[] Items;
         public readonly int Begin;
         public readonly int End;
-        public readonly int Count;
+        public readonly int Length;
 
         public T this[int index] => Items[Begin + index];
 
@@ -21,7 +23,7 @@
             this.Items = items;
             this.Begin = 0;
             this.End = items.Length;
-            this.Count = End - Begin;
+            this.Length = End - Begin;
         }
 
         public Slice(T[] items, int begin)
@@ -32,7 +34,7 @@
             this.Items = items;
             this.Begin = begin;
             this.End = items.Length;
-            this.Count = End - Begin;
+            this.Length = End - Begin;
         }
 
         public Slice(T[] items, int begin, int count)
@@ -44,7 +46,7 @@
             this.Items = items;
             this.Begin = begin;
             this.End = begin + count;
-            this.Count = count;
+            this.Length = count;
         }
 
         public static implicit operator Slice<T>(T[] array) => new Slice<T>(array);
@@ -53,14 +55,14 @@
         public override bool Equals(object obj) => obj is Slice<T> && Equals((Slice<T>)obj);
         public override int GetHashCode() => Items.GetHashCode() ^ (Begin.GetHashCode() << 8) ^ (End.GetHashCode() << 16);
 
-        public override string ToString() => $"{ typeof(T[]).Name } [{ Count }]({ Begin } - { End })";
+        public override string ToString() => $"{ typeof(T[]).Name } [{ Length }]({ Begin } - { End })";
 
         public Enumerator GetEnumerator() => new Enumerator { index = Begin - 1, items = Items, begin = Begin, end = End };
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        int IReadOnlyCollection<T>.Count => Count;
+        int IReadOnlyCollection<T>.Count => Length;
 
         public struct Enumerator : IEnumerator<T>
         {

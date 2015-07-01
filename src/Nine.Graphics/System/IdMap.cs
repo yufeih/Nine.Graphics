@@ -1,6 +1,5 @@
-﻿namespace Nine.Graphics
+﻿namespace System
 {
-    using System;
     using System.Collections.Concurrent;
 
     class IdMap

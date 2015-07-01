@@ -1,5 +1,6 @@
 ﻿namespace Nine.Graphics.Rendering
 {
+    using System;
     using System.Numerics;
 
     public interface ISpriteRenderer

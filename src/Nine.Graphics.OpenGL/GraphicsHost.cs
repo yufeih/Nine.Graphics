@@ -2,6 +2,7 @@
 {
     using System;
     using Nine.Graphics.Content;
+    using Nine.Graphics.Rendering;
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;

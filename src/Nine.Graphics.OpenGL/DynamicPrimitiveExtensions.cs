@@ -7,7 +7,7 @@
     using System.ComponentModel;
     using System.Numerics;
 
-    public enum Flip
+    enum Flip
     {
         None,
         Horizontally,
@@ -19,7 +19,7 @@
     /// Contains extension method for <see cref="DynamicPrimitive"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class DynamicPrimitiveExtensions
+    static class DynamicPrimitiveExtensions
     {
         // TODO: Add more advanced texture rectangles
         //       Like texture region and texture rotation

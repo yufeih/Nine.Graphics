@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.Rendering.DirectX
+﻿namespace Nine.Graphics.DirectX
 {
     using System.Diagnostics;
     using System;

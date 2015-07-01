@@ -1,16 +1,16 @@
 ﻿namespace Nine.Graphics
 {
+    using Nine.Graphics.Content;
+    using Nine.Graphics.Rendering;
+    using Nine.Imaging;
+    using Nine.Imaging.Filtering;
+    using Nine.Injection;
     using System;
     using System.Diagnostics;
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
-    using Nine.Graphics.Content;
-    using Nine.Imaging;
-    using Nine.Imaging.Filtering;
-    using Nine.Injection;
     using Xunit;
-
 
     /// <summary>
     /// Enables a couple of key graphics testing scenarios:
@@ -57,7 +57,7 @@
                .Map<IContentProvider, ContentProvider>()
                .Map<ITextureLoader, TextureLoader>()
                .Map<IFontLoader, FontLoader>()
-               .Map<ITexturePreloader, Rendering.OpenGL.TextureFactory>()
+               .Map<ITexturePreloader, OpenGL.TextureFactory>()
                .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
 
             Setup(container);

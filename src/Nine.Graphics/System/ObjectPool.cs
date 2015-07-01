@@ -1,10 +1,10 @@
-﻿namespace Nine.Graphics
+﻿namespace System
 {
-    using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Collections.Generic;
+    using Nine.Graphics;
 
-    public class ObjectPool
+    class ObjectPool
     {
         private readonly int defaultCapacity;
 

@@ -1,13 +1,14 @@
 ﻿#if DX
-namespace Nine.Graphics.Rendering.DirectX
+namespace Nine.Graphics.DirectX
 {
 #else
-namespace Nine.Graphics.Rendering.OpenGL
+namespace Nine.Graphics.OpenGL
 {
 #endif
     using System;
     using System.Diagnostics;
     using System.Numerics;
+    using Nine.Graphics.Rendering;
 
     public sealed partial class SpriteRenderer : ISpriteRenderer, IDisposable
     {
@@ -39,7 +40,7 @@ namespace Nine.Graphics.Rendering.OpenGL
 
         public unsafe void Draw(Matrix4x4 projection, Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null)
         {
-            var spriteCount = (indices != null ? indices.Value.Count : sprites.Count);
+            var spriteCount = (indices != null ? indices.Value.Length : sprites.Length);
             if (spriteCount <= 0)
             {
                 return;
@@ -66,7 +67,7 @@ namespace Nine.Graphics.Rendering.OpenGL
                     {
                         iIndexed = indices.Value[i];
 
-                        Debug.Assert(iIndexed >= 0 && iIndexed < sprites.Count);
+                        Debug.Assert(iIndexed >= 0 && iIndexed < sprites.Length);
 
                         sprite = pSprite + iIndexed;
                     }
