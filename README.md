@@ -20,7 +20,7 @@ The content pipeline is build directly into the runtime, so changes to assets ar
 
 Nine.Graphics makes it easy to write correct multi-threaded programs that separates simulation and rendering into different threads at large scale. The rendering pipeline itself also takes advantage of multi-threaded rendering whenever possible to reduce frame time.
 
-## Immutable Data Driven and Pure Functionals
+## Immutable Data Driven and Pure Functions
 
 The core rendering API is exposed though an *immutable struct object model*, the rendering pipeline is simply a function that takes this *immutable object state*, performs a series of *pure* data transforms to generate triangles and commands *with no side effects*, then submit those commands to the GPU to produce a predictable image. This makes it easy to write parallel code that separates simulation and rendering.
 
