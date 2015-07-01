@@ -12,8 +12,6 @@ namespace Nine.Graphics.Rendering.OpenGL
 
     public partial class TextureFactory : ITexturePreloader
     {
-        private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
-
         enum LoadState { None, Loading, Loaded, Failed, Missing }
 
         struct Entry
@@ -24,6 +22,7 @@ namespace Nine.Graphics.Rendering.OpenGL
             public override string ToString() => $"{ LoadState }: { Slice }";
         }
 
+        private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
         private readonly ITextureLoader loader;
         private Entry[] textures;
 
@@ -47,9 +46,7 @@ namespace Nine.Graphics.Rendering.OpenGL
             var entry = textures[textureId.Id];
             if (entry.LoadState == LoadState.None)
             {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 LoadTexture(textureId);
-#pragma warning restore CS4014
 
                 // Ensures the method returns a valid result when the
                 // async load method succeeded synchroniously.
@@ -88,7 +85,7 @@ namespace Nine.Graphics.Rendering.OpenGL
         Task ITexturePreloader.Preload(params TextureId[] textures)
         {
             if (textures.Length <= 0) return Task.FromResult(0);
-            if (syncContext == null) throw new InvalidOperationException("Cannot preload textures when TextureFactory is created on a thread without SynchronizationContext.");
+            if (syncContext == null) throw new ArgumentNullException(nameof(SynchronizationContext));
 
             var tcs = new TaskCompletionSource<int>();
 
