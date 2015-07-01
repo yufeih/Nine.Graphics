@@ -3,13 +3,14 @@
     using System;
     using System.Diagnostics;
     using System.IO;
-    using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
-    using Nine.Imaging;
-    using Nine.Injection;
     using Nine.Graphics.Content;
+    using Nine.Imaging;
+    using Nine.Imaging.Filtering;
+    using Nine.Injection;
     using Xunit;
+
 
     /// <summary>
     /// Enables a couple of key graphics testing scenarios:
@@ -170,6 +171,9 @@
         {
             var image = new Image();
             image.SetPixels(texture.Width, texture.Height, texture.Pixels);
+
+            // glGetPixels read pixels with Y axis flipped.
+            image = image.FlipY();
 
             using (var stream = File.OpenWrite(filename))
             {

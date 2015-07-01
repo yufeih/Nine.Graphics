@@ -31,6 +31,8 @@
         public int Rgba => (R << 24) | (G << 16) | (B << 8) | A;
         public int Argb => (A << 24) | (R << 16) | (G << 8) | B;
 
+        public bool IsTransparent => A < 255;
+
         public Color(int bgra) { R = G = B = A = 0; Bgra = bgra; }
         public Color(byte r, byte g, byte b, byte a = 255) { Bgra = 0; R = r; G = g; B = b; A = a; }
         public Color(float r, float g, float b, float a = 1.0f)

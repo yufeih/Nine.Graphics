@@ -38,6 +38,12 @@
                 new Sprite(textures[2], size:new Vector2(80, 80), position:new Vector2(160, 0)),
                 new Sprite(textures[3], size:new Vector2(80, 80), position:new Vector2(240, 0)),
             },
+            new []
+            {
+                new Sprite(textures[1], size:new Vector2(80, 80)),
+                new Sprite(textures[1], size:new Vector2(80, 80), color:Color.White * 0.2f, position:new Vector2(60, 0)),
+                new Sprite(textures[1], size:new Vector2(80, 80), color:new Color(255, 255, 0), position:new Vector2(120, 0)),
+            },
         };
 
         public static readonly TheoryData<Type, Type> Dimensions = new TheoryData<Type, Type>()

@@ -8,7 +8,6 @@ namespace Nine.Graphics.Rendering.OpenGL
     using System;
     using System.Diagnostics;
     using System.Numerics;
-    using Nine.Graphics.Content;
 
     public sealed partial class SpriteRenderer : ISpriteRenderer, IDisposable
     {
@@ -53,6 +52,8 @@ namespace Nine.Graphics.Rendering.OpenGL
             fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
             {
                 var vertexCount = 0;
+                var drawing = false;
+                var isTransparent = false;
                 var previousTexture = (Texture)null;
 
                 Vertex* vertex = pVertex;
@@ -82,12 +83,24 @@ namespace Nine.Graphics.Rendering.OpenGL
                     }
                     else if (currentTexture.PlatformTexture != previousTexture.PlatformTexture)
                     {
-                        PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref projection);
+                        if (!drawing)
+                        {
+                            drawing = true;
+                            PlatformBeginDraw(ref projection);
+                        }
+
+                        PlatformDraw(
+                            pVertex, pIndex, vertexCount, vertexCount / 4 * 6,
+                            previousTexture.PlatformTexture, isTransparent);
 
                         vertexCount = 0;
                         vertex = pVertex;
                         previousTexture = currentTexture;
+                        isTransparent = false;
                     }
+
+                    var isSpriteTransparent = currentTexture.IsTransparent || sprite->Color.IsTransparent;
+                    isTransparent |= isSpriteTransparent;
 
                     if (sprite->Rotation == 0)
                     {
@@ -122,7 +135,20 @@ namespace Nine.Graphics.Rendering.OpenGL
 
                 if (vertexCount > 0)
                 {
-                    PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref projection);
+                    if (!drawing)
+                    {
+                        drawing = true;
+                        PlatformBeginDraw(ref projection);
+                    }
+
+                    PlatformDraw(
+                        pVertex, pIndex, vertexCount, vertexCount / 4 * 6, 
+                        previousTexture.PlatformTexture, isTransparent);
+                }
+
+                if (drawing)
+                {
+                    PlatformEndDraw();
                 }
             }
         }
