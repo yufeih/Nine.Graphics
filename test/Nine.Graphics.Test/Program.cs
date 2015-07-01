@@ -25,6 +25,8 @@
         {
             Trace.Listeners.Add(new ConsoleTraceListener());
 
+            WarnIfGacIsNotPatched();
+
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
             app.Name = app.FullName = "Nine.Graphics.Test";
             app.HelpOption("-?|--help");
@@ -52,6 +54,21 @@
                 GraphicsTest.Delay = int.Parse(delay.Value());
 
             xunitRunner.Main(app.RemainingArguments.ToArray());
+        }
+
+        private void WarnIfGacIsNotPatched()
+        {
+            try
+            {
+                System.Numerics.Matrix4x4.CreateOrthographicOffCenter(0, 1, 1, 0, 0, 1);
+            }
+            catch (MissingMethodException)
+            {
+                Trace.TraceError(
+                    @"Please patch System.Numerics.Vectors.dll using the following command:\n" +
+                    @"    gacutil / i % DNX_HOME %\packages\System.Numerics.Vectors\4.0.0\lib\win8\System.Numerics.Vectors.dll / f\n\n" +
+                    @"See https://github.com/dotnet/corefx/issues/313 for details");
+            }
         }
     }
 }

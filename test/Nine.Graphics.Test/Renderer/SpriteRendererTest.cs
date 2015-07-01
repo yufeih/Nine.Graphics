@@ -20,7 +20,7 @@
         public static readonly Sprite[][] scenes =
         {
             new [] { new Sprite(), new Sprite("not exist"), new Sprite(textures[0]) },
-            new [] 
+            new []
             {
                 new Sprite(textures[0], size:new Vector2(100, 50)),
                 new Sprite(textures[0], size:new Vector2(100, 100), position:new Vector2(100, 0), color:new Color(r:255, g:0, b:0)),
@@ -51,15 +51,13 @@
         {
             await PreloadTextures(textures);
 
+            var camera = Matrix4x4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
             var renderer = Container.Get(rendererType) as ISpriteRenderer;
 
             foreach (var scene in scenes)
             {
-                Frame(hostType, () => renderer.Draw(scene));
+                Frame(hostType, () => renderer.Draw(camera, scene));
             }
-
-            // TODO: Patch GAC.
-            Frame(hostType, () => renderer.Draw(scenes[2], Matrix3x2.CreateScale(2) * Matrix3x2.CreateTranslation(-100, -100)));
         }
     }
 }

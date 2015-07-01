@@ -89,11 +89,6 @@ void main(void)
             transformLocation = GL.GetUniformLocation(shaderProgramHandle, "transform");
         }
 
-        private unsafe void PlatformGetViewport(int* viewport)
-        {
-            GL.GetInteger(GetPName.Viewport, viewport);
-        }
-
         private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Texture texture, ref Matrix4x4 projection)
         {
             GLDebug.CheckAccess();
@@ -124,7 +119,7 @@ void main(void)
             
             fixed (float* ptr = &projection.M11)
             {
-                GL.UniformMatrix4(transformLocation, 16, false, ptr);
+                GL.UniformMatrix4(transformLocation, 1, false, ptr);
             }
 
             GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, 0);

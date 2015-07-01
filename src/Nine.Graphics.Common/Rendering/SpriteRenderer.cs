@@ -6,6 +6,7 @@ namespace Nine.Graphics.Rendering.OpenGL
 {
 #endif
     using System;
+    using System.Diagnostics;
     using System.Numerics;
     using Nine.Graphics.Content;
 
@@ -37,7 +38,7 @@ namespace Nine.Graphics.Rendering.OpenGL
             this.PlatformCreateShaders();
         }
 
-        public unsafe void Draw(Slice<Sprite> sprites, Matrix3x2? camera = null, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null)
+        public unsafe void Draw(Matrix4x4 projection, Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null)
         {
             var spriteCount = (indices != null ? indices.Value.Count : sprites.Count);
             if (spriteCount <= 0)
@@ -46,9 +47,6 @@ namespace Nine.Graphics.Rendering.OpenGL
             }
 
             EnsureBufferCapacity(spriteCount);
-
-            Matrix4x4 projection;
-            GetProjection(camera, out projection);
 
             fixed (Vertex* pVertex = vertexData)
             fixed (ushort* pIndex = indexData)
@@ -66,7 +64,10 @@ namespace Nine.Graphics.Rendering.OpenGL
                     if (indices != null)
                     {
                         iIndexed = indices.Value[i];
-                        sprite += iIndexed;
+
+                        Debug.Assert(iIndexed >= 0 && iIndexed < sprites.Count);
+
+                        sprite = pSprite + iIndexed;
                     }
 
                     var currentTexture = textureFactory.GetTexture(sprite->Texture);
@@ -123,23 +124,6 @@ namespace Nine.Graphics.Rendering.OpenGL
                 {
                     PlatformDraw(pVertex, pIndex, vertexCount, vertexCount / 4 * 6, previousTexture, ref projection);
                 }
-            }
-        }
-
-        private unsafe void GetProjection(Matrix3x2? camera, out Matrix4x4 projection)
-        {
-            var viewport = stackalloc int[4];
-            PlatformGetViewport(viewport);
-
-            projection = Matrix4x4.CreateOrthographicOffCenter(
-                *viewport, *viewport + *(viewport + 2),
-                *(viewport + 1) + *(viewport + 4), *(viewport + 1), 0, 1);
-
-            if (camera != null)
-            {
-                Matrix4x4 view = new Matrix4x4(camera.Value);
-                Matrix4x4.Invert(view, out view);
-                projection = view * projection;
             }
         }
 
