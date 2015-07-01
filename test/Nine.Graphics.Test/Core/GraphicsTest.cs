@@ -41,7 +41,7 @@
         public static int Width = 1024;
         public static int Height = 768;
         public static int Delay = 1;
-        public static string Output = "TestResults";
+        public static string OutputPath = "TestResults";
 
         private int frameCounter = 0;
 
@@ -84,12 +84,6 @@
         {
             var i = 0;
             var frameName = $"{ GetType().Name }/{ name }" + (frameCounter > 0 ? $"-{ frameCounter }" : "");
-            var outputPath = Path.GetDirectoryName($"{ Output }/{ frameName }");
-
-            if (!Directory.Exists(outputPath))
-            {
-                Directory.CreateDirectory(outputPath);
-            }
 
             var host = Container.Get(hostType) as IGraphicsHost;
             var previousFrame = (TextureContent)null;
@@ -141,7 +135,7 @@
 
         private void SaveAndVerifyFrame(TextureContent frame, string name)
         {
-            var expectedFile = $"{ Output }/{ name }.png";
+            var expectedFile = $"{ OutputPath }/{ name }.png";
 
             if (File.Exists(expectedFile))
             {
@@ -158,7 +152,7 @@
                     }
                     catch
                     {
-                        SaveFrame(frame, $"{ Output }/{ name }.actual.png");
+                        SaveFrame(frame, $"{ OutputPath }/{ name }.actual.png", true);
                         throw;
                     }
                 }
@@ -167,13 +161,21 @@
             SaveFrame(frame, expectedFile);
         }
 
-        private void SaveFrame(TextureContent texture, string filename)
+        protected void SaveFrame(TextureContent texture, string filename, bool flipY = false)
         {
+            var outputPath = Path.GetDirectoryName(filename);
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.CreateDirectory(outputPath);
+            }
+
             var image = new Image();
             image.SetPixels(texture.Width, texture.Height, texture.Pixels);
 
-            // glGetPixels read pixels with Y axis flipped.
-            image = image.FlipY();
+            if (flipY)
+            {
+                image = image.FlipY();
+            }
 
             using (var stream = File.OpenWrite(filename))
             {
@@ -183,7 +185,7 @@
 
         private void SaveAndVerifyPerf(int count, Stopwatch watch, string frameName)
         {
-            var previousRunFile = $"{ Output }/{frameName}.perf.txt";
+            var previousRunFile = $"{ OutputPath }/{frameName}.perf.txt";
             var previousTime = File.Exists(previousRunFile) ? double.Parse(File.ReadAllText(previousRunFile)) : 99999999;
             var previousFps = 1000 * count / previousTime;
 

@@ -4,6 +4,6 @@
 
     public interface IFontLoader
     {
-        Task<IFontRasterizer> LoadFont(string font = null);
+        Task<IFontFace> LoadFont(string font = null);
     }
 }

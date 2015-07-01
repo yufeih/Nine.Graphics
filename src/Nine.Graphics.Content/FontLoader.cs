@@ -3,13 +3,12 @@
     using Microsoft.Framework.Runtime;
     using SharpFont;
     using System;
-    using System.Drawing;
     using System.IO;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
     using Library = SharpFont.Library;
+    using System.Drawing;
 
     public sealed class FontLoader : IFontLoader, IDisposable
     {
@@ -20,7 +19,8 @@
         private readonly int textureSize;
         private readonly Fixed26Dot6 baseFontSize;
 
-        private readonly RectanglePacker packer;
+        private RectanglePacker packer;
+        private byte[] pixels;
 
         public bool UseSystemFonts { get; set; } = true;
 
@@ -37,11 +37,10 @@
             this.contentProvider = contentProvider;
             this.baseFontSize = baseFontSize;
             this.textureSize = textureSize;
-            this.packer = new RectanglePacker(textureSize, textureSize);
             this.freetype = new Lazy<Library>(LoadFreeTypeLibrary);
         }
-        
-        public async Task<IFontRasterizer> LoadFont(string font)
+
+        public async Task<IFontFace> LoadFont(string font)
         {
             font = string.IsNullOrEmpty(font) ? defaultFont : font;
 
@@ -51,7 +50,7 @@
                     Environment.GetFolderPath(Environment.SpecialFolder.Fonts),
                     font + ".ttf");
 
-                return new Rasterizer(this, freetype.Value.NewFace(fontPath, 0));
+                return new FontFace(this, freetype.Value.NewFace(fontPath, 0));
             }
 
             if (contentProvider != null)
@@ -65,7 +64,7 @@
 
                     var buffer = new byte[stream.Length];
                     stream.Read(buffer, 0, (int)stream.Length);
-                    return new Rasterizer(this, freetype.Value.NewMemoryFace(buffer, 0));
+                    return new FontFace(this, freetype.Value.NewMemoryFace(buffer, 0));
                 }
             }
 
@@ -93,74 +92,60 @@
             }
         }
 
-        class Rasterizer : IFontRasterizer
+        class FontFace : IFontFace
         {
             private readonly FontLoader parent;
             private readonly Face face;
 
-            public Rasterizer(FontLoader parent, Face face)
+            public FontFace(FontLoader parent, Face face)
             {
                 this.parent = parent;
                 this.face = face;
             }
 
-            public void LoadGlyph(StringBuilder text, TextureContent[] glyphs, int startIndex)
-            {
-                for (var i = 0; i < text.Length; i++)
-                {
-                    glyphs[startIndex + i] = LoadGlyph(text[i]);
-                }
-            }
-
-            public void LoadGlyph(string text, TextureContent[] glyphs, int startIndex)
-            {
-                for (var i = 0; i < text.Length; i++)
-                {
-                    glyphs[startIndex + i] = LoadGlyph(text[i]);
-                }
-            }
-
-            private TextureContent LoadGlyph(char charactor)
-            {
-                // TODO: Cache
-                //TextureContent slice;
-
-                //var hash = (font.Id << 16) | charactor;
-                //if (!charactorMap.TryGetValue(hash, out slice))
-                //{
-                //    charactorMap[hash] = slice = CreateGlyph(charactor, font);
-                //}
-
-                //return slice;
-                return CreateGlyph(charactor);
-            }
-
-            private TextureContent CreateGlyph(char charactor)
+            public GlyphLoadResult LoadGlyph(char charactor)
             {
                 var glyph = face.GetCharIndex(charactor);
                 if (glyph == 0)
                 {
-                    return null;
+                    return default(GlyphLoadResult);
                 }
 
                 face.SetCharSize(parent.baseFontSize, parent.baseFontSize, 72, 72);
                 face.LoadGlyph(glyph, LoadFlags.Default, LoadTarget.Normal);
 
-                Point point;
+                var point = default(Point);
+                var createsNewTexture = false;
                 var metrics = face.Glyph.Metrics;
-                if (parent.packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+                var textureSize = parent.textureSize;
+
+                if (parent.packer == null)
                 {
-                    var pixels = new byte[parent.textureSize * parent.textureSize];
-                    FillGlyph(face, pixels, parent.textureSize, 0, 0);
+                    createsNewTexture = true;
+                    parent.packer = new RectanglePacker(textureSize, textureSize);
+                    parent.pixels = new byte[textureSize * textureSize];
                 }
 
-                // return new Texture(0, textureSize, textureSize, true);
-                return null;
+                if (parent.packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+                {
+                    FillGlyph(face, parent.pixels, textureSize, point.X, point.Y);
+
+                    return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent.pixels), createsNewTexture);
+                }
+                else if (parent.packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+                {
+                    parent.pixels = new byte[textureSize * textureSize];
+
+                    FillGlyph(face, parent.pixels, textureSize, point.X, point.Y);
+
+                    return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent.pixels), true);
+                }
+
+                return default(GlyphLoadResult);
             }
 
             private unsafe void FillGlyph(Face face, byte[] pixels, int width, int startX, int startY)
             {
-                // Use default for 8-bit anti-aliased pixmap ??
                 face.Glyph.RenderGlyph(RenderMode.Mono);
 
                 using (var bitmap = face.Glyph.Bitmap)
