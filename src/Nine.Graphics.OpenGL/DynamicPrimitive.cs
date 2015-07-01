@@ -3,6 +3,7 @@
     using System;
     using System.Numerics;
     using OpenTK.Graphics.OpenGL;
+    using Nine.Graphics.Rendering.OpenGL;
 
     public partial class DynamicPrimitive : IDisposable
     {
@@ -118,15 +119,11 @@
             GL.LineWidth(entry.LineWidth);
 
             // Apply texture
-            if (entry.Texture != null)
-            {
-                var texture = textureFactory.GetTexture(entry.Texture.Value);
-                GL.BindTexture(TextureTarget.Texture2D, (texture == null) ? blankTexture : texture.Texture);
-            }
-            else
-            {
-                GL.BindTexture(TextureTarget.Texture2D, blankTexture);
-            }
+            var texture = textureFactory.GetTexture(entry.Texture ?? TextureId.White);
+            if (texture == null)
+                return;
+
+            GL.BindTexture(TextureTarget.Texture2D, texture.PlatformTexture);
 
             // Draw geometry
             if (entry.IndexCount > 0)

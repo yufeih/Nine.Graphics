@@ -1,6 +1,7 @@
 ﻿namespace Nine.Graphics
 {
     using System;
+    using Nine.Graphics.Content;
 
     public interface IGraphicsHost : IDisposable
     {

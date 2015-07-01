@@ -8,7 +8,12 @@
 
   "dependencies": {
     "OpenTK": "1.1.1589.5942",
-    "Nine.Graphics": ""
+    "Nine.Graphics.Common": { "version": "1.0.0-*", "type": "build" },
+  },
+
+  "compilationOptions": {
+    "allowUnsafe": true,
+    "define": [ "GL" ]
   },
 
   "frameworks": {

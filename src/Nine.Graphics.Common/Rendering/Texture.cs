@@ -1,11 +1,18 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿#if DX
+namespace Nine.Graphics.Rendering.DirectX
 {
+    using PlatformTexture = SharpDX.Direct3D12.Resource;
+#else
+namespace Nine.Graphics.Rendering.OpenGL
+{
+    using PlatformTexture = System.Int32;
+#endif
     using System.Diagnostics;
 
-    public class TextureSlice
+    public partial class Texture
     {
-        public readonly int Texture;
-        
+        public readonly PlatformTexture PlatformTexture;
+
         public readonly int Width;
         public readonly int Height;
 
@@ -17,7 +24,13 @@
         public readonly float Top;
         public readonly float Bottom;
 
-        public TextureSlice(int texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom)
+        public readonly bool IsTransparent;
+
+        public Texture(PlatformTexture texture, int width, int height, bool isTransparent)
+            : this(texture, width, height, 0, width, 0, height, isTransparent)
+        { }
+
+        public Texture(PlatformTexture texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom, bool isTransparent)
         {
             Debug.Assert(sourceWidth > 0);
             Debug.Assert(sourceHeight > 0);
@@ -30,7 +43,7 @@
             Debug.Assert(bottom >= 0 && bottom <= sourceHeight);
             Debug.Assert(bottom >= top);
 
-            this.Texture = texture;
+            this.PlatformTexture = texture;
             this.SourceWidth = sourceWidth;
             this.SourceHeight = sourceHeight;
 
@@ -41,6 +54,17 @@
             this.Right = (float)right / sourceWidth;
             this.Top = (float)top / sourceHeight;
             this.Bottom = (float)bottom / sourceHeight;
+
+            this.IsTransparent = isTransparent;
+        }
+
+        public override string ToString()
+        {
+            if (Width == SourceWidth && Height == SourceHeight)
+            {
+                return $"{ Width }x{ Height }, { PlatformTexture } ";
+            }
+            return $"{ Width }x{ Height }, source:{ SourceWidth }x{ SourceHeight }, { PlatformTexture }";
         }
     }
 }

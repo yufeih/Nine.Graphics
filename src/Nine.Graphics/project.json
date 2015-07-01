@@ -7,15 +7,19 @@
   "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
   "dependencies": {
-    "System.Numerics.Vectors": "4.0.0",
-    "Nine.Imaging": "1.0.78-alpha"
+    "System.Numerics.Vectors": "4.0.0"
+  },
+
+  "compilationOptions": {
+    "allowUnsafe": true
   },
 
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
         "System.Runtime": "4.0.10.0",
-        "System.IO": "4.0.0.0"
+        "System.IO": "4.0.0.0",
+        "System.Net.Http": "4.0.0.0"
       }
     },
     "dnxcore50": {
@@ -24,11 +28,12 @@
         "System.Collections": "4.0.10-beta-22816",
         "System.Collections.Concurrent": "4.0.10-beta-22816",
         "System.Diagnostics.Debug": "4.0.10-beta-22816",
-        "System.Runtime": "4.0.20-beta-22816",
-        "System.Runtime.Extensions": "4.0.10-beta-22816",
         "System.IO": "4.0.10-beta-22816",
         "System.IO.FileSystem": "4.0.0-beta-22816",
         "System.Linq": "4.0.0-beta-22816",
+        "System.Net.Http": "4.0.0-beta-22816",
+        "System.Runtime": "4.0.20-beta-22816",
+        "System.Runtime.Extensions": "4.0.10-beta-22816",
         "System.Threading": "4.0.10-beta-22816"
       }
     }

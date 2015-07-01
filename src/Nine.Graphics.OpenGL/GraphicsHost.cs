@@ -1,6 +1,7 @@
 ﻿namespace Nine.Graphics.OpenGL
 {
     using System;
+    using Nine.Graphics.Content;
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
@@ -16,13 +17,15 @@
 
         public IntPtr WindowHandle => window.WindowInfo.Handle;
 
-        public GraphicsHost(int width, int height, GraphicsMode mode = null, bool hidden = false)
-            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow), hidden)
+        public GraphicsHost(int width, int height, GraphicsMode mode = null, bool hidden = false, bool vSync = true)
+            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow) { VSync = vSync ? VSyncMode.On : VSyncMode.Off }, hidden)
         { }
 
         public GraphicsHost(GameWindow window, bool hidden = false)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
+
+            GLDebug.CheckAccess();
 
             this.window = window;
             if (!hidden)
@@ -35,6 +38,8 @@
 
         public bool BeginFrame()
         {
+            GLDebug.CheckAccess();
+
             window.ProcessEvents();
 
             if (window.IsExiting)
@@ -48,16 +53,25 @@
 
         public void EndFrame()
         {
+            GLDebug.CheckAccess();
+
             window?.SwapBuffers();
         }
 
         public TextureContent GetTexture()
         {
+            GLDebug.CheckAccess();
+
             framePixels = framePixels ?? new byte[Width * Height * 4];
             GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, framePixels);
             return new TextureContent(Width, Height, framePixels);
         }
 
-        public void Dispose() => window?.Dispose();
+        public void Dispose()
+        {
+            GLDebug.CheckAccess();
+
+            window?.Dispose();
+        }
     }
 }

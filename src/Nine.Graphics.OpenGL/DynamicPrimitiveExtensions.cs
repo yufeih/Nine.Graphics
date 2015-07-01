@@ -47,7 +47,7 @@
 
         public static void AddRectangle(this DynamicPrimitive dynamicPrimitive, Vector2 min, Vector2 max, Vector3 up, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
-            var transform = MatrixHelper.CreateRotation(new Vector3(0, 1, 0), up);
+            var transform = MathHelper.CreateRotation(new Vector3(0, 1, 0), up);
 
             dynamicPrimitive.BeginPrimitive(PrimitiveType.Lines, null, world, lineWidth);
             {
@@ -107,7 +107,7 @@
                 // Create a single ring of vertices at this latitude.
                 for (int j = 0; j <= horizontalSegments; j++)
                 {
-                    float longitude = j * MathHelpers.TwoPi / horizontalSegments;
+                    float longitude = j * MathHelper.TwoPI / horizontalSegments;
 
                     float dx = (float)Math.Cos(longitude);
                     float dy = (float)Math.Sin(longitude);
@@ -123,7 +123,7 @@
         public static void AddCircle(this DynamicPrimitive dynamicPrimitive, Vector3 center, float radius, Vector3 up, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             var transform = Matrix4x4.CreateScale(radius) *
-                            MatrixHelper.CreateRotation(new Vector3(0, 1, 0), up) *
+                            MathHelper.CreateRotation(new Vector3(0, 1, 0), up) *
                             Matrix4x4.CreateTranslation(center);
 
             dynamicPrimitive.BeginPrimitive(PrimitiveType.LineStrip, null, world, lineWidth);
@@ -136,7 +136,7 @@
                 // Create a single ring of vertices at this latitude.
                 for (int j = 0; j <= horizontalSegments; j++)
                 {
-                    float longitude = j * MathHelpers.TwoPi / horizontalSegments;
+                    float longitude = j * MathHelper.TwoPI / horizontalSegments;
 
                     float dx = (float)Math.Cos(longitude);
                     float dy = (float)Math.Sin(longitude);
@@ -183,7 +183,7 @@
 
         public static void AddPlane(this DynamicPrimitive dynamicPrimitive, Plane plane, float size, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
-            var transform = MatrixHelper.CreateRotation(new Vector3(0, 1, 0), plane.Normal) *
+            var transform = MathHelper.CreateRotation(new Vector3(0, 1, 0), plane.Normal) *
                             Matrix4x4.CreateTranslation(plane.Normal * plane.D);
 
             if (world.HasValue)

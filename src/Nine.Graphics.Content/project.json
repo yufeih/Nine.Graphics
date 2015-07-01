@@ -1,30 +1,30 @@
-{
+﻿{
   "version": "1.0.0-*",
-  "description": "The openGL renderer for Nine.Graphics",
+  "description": "A real-time rendering library",
   "authors": [ "Yufei Huang" ],
   "tags": [ "graphics, realtime rendering, 3d" ],
   "projectUrl": "https://github.com/studio-nine/Nine.Graphics",
   "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
   "dependencies": {
+    "Microsoft.Framework.Runtime": "1.0.0-beta4",
     "Nine.Graphics": "1.0.0-*",
-    "Nine.Graphics.Common": { "version": "1.0.0-*", "type": "build" },
-    "SharpDX": "3.0.0-alpha02",
-    "SharpDX.Direct3D12": "3.0.0-alpha02",
-    "SharpDX.DXGI": "3.0.0-alpha02",
-    "SharpDX.Desktop": "3.0.0-alpha02",
-    "SharpDX.Mathematics": "3.0.0-alpha02",
-    "SharpDX.D3DCompiler": "3.0.0-alpha02" 
+    "Nine.Imaging": "1.1.0-*",
+    "SharpFont": "3.0.1",
+    "SharpFont.Dependencies": "2.5.5.1",
+    "System.Numerics.Vectors": "4.0.0"
   },
 
   "compilationOptions": {
-    "allowUnsafe": true,
-    "define": [ "DX" ]
+    "allowUnsafe": true
   },
 
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
+        "System.Drawing": "4.0.0.0",
+        "System.IO": "4.0.0.0",
+        "System.Net.Http": "4.0.0.0",
         "System.Runtime": "4.0.10.0"
       }
     }

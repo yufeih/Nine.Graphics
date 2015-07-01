@@ -1,28 +1,25 @@
 ﻿namespace Nine.Graphics
 {
     using System;
-    using System.Collections.Concurrent;
-    using System.Threading;
 
     public struct TextureId : IEquatable<TextureId>
     {
-        public readonly string Name;
         public readonly int Id;
 
-        public bool IsMissing => Id == 0;
+        public string Name => map[Id];
 
-        public static readonly TextureId Missing = new TextureId();
+        public static int Count => map.Count;
 
-        public static int Count => count;
+        private static readonly IdMap map = new IdMap();
 
-        private static int count;
-        private static readonly ConcurrentDictionary<string, int> textureIds = new ConcurrentDictionary<string, int>();
+        public static readonly TextureId None = new TextureId();
+        public static readonly TextureId White = new TextureId("n:white");
+        public static readonly TextureId Black = new TextureId("n:black");
+        public static readonly TextureId Error = new TextureId("n:error");
+        public static readonly TextureId Missing = new TextureId("n:missing");
+        public static readonly TextureId Transparent = new TextureId("n:transparent");
 
-        public TextureId(string name)
-        {
-            this.Name = name;
-            this.Id = textureIds.GetOrAdd(name, key => Interlocked.Increment(ref count) + 1);
-        }
+        public TextureId(string name) { Id = map[name]; }
 
         public static implicit operator TextureId(string name) => new TextureId(name);
         public static implicit operator string(TextureId textureId) => textureId.Name;

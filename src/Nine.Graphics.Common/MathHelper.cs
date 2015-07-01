@@ -1,12 +1,39 @@
 ﻿namespace Nine.Graphics
 {
     using System;
-    using System.ComponentModel;
     using System.Numerics;
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class MatrixHelper
+    static class MathHelper
     {
+        public const float PI = (float)Math.PI;
+        public const float TwoPI = (float)(Math.PI * 2);
+
+        public static float ToRadius(float degrees)
+        {
+            return degrees * PI / 180;
+        }
+
+        public static float ToDegrees(float radius)
+        {
+            return radius * 180 / PI;
+        }
+
+        public static int NextPowerOfTwo(int num)
+        {
+            var n = num > 0 ? num - 1 : 0;
+            n |= n >> 1;
+            n |= n >> 2;
+            n |= n >> 4;
+            n |= n >> 8;
+            n |= n >> 16;
+            return ++n;
+        }
+
+        public static bool IsPowerOfTwo(int x)
+        {
+            return (x & (x - 1)) == 0;
+        }
+
         public static Matrix4x4 CreateRotation(Vector3 fromDirection, Vector3 toDirection)
         {
             var result = new Matrix4x4();

@@ -1,14 +1,12 @@
 ﻿namespace Nine.Graphics.OpenGL
 {
-    using System.Diagnostics;
     using OpenTK.Graphics.OpenGL;
+    using System;
 
-    partial class SpriteRenderer
+    partial class DynamicPrimitive
     {
         static readonly string vertexShaderSource = @"
 #version 140
-
-precision highp float;
 
 uniform mat4 transform;
 
@@ -31,17 +29,20 @@ void main(void)
 
 precision highp float;
 
+uniform sampler2D Texture;
+
 in vec2 uv;
 in vec4 color;
 
-uniform sampler2D Texture;
+out vec4 out_color;
 
 void main(void)
 {
-    gl_FragColor = color * texture2D(Texture, uv);
+    out_color = color * texture2D(Texture, uv);
 }";
 
         int shaderProgramHandle, transformLocation;
+        int blankTexture;
 
         void CreateShaders()
         {
@@ -59,18 +60,38 @@ void main(void)
 
             GL.AttachShader(shaderProgramHandle, vertexShaderHandle);
             GL.AttachShader(shaderProgramHandle, fragmentShaderHandle);
-
+            
             GL.BindAttribLocation(shaderProgramHandle, 0, "in_position");
             GL.BindAttribLocation(shaderProgramHandle, 1, "in_color");
             GL.BindAttribLocation(shaderProgramHandle, 2, "in_uv");
 
             GL.LinkProgram(shaderProgramHandle);
 
-            Debug.WriteLine(GL.GetProgramInfoLog(shaderProgramHandle));
+            GL.DeleteShader(vertexShaderHandle);
+            GL.DeleteShader(fragmentShaderHandle);
+
+            //OpenGLExtensions.PrintProgramInfo(shaderProgramHandle);
+            Console.WriteLine(GL.GetProgramInfoLog(shaderProgramHandle));
+
             GL.UseProgram(shaderProgramHandle);
 
             // Set uniforms
             transformLocation = GL.GetUniformLocation(shaderProgramHandle, "transform");
+
+            // Create blank texture
+            byte[] blankTextureData = { 255, 255, 255, 255 };
+            blankTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, blankTexture);
+            GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, 1, 1);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, blankTextureData);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, 0x2600);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 0x2600);
+        }
+
+        void DisposeShaders()
+        {
+            GL.DeleteProgram(shaderProgramHandle);
+            GL.DeleteTexture(blankTexture);
         }
     }
 }
