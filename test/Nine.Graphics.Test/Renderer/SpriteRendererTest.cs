@@ -48,7 +48,7 @@
 
         public static readonly TheoryData<Type, Type> Dimensions = new TheoryData<Type, Type>()
         {
-            { typeof(OpenGL.GraphicsHost), typeof(OpenGL.TextSpriteRenderer) },
+            { typeof(OpenGL.GraphicsHost), typeof(OpenGL.SpriteRenderer) },
         };
 
         [Theory]
@@ -58,7 +58,7 @@
             await PreloadTextures(textures);
 
             var camera = Matrix4x4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
-            var renderer = Container.Get(rendererType) as ISpriteRenderer;
+            var renderer = (ISpriteRenderer)Container.Get(rendererType);
 
             foreach (var scene in scenes)
             {

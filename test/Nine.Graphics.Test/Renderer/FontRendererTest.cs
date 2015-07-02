@@ -31,7 +31,7 @@
                 $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
         }
 
-        [Fact]
+        // [Fact]
         public async Task build_full_unicode_table()
         {
             var textureCount = 0;
