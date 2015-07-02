@@ -38,15 +38,14 @@ namespace Nine.Graphics.OpenGL
             this.PlatformCreateShaders();
         }
 
-        public unsafe void Draw(Matrix4x4 projection, Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null, Slice<int>? indices = null)
+        public unsafe void Draw(Matrix4x4 projection, Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null)
         {
-            var spriteCount = (indices != null ? indices.Value.Length : sprites.Length);
-            if (spriteCount <= 0)
+            if (sprites.Length <= 0)
             {
                 return;
             }
 
-            EnsureBufferCapacity(spriteCount);
+            EnsureBufferCapacity(sprites.Length);
 
             fixed (Vertex* pVertex = vertexData)
             fixed (ushort* pIndex = indexData)
@@ -60,18 +59,8 @@ namespace Nine.Graphics.OpenGL
                 Vertex* vertex = pVertex;
                 Sprite* sprite = pSprite;
 
-                for (var i = 0; i < spriteCount; i++)
+                for (var i = 0; i < sprites.Length; i++)
                 {
-                    var iIndexed = i;
-                    if (indices != null)
-                    {
-                        iIndexed = indices.Value[i];
-
-                        Debug.Assert(iIndexed >= 0 && iIndexed < sprites.Length);
-
-                        sprite = pSprite + iIndexed;
-                    }
-
                     var currentTexture = textureFactory.GetTexture(sprite->Texture);
                     if (currentTexture == null)
                     {
@@ -111,7 +100,7 @@ namespace Nine.Graphics.OpenGL
                         }
                         else
                         {
-                            PopulateVertexWithTransform(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++, transforms.Value[iIndexed]);
+                            PopulateVertexWithTransform(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++, transforms.Value[i]);
                         }
                     }
                     else
@@ -122,16 +111,12 @@ namespace Nine.Graphics.OpenGL
                         }
                         else
                         {
-                            PopulateVertexWithRotationAndTransform(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++, transforms.Value[iIndexed]);
+                            PopulateVertexWithRotationAndTransform(sprite, currentTexture, vertex++, vertex++, vertex++, vertex++, transforms.Value[i]);
                         }
                     }
 
                     vertexCount += 4;
-
-                    if (indices == null)
-                    {
-                        sprite++;
-                    }
+                    sprite++;
                 }
 
                 if (vertexCount > 0)
