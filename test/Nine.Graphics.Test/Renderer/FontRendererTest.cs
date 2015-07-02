@@ -1,17 +1,10 @@
 ﻿namespace Nine.Graphics
 {
-    using System;
-    using System.Numerics;
-    using Xunit;
-    using Nine.Imaging;
     using System.Threading.Tasks;
-    using Nine.Graphics.Rendering;
+    using Microsoft.Framework.Runtime;
     using Nine.Graphics.Content;
     using Nine.Injection;
-    using Microsoft.Framework.Runtime;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Diagnostics;
+    using Xunit;
 
     public class FontRendererTest : GraphicsTest
     {
@@ -20,25 +13,46 @@
         {
             var textureCount = 0;
             var fontLoader = Container.Get<IFontLoader>();
-            
+
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
-            foreach (var font in await Task.WhenAll(fontLoader.LoadFont(), fontLoader.LoadFont("simhei")))
+            var font = await fontLoader.LoadFont();
+            for (var c = '\0'; c <= '\u00FF'; c++)
             {
-                for (var c = char.MinValue; c < char.MaxValue; c++)
+                var glyph = font.LoadGlyph(c);
+                if (glyph.Texture != null)
                 {
-                    var glyph = font.LoadGlyph(c);
-                    if (glyph.CreatesNewTexture && lastGlyph.Texture != null)
-                    {
-                        SaveFrame(
-                            ExpandMonoTexture(lastGlyph.Texture),
-                            $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
-                    }
+                    lastGlyph = glyph;
+                }
+            }
 
-                    if (glyph.Texture != null)
-                    {
-                        lastGlyph = glyph;
-                    }
+            SaveFrame(
+                ExpandMonoTexture(lastGlyph.Texture),
+                $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
+        }
+
+        [Fact]
+        public async Task build_full_unicode_table()
+        {
+            var textureCount = 0;
+            var fontLoader = Container.Get<IFontLoader>();
+
+            GlyphLoadResult lastGlyph = new GlyphLoadResult();
+
+            var font = await fontLoader.LoadFont("simhei");
+            for (var c = char.MinValue; c < char.MaxValue; c++)
+            {
+                var glyph = font.LoadGlyph(c);
+                if (glyph.CreatesNewTexture && lastGlyph.Texture != null)
+                {
+                    SaveFrame(
+                        ExpandMonoTexture(lastGlyph.Texture),
+                        $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
+                }
+
+                if (glyph.Texture != null)
+                {
+                    lastGlyph = glyph;
                 }
             }
 
@@ -46,7 +60,7 @@
             {
                 SaveFrame(
                     ExpandMonoTexture(lastGlyph.Texture),
-                    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
+                    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
             }
         }
 

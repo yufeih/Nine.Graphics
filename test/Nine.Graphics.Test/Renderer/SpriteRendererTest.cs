@@ -48,7 +48,7 @@
 
         public static readonly TheoryData<Type, Type> Dimensions = new TheoryData<Type, Type>()
         {
-            { typeof(OpenGL.GraphicsHost), typeof(OpenGL.SpriteRenderer) },
+            { typeof(OpenGL.GraphicsHost), typeof(OpenGL.TextSpriteRenderer) },
         };
 
         [Theory]

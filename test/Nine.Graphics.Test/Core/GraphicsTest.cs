@@ -53,11 +53,13 @@
         public static IContainer CreateContainer()
         {
             var container = new Container();
+
             container
                .Map<IContentProvider, ContentProvider>()
                .Map<ITextureLoader, TextureLoader>()
                .Map<IFontLoader, FontLoader>()
                .Map<ITexturePreloader, OpenGL.TextureFactory>()
+               .Map<IFontPreloader, OpenGL.FontTextureFactory>()
                .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
 
             Setup(container);
@@ -67,15 +69,30 @@
 
         public async Task PreloadTextures(string[] textures)
         {
-            foreach (var texturePreloader in Container.GetAll<ITexturePreloader>())
+            foreach (var preloader in Container.GetAll<ITexturePreloader>())
             {
                 foreach (var texture in textures)
                 {
                     var color = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine($"Loading { texture }");
+                    Console.WriteLine($"Loading texture { texture }");
                     Console.ForegroundColor = color;
-                    await texturePreloader.Preload(texture);
+                    await preloader.Preload(texture);
+                }
+            }
+        }
+
+        public async Task PreloadFonts(string[] fonts)
+        {
+            foreach (var preloader in Container.GetAll<IFontPreloader>())
+            {
+                foreach (var font in fonts)
+                {
+                    var color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"Loading font { font }");
+                    Console.ForegroundColor = color;
+                    await preloader.Preload(font);
                 }
             }
         }
