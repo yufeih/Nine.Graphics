@@ -86,7 +86,7 @@ float4 main(PS_IN input) : SV_Target
         {
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, Resource texture, bool isTransparent)
+        private unsafe void PlatformDraw(Vertex* pVertex, int vertexCount, Resource texture, bool isTransparent)
         {
             //context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertices, 32, 0));
         }

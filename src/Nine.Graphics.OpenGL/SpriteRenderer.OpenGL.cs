@@ -48,7 +48,6 @@ void main(void)
 
         private int shaderProgramHandle, transformLocation;
         private int vertexBufferId;
-        private static int indexBufferId = GL.GenBuffer();
 
         private void PlatformCreateBuffers()
         {
@@ -96,7 +95,6 @@ void main(void)
             GL.UseProgram(shaderProgramHandle);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
 
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 0);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, Vertex.SizeInBytes, 8);
@@ -112,13 +110,11 @@ void main(void)
             }
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, ushort* pIndex, int vertexCount, int indexCount, int texture, bool isTransparent)
+        private unsafe void PlatformDraw(Vertex* pVertex, int vertexCount, int texture, bool isTransparent)
         {
             GLDebug.CheckAccess();
 
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexCount * Vertex.SizeInBytes), (IntPtr)pVertex, BufferUsageHint.StaticDraw);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indexCount * sizeof(ushort)), (IntPtr)pIndex, BufferUsageHint.StaticDraw);
-
             GL.BindTexture(TextureTarget.Texture2D, texture);
 
             if (isTransparent)
@@ -131,12 +127,12 @@ void main(void)
                 GL.Disable(EnableCap.Blend);
             }
 
-            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, 0);
+            GL.DrawElements(BeginMode.Triangles, vertexCount / 4 * 6, DrawElementsType.UnsignedShort, 0);
         }
 
         private void PlatformEndDraw()
         {
-
+            
         }
 
         private void PlatformDispose()
