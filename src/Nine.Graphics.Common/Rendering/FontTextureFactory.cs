@@ -6,6 +6,7 @@ namespace Nine.Graphics.OpenGL
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -19,6 +20,8 @@ namespace Nine.Graphics.OpenGL
         private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
         private readonly Dictionary<int, FontFace> fontMap = new Dictionary<int, FontFace>();
         private readonly Dictionary<long, Texture> charactorMap = new Dictionary<long, Texture>();
+
+        private Texture textureBuilder;
 
         public FontTextureFactory(IFontLoader loader)
         {
@@ -67,12 +70,13 @@ namespace Nine.Graphics.OpenGL
 
             if (glyph.CreatesNewTexture)
             {
-                // TODO:
-                //return PlatformCreateNewTexture(glyph.Texture.Width, glyph.Texture.Height, glyph.Texture.Pixels);
+                return textureBuilder = PlatformCreate8BppTexture(glyph.Texture.Width, glyph.Texture.Height, glyph.Texture.Pixels);
             }
 
-            //PlatformUpdateTexture(glyph.Texture.Pixels);
-            return null;
+            Debug.Assert(textureBuilder != null);
+
+            PlatformUpdate8bppTexture(textureBuilder.PlatformTexture, glyph.Texture.Width, glyph.Texture.Height, glyph.Texture.Pixels);
+            return textureBuilder;
         }
 
         Task IFontPreloader.Preload(params FontId[] fonts)

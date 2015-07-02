@@ -3,12 +3,12 @@
     using Microsoft.Framework.Runtime;
     using SharpFont;
     using System;
+    using System.Drawing;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
 
     using Library = SharpFont.Library;
-    using System.Drawing;
 
     public sealed class FontLoader : IFontLoader, IDisposable
     {
