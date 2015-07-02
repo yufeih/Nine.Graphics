@@ -26,7 +26,7 @@
 
         public FontLoader(
             NuGetDependencyResolver nuget, IContentProvider contentProvider = null,
-            string defaultFont = null, int baseFontSize = 72, int textureSize = 512)
+            string defaultFont = null, int baseFontSize = 32, int textureSize = 512)
         {
             if (nuget == null) throw new ArgumentNullException(nameof(nuget));
             if (baseFontSize <= 1 || baseFontSize > textureSize) throw new ArgumentOutOfRangeException(nameof(baseFontSize));
@@ -50,7 +50,10 @@
                     Environment.GetFolderPath(Environment.SpecialFolder.Fonts),
                     font + ".ttf");
 
-                return new FontFace(this, freetype.Value.NewFace(fontPath, 0));
+                if (File.Exists(fontPath))
+                {
+                    return new FontFace(this, freetype.Value.NewFace(fontPath, 0));
+                }
             }
 
             if (contentProvider != null)
@@ -132,13 +135,18 @@
 
                     return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent.pixels), createsNewTexture);
                 }
-                else if (parent.packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+                else
                 {
-                    parent.pixels = new byte[textureSize * textureSize];
+                    parent.packer = new RectanglePacker(textureSize, textureSize);
 
-                    FillGlyph(face, parent.pixels, textureSize, point.X, point.Y);
+                    if (parent.packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+                    {
+                        parent.pixels = new byte[textureSize * textureSize];
 
-                    return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent.pixels), true);
+                        FillGlyph(face, parent.pixels, textureSize, point.X, point.Y);
+
+                        return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent.pixels), true);
+                    }
                 }
 
                 return default(GlyphLoadResult);
