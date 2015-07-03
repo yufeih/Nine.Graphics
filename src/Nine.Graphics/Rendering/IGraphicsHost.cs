@@ -1,18 +1,19 @@
 ﻿namespace Nine.Graphics.Rendering
 {
     using System;
-    using Nine.Graphics.Content;
 
-    public interface IGraphicsHost : IDisposable
+    public interface IGraphicsHost
     {
-        int Width { get; }
-        int Height { get; }
-
-        IntPtr WindowHandle { get; }
-
-        bool BeginFrame();
-        void EndFrame();
-
-        TextureContent GetTexture();
+        /// <summary>
+        /// Draws one frame using the draw action.
+        /// </summary>
+        /// <param name="draw">
+        /// An action that takes the width and height of the host
+        /// and performs the actual drawing operations for this frame.
+        /// </param>
+        /// <returns>
+        /// Returns true if the host can accept more frames.
+        /// </returns>
+        bool DrawFrame(Action<int, int> draw);
     }
 }

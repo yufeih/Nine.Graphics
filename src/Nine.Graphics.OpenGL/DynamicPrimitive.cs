@@ -50,10 +50,10 @@
         public void Draw(IGraphicsHost host)
         {
             // TODO: Camera system
-            OpenTK.Matrix4 projection = OpenTK.Matrix4.Identity;
-            OpenTK.Matrix4.CreateOrthographicOffCenter(0, host.Width, host.Height, 0, 0, 1, out projection);
+            //OpenTK.Matrix4 projection = OpenTK.Matrix4.Identity;
+            //OpenTK.Matrix4.CreateOrthographicOffCenter(0, host.Width, host.Height, 0, 0, 1, out projection);
 
-            this.Draw(projection);
+            //this.Draw(projection);
         }
 
         public void Draw(OpenTK.Matrix4 wvp)

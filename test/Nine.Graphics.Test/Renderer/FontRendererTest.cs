@@ -28,9 +28,10 @@
                 }
             }
 
-            SaveFrame(
-                ExpandMonoTexture(lastGlyph.Texture),
-                $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
+            // TODO:
+            //SaveFrame(
+            //    ExpandMonoTexture(lastGlyph.Texture),
+            //    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
         }
 
         //[Theory]
@@ -48,9 +49,10 @@
                 var glyph = font.LoadGlyph(c);
                 if (glyph.CreatesNewTexture && lastGlyph.Texture != null)
                 {
-                    SaveFrame(
-                        ExpandMonoTexture(lastGlyph.Texture),
-                        $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
+                    // TODO:
+                    //SaveFrame(
+                    //    ExpandMonoTexture(lastGlyph.Texture),
+                    //    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
                 }
 
                 if (glyph.Texture != null)
@@ -61,9 +63,10 @@
 
             if (lastGlyph.Texture != null)
             {
-                SaveFrame(
-                    ExpandMonoTexture(lastGlyph.Texture),
-                    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
+                // TODO:
+                //SaveFrame(
+                //    ExpandMonoTexture(lastGlyph.Texture),
+                //    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
             }
         }
 

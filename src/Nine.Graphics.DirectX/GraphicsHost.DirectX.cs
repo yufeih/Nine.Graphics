@@ -17,9 +17,6 @@
     {
         private readonly RenderForm window;
 
-        public int Width => window.Width;
-        public int Height => window.Height;
-
         public IntPtr WindowHandle => window.Handle;
 
         public Device Device => device;
@@ -110,8 +107,8 @@
             renderTarget = swapChain.GetBackBuffer<Resource>(0);
             device.CreateRenderTargetView(renderTarget, null, descriptorHeap.CPUDescriptorHandleForHeapStart);
 
-            viewport = new ViewportF(0, 0, this.Width, this.Height);
-            scissorRectangle = new Rectangle(0, 0, this.Width, this.Height);
+            viewport = new ViewportF(0, 0, window.Width, window.Height);
+            scissorRectangle = new Rectangle(0, 0, window.Width, window.Height);
 
             fence = device.CreateFence(0, FenceFlags.None);
             currentFence = 1;
@@ -123,7 +120,7 @@
             WaitForPrevFrame();
         }
 
-        public bool BeginFrame()
+        public bool DrawFrame(Action<int, int> draw)
         {
             commandListAllocator.Reset();
             commandList.Reset(commandListAllocator, null);
@@ -138,11 +135,8 @@
 
             commandList.Close();
 
-            return true;
-        }
+            draw(window.Width, window.Height);
 
-        public void EndFrame()
-        {
             commandQueue.ExecuteCommandList(commandList);
 
             swapChain.Present(1, PresentFlags.None);
@@ -152,6 +146,7 @@
             device.CreateRenderTargetView(renderTarget, null, descriptorHeap.CPUDescriptorHandleForHeapStart);
 
             WaitForPrevFrame();
+            return true;
         }
 
         public TextureContent GetTexture()

@@ -4,6 +4,7 @@
     using Nine.Graphics.Content;
     using Nine.Graphics.Rendering;
     using Nine.Injection;
+    using OpenTK;
 
     public static class GraphicsContainer
     {
@@ -19,7 +20,7 @@
                .Map<IFontPreloader, OpenGL.FontTextureFactory>()
                .Map<ISpriteRenderer, OpenGL.SpriteRenderer>()
                .Map<ITextSpriteRenderer, OpenGL.TextSpriteRenderer>()
-               .Map<IGraphicsHost>(new OpenGL.GraphicsHost(width, height, null, hide, false));
+               .Map<IGraphicsHost>(new OpenGL.GraphicsHost(width, height, null, false, hide));
 
             if (setup != null)
             {
