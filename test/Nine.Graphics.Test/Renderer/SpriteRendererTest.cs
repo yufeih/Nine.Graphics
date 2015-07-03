@@ -1,20 +1,22 @@
 ﻿namespace Nine.Graphics
 {
     using System;
+    using System.Linq;
     using System.Numerics;
-    using Xunit;
-    using Nine.Imaging;
     using System.Threading.Tasks;
+    using Nine.Graphics.Content;
     using Nine.Graphics.Rendering;
+    using Nine.Injection;
+    using Xunit;
 
     public class SpriteRendererTest : GraphicsTest
     {
-        public static readonly string[] textures =
+        public static readonly TextureId[] textures =
         {
             "http://findicons.com/files/icons/1700/2d/512/game.png",
             "https://avatars0.githubusercontent.com/u/511355?v=3&s=460",
             "Content/Logo.png",
-            TextureId.White.Name,
+            TextureId.White,
         };
 
         public static readonly Sprite[][] scenes =
@@ -45,24 +47,19 @@
                 new Sprite(textures[1], size:new Vector2(80, 80), color:new Color(255, 255, 0), position:new Vector2(120, 0)),
             },
         };
-
-        public static readonly TheoryData<Type, Type> Dimensions = new TheoryData<Type, Type>()
-        {
-            { typeof(OpenGL.GraphicsHost), typeof(OpenGL.SpriteRenderer) },
-        };
-
+        
         [Theory]
-        [MemberData(nameof(Dimensions))]
-        public async Task draw_an_image(Type hostType, Type rendererType)
+        [MemberData(nameof(Containers))]
+        public async Task draw_an_image(Lazy<IContainer> container)
         {
-            await PreloadTextures(textures);
-
+            var renderer = container.Value.Get<ISpriteRenderer>();
             var camera = Matrix4x4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
-            var renderer = (ISpriteRenderer)Container.Get(rendererType);
+
+            await container.Value.Get<ITexturePreloader>().Preload(textures);
 
             foreach (var scene in scenes)
             {
-                Frame(hostType, () => renderer.Draw(camera, scene));
+                Frame(container.Value, () => renderer.Draw(camera, scene));
             }
         }
     }

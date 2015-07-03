@@ -1,15 +1,16 @@
 ﻿namespace Nine.Graphics
 {
     using System;
+    using Nine.Injection;
     using Xunit;
 
     public class EmptyGraphicsHostTest : GraphicsTest
     {
         [Theory]
-        [InlineData(typeof(OpenGL.GraphicsHost))]
-        public void DummyLoop(Type hostType)
+        [MemberData(nameof(Containers))]
+        public void DummyLoop(Lazy<IContainer> container)
         {
-            Frame(hostType, () => { });
+            Frame(container.Value, () => { });
         }
     }
 }

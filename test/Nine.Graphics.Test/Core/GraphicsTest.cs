@@ -9,7 +9,6 @@
     using System.Diagnostics;
     using System.IO;
     using System.Runtime.CompilerServices;
-    using System.Threading.Tasks;
     using Xunit;
 
     /// <summary>
@@ -46,63 +45,25 @@
         private int frameCounter = 0;
 
         public static Action<IContainer> Setup;
-        public static IContainer Container => containerFunc.Value;
 
-        private static readonly Lazy<IContainer> containerFunc = new Lazy<IContainer>(CreateContainer);
-
-        public static IContainer CreateContainer()
+        public static TheoryData<Lazy<IContainer>> Containers => new TheoryData<Lazy<IContainer>>
         {
-            var container = new Container();
+            openGlContainer,
+            // directXContainer,
+        };
 
-            container
-               .Map<IContentProvider, ContentProvider>()
-               .Map<ITextureLoader, TextureLoader>()
-               .Map<IFontLoader, FontLoader>()
-               .Map<ITexturePreloader, OpenGL.TextureFactory>()
-               .Map<IFontPreloader, OpenGL.FontTextureFactory>()
-               .Map(new OpenGL.GraphicsHost(Width, Height, null, Hide, false));
+        private static readonly Lazy<IContainer> openGlContainer =
+            new Lazy<IContainer>(() => GraphicsContainer.CreateOpenGLContainer(Width, Height, Hide, Setup));
 
-            Setup(container);
-            container.Freeze();
-            return container;
-        }
+        private static readonly Lazy<IContainer> directXContainer =
+            new Lazy<IContainer>(() => GraphicsContainer.CreateDirectXContainer(Width, Height, Hide, Setup));
 
-        public async Task PreloadTextures(string[] textures)
-        {
-            foreach (var preloader in Container.GetAll<ITexturePreloader>())
-            {
-                foreach (var texture in textures)
-                {
-                    var color = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine($"Loading texture { texture }");
-                    Console.ForegroundColor = color;
-                    await preloader.Preload(texture);
-                }
-            }
-        }
-
-        public async Task PreloadFonts(string[] fonts)
-        {
-            foreach (var preloader in Container.GetAll<IFontPreloader>())
-            {
-                foreach (var font in fonts)
-                {
-                    var color = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine($"Loading font { font }");
-                    Console.ForegroundColor = color;
-                    await preloader.Preload(font);
-                }
-            }
-        }
-
-        public void Frame(Type hostType, Action draw, [CallerMemberName]string name = null)
+        public void Frame(IContainer container, Action draw, [CallerMemberName]string name = null)
         {
             var i = 0;
             var frameName = $"{ GetType().Name }/{ name }" + (frameCounter > 0 ? $"-{ frameCounter }" : "");
 
-            var host = Container.Get(hostType) as IGraphicsHost;
+            var host = container.Get<IGraphicsHost>();
             var previousFrame = (TextureContent)null;
             var watch = Stopwatch.StartNew();
 

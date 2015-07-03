@@ -1,5 +1,6 @@
 ﻿namespace Nine.Graphics
 {
+    using System;
     using System.Threading.Tasks;
     using Microsoft.Framework.Runtime;
     using Nine.Graphics.Content;
@@ -8,11 +9,12 @@
 
     public class FontRendererTest : GraphicsTest
     {
-        [Fact]
-        public async Task build_default_ascii_table()
+        [Theory]
+        [MemberData(nameof(Containers))]
+        public async Task build_default_ascii_table(Lazy<IContainer> container)
         {
             var textureCount = 0;
-            var fontLoader = Container.Get<IFontLoader>();
+            var fontLoader = container.Value.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
@@ -31,11 +33,12 @@
                 $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
         }
 
-        // [Fact]
-        public async Task build_full_unicode_table()
+        //[Theory]
+        //[MemberData(nameof(Containers))]
+        public async Task build_full_unicode_table(Lazy<IContainer> container)
         {
             var textureCount = 0;
-            var fontLoader = Container.Get<IFontLoader>();
+            var fontLoader = container.Value.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
