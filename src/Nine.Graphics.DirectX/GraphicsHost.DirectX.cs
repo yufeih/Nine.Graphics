@@ -12,6 +12,7 @@
 
     using Device = SharpDX.Direct3D12.Device;
     using Resource = SharpDX.Direct3D12.Resource;
+    using System.Runtime.CompilerServices;
 
     public class GraphicsHost : IGraphicsHost
     {
@@ -120,7 +121,7 @@
             WaitForPrevFrame();
         }
 
-        public bool DrawFrame(Action<int, int> draw)
+        public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
             commandListAllocator.Reset();
             commandList.Reset(commandListAllocator, null);

@@ -10,26 +10,30 @@
     {
         private readonly GameWindow window;
         
-        public TestGraphicsHost(int width, int height, GraphicsMode mode = null)
+        public TestGraphicsHost(
+            int width, int height, GraphicsMode mode = null,
+            int frameTime = 1000, float epsilon = 0.001f, string outputPath = "TestResults")
         {
             GLDebug.CheckAccess();
 
-            this.Width = width;
-            this.Height = height;
-            this.window = new GameWindow(width, height, mode);
+            this.width = width;
+            this.height = height;
+            this.frameTime = frameTime;
+            this.epsilon = epsilon;
+            this.outputPath = outputPath;
+            this.window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
             this.framePixelsA = new byte[width * height * 4];
             this.framePixelsB = new byte[width * height * 4];
 
-            GL.ClearColor(Color.FromArgb(Branding.Color.R, Branding.Color.G, Branding.Color.B, Branding.Color.A));
+            GL.ClearColor(Color.FromArgb(Branding.Color.A, Branding.Color.R, Branding.Color.G, Branding.Color.B));
         }
 
         private void PlatformBeginFrame()
         {
             GLDebug.CheckAccess();
 
-            GL.Viewport(0, 0, Width, Height);
+            GL.Viewport(0, 0, width, height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
         }
 
         private void PlatformEndFrame(byte[] pixels)
@@ -38,15 +42,15 @@
 
             if (pixels != null)
             {
-                GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+                GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
 
                 // Flip Y
-                for (int y = 0; y < Height / 2; y++)
+                for (int y = 0; y < height / 2; y++)
                 {
-                    var a = y * Width * 4;
-                    var b = (Height - y - 1) * Width * 4;
+                    var a = y * width * 4;
+                    var b = (height - y - 1) * width * 4;
 
-                    for (int x = 0; x < Width * 4; x++)
+                    for (int x = 0; x < width * 4; x++)
                     {
                         var tmp = pixels[a + x];
                         pixels[a + x] = pixels[b + x];

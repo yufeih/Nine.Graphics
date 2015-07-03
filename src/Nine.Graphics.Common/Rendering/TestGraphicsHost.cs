@@ -37,44 +37,31 @@ namespace Nine.Graphics.OpenGL
     ///   - Be able to render a frame to the output window.
     /// 
     /// </remarks>
-    public sealed partial class TestGraphicsHost : ITestGraphicsHost
+    public sealed partial class TestGraphicsHost : IGraphicsHost
     {
-        public readonly int Width;
-        public readonly int Height;
-        public readonly int Duration = 1000;
-        public readonly string OutputPath = "TestResults";
-
+        private readonly int width;
+        private readonly int height;
+        private readonly int frameTime;
+        private readonly float epsilon;
+        private readonly string outputPath;
         private readonly byte[] framePixelsA;
         private readonly byte[] framePixelsB;
         private readonly Stopwatch watch = new Stopwatch();
         private readonly Dictionary<string, int> frameCounters = new Dictionary<string, int>();
 
-        public bool DrawFrame(Action<int, int> draw) => DrawFrame(draw, 1);
-        public bool DrawFrame(Action<int, int> draw, float epsilon, [CallerMemberName]string frameName = null)
+        public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
             var frameIdentifier = GetFrameIdentifier(frameName);
+            var framePath = $"{ outputPath }/{ GetType().FullName }/{ frameIdentifier }";
 
-            CompareTwoFrames(draw, epsilon);
-            CompareAgainstExpectedImageIfExists(framePixelsA, epsilon, frameIdentifier);
-            ComparePerformance(draw, frameName);
+            CompareTwoFrames(draw, framePath + ".png");
+            CompareWithExpectedImage(framePixelsA, framePath + ".png");
+            ComparePerformance(draw, frameIdentifier, framePath + ".perf");
 
             return false;
         }
 
-        private void CompareTwoFrames(Action<int, int> draw, float epsilon)
-        {
-            PlatformBeginFrame();
-            draw(Width, Height);
-            PlatformEndFrame(framePixelsA);
-
-            PlatformBeginFrame();
-            draw(Width, Height);
-            PlatformEndFrame(framePixelsB);
-
-            CompareImage(framePixelsA, framePixelsB, epsilon);
-        }
-
-        private object GetFrameIdentifier(string frameName)
+        private string GetFrameIdentifier(string frameName)
         {
             int counter;
             if (!frameCounters.TryGetValue(frameName, out counter))
@@ -84,24 +71,35 @@ namespace Nine.Graphics.OpenGL
 
             frameCounters[frameName] = ++counter;
 
-            return $"{ GetType().Name }/{ frameName }" + (counter > 0 ? $"-{ counter }" : "");
+            return frameName + (counter > 0 ? $"-{ counter }" : "");
         }
 
-        private void CompareAgainstExpectedImageIfExists(byte[] pixels, float epsilon, object frameIdentifier)
+        private void CompareTwoFrames(Action<int, int> draw, string framePath)
         {
-            var expectedFile = $"{ OutputPath }/{ frameIdentifier }.png";
+            PlatformBeginFrame();
+            draw(width, height);
+            PlatformEndFrame(framePixelsA);
 
-            if (File.Exists(expectedFile))
+            PlatformBeginFrame();
+            draw(width, height);
+            PlatformEndFrame(framePixelsB);
+
+            CompareImage(framePixelsA, framePixelsB, framePath, true);
+        }
+
+        private void CompareWithExpectedImage(byte[] pixels, string framePath)
+        {
+            if (File.Exists(framePath))
             {
-                using (var expectedStream = File.OpenRead(expectedFile))
+                using (var expectedStream = File.OpenRead(framePath))
                 {
                     var expectedImage = new Image(expectedStream);
-                    CompareImage(expectedImage.Pixels, pixels, epsilon);
+                    CompareImage(expectedImage.Pixels, pixels, framePath, false);
                 }
             }
         }
 
-        private void CompareImage(byte[] expected, byte[] actual, float epsilon)
+        private void CompareImage(byte[] expected, byte[] actual, string framePath, bool saveExpected)
         {
             if (expected.Length != actual.Length)
             {
@@ -117,57 +115,112 @@ namespace Nine.Graphics.OpenGL
 
             if (diff > epsilon * expected.Length)
             {
-                throw new GraphicsTestFailedException("Images are different then the expected size does not equal");
+                if (saveExpected)
+                {
+                    SaveImage(expected, framePath, "expected");
+                }
+
+                SaveImage(actual, framePath, "actual");
+                SaveImage(CreateImageDiff(expected, actual), framePath, "diff");
+
+                throw new GraphicsTestFailedException("Images are different then the expected");
+            }
+
+            if (!File.Exists(framePath))
+            {
+                SaveImage(actual, framePath, null);
             }
         }
 
-        private void ComparePerformance(Action<int, int> draw, string frameName)
+        private void SaveImage(byte[] pixels, string path, string tag)
         {
+            if (!string.IsNullOrEmpty(tag))
+            {
+                var extension = Path.GetExtension(path);
+                var directory = Path.GetDirectoryName(path);
+                var filename = Path.GetFileNameWithoutExtension(path);
+
+                path = $"{ directory }/{ filename }.{ tag }{ extension }";
+            }
+
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
+
+            using (var stream = File.OpenWrite(path))
+            {
+                var img = new Image();
+                img.SetPixels(width, height, pixels);
+                img.SaveAsPng(stream);
+            }
+        }
+
+        private byte[] CreateImageDiff(byte[] expected, byte[] actual)
+        {
+            var diff = new byte[expected.Length];
+
+            for (var i = 0; i < expected.Length; i += 4)
+            {
+                var equals = (expected[i] != actual[i]
+                           || expected[i + 1] != actual[i + 1]
+                           || expected[i + 2] != actual[i + 2]
+                           || expected[i + 3] != actual[i + 3]);
+
+                diff[i] = diff[i + 1] = diff[i + 2] = equals ? byte.MaxValue : byte.MinValue;
+                diff[i + 3] = byte.MaxValue;
+            }
+
+            return diff;
+        }
+
+        private void ComparePerformance(Action<int, int> draw, string frameName, string framePath)
+        {
+            if (frameTime <= 0)
+            {
+                return;
+            }
+
             watch.Restart();
 
             var frameCount = 0;
 
-            while (watch.Elapsed.TotalSeconds < Duration)
+            while (watch.Elapsed.TotalMilliseconds < frameTime)
             {
                 PlatformBeginFrame();
-                draw(Width, Height);
+                draw(width, height);
                 PlatformEndFrame(null);
                 frameCount++;
             }
 
             watch.Stop();
 
-            SaveAndVerifyPerf(frameCount, watch.Elapsed.TotalMilliseconds, frameName);
+            SaveAndVerifyPerf(frameCount, watch.Elapsed.TotalMilliseconds, frameName, framePath);
         }
 
-        private void SaveAndVerifyPerf(int count, double ms, string frameName)
+        private void SaveAndVerifyPerf(int count, double time, string frameName, string framePath)
         {
-            var previousRunFile = $"{ OutputPath }/{frameName}.perf.txt";
-            var previousTime = File.Exists(previousRunFile) ? double.Parse(File.ReadAllText(previousRunFile)) : 99999999;
-            var previousFps = 1000 * count / previousTime;
+            var previousFps = File.Exists(framePath) ? double.Parse(File.ReadAllText(framePath)) : 0;
 
-            var fps = 1000 * count / ms;
-            var isRunningSlower = ms > previousTime * 1.25;
+            var fps = 1000 * count / time;
+            var isRunningSlower = fps < previousFps * 0.75;
 
             var color = Console.ForegroundColor;
             var highlight = isRunningSlower ? ConsoleColor.Red : ConsoleColor.DarkGreen;
 
             Console.Write(frameName);
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write($" finished { count } frames in ");
+            Console.Write($" finished with ");
             Console.ForegroundColor = highlight;
-            Console.Write(ms.ToString("N4"));
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            if (isRunningSlower) Console.Write($"({ previousTime.ToString("N4") })");
-            Console.Write(" ms, ");
-            Console.ForegroundColor = highlight;
-            Console.Write(fps.ToString("N4"));
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            if (isRunningSlower) Console.Write($"({ previousFps.ToString("N4") })");
-            Console.WriteLine(" fps");
+            Console.Write(fps.ToString("N2"));
+            Console.ForegroundColor = isRunningSlower ? ConsoleColor.Red : ConsoleColor.DarkGray;
+            Console.WriteLine(" fps " + (fps > previousFps ? '>' : '<') + " " + previousFps.ToString("N2"));
             Console.ForegroundColor = color;
 
-            File.WriteAllText(previousRunFile, ms.ToString());
+            if (!isRunningSlower)
+            {
+                File.WriteAllText(framePath, fps.ToString());
+            }
         }
     }
 }

@@ -1,49 +1,17 @@
 ﻿namespace Nine.Graphics
 {
-    using Nine.Graphics.Content;
     using Nine.Graphics.Rendering;
-    using Nine.Imaging;
-    using Nine.Imaging.Filtering;
     using Nine.Injection;
     using System;
-    using System.Diagnostics;
-    using System.IO;
     using System.Runtime.CompilerServices;
     using Xunit;
 
-    /// <summary>
-    /// Enables a couple of key graphics testing scenarios:
-    /// 
-    /// CORRECTNESS:
-    ///   - The image should be idential to an expected image.
-    ///     The expected image is usually pre-rendered and verified manually.
-    ///   - The same input state should always produce the same result between 2 frames.
-    ///   - The same input state should produce nearly idential images between different renderers.
-    ///   - The renderer should only read the input state and never alter the state.
-    /// 
-    /// PERFORMANCE:
-    ///   - The input state is rendered multiple times to abtain time info.
-    ///   - The time info is compared against a baseline to warn if something become drastically slower.
-    ///   - The time info is compared against multiple renderers for comparison.
-    /// 
-    /// DEBUGGING:
-    ///   - Be able to render a frame to an image.
-    ///   - Be able to render a frame to the output window.
-    /// 
-    /// </summary>
     [Trait("ci", "false")]
     public class GraphicsTest
     {
-        public static bool Hide;
-        public static bool Verify;
-        public static int? Repeat;
+        public static bool IsTest;
         public static int Width = 1024;
         public static int Height = 768;
-        public static int Delay = 1;
-        public static string OutputPath = "TestResults";
-
-        private int frameCounter = 0;
-
         public static Action<IContainer> Setup;
 
         public static TheoryData<Lazy<IContainer>> Containers => new TheoryData<Lazy<IContainer>>
@@ -53,15 +21,15 @@
         };
 
         private static readonly Lazy<IContainer> openGlContainer =
-            new Lazy<IContainer>(() => GraphicsContainer.CreateOpenGLContainer(Width, Height, Hide, Setup));
+            new Lazy<IContainer>(() => GraphicsContainer.CreateOpenGLContainer(Width, Height, IsTest, Setup));
 
         private static readonly Lazy<IContainer> directXContainer =
-            new Lazy<IContainer>(() => GraphicsContainer.CreateDirectXContainer(Width, Height, Hide, Setup));
+            new Lazy<IContainer>(() => GraphicsContainer.CreateDirectXContainer(Width, Height, IsTest, Setup));
 
         public void Frame(IContainer container, Action draw, [CallerMemberName]string name = null)
         {
             var host = container.Get<IGraphicsHost>();
-            host.DrawFrame((w, h) => draw());
+            host.DrawFrame((w, h) => draw(), $"{ GetType().Name }/{ name }");
         }
     }
 }

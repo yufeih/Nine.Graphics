@@ -26,7 +26,7 @@
     },
 
     "commands": {
-        "test": "Nine.Graphics.Test --verify --hide --repeat 2",
+        "test": "Nine.Graphics.Test --test",
         "run": "Nine.Graphics.Test"
     }
 }

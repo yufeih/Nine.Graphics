@@ -6,17 +6,14 @@
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
+    using System.Runtime.CompilerServices;
 
     public sealed class GraphicsHost : IGraphicsHost, IDisposable
     {
         public readonly GameWindow Window;
 
-        public GraphicsHost(int width, int height, GraphicsMode mode = null, bool vSync = true, bool hidden = false)
-            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow)
-            {
-                VSync = vSync ? VSyncMode.On : VSyncMode.Off,
-                Visible = !hidden,
-            })
+        public GraphicsHost(int width, int height, GraphicsMode mode = null, bool vSync = true)
+            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow) { VSync = vSync ? VSyncMode.On : VSyncMode.Off })
         { }
 
         public GraphicsHost(GameWindow window)
@@ -33,7 +30,7 @@
             GL.ClearColor(Color.FromArgb(Branding.Color.R, Branding.Color.G, Branding.Color.B, Branding.Color.A));
         }
 
-        public bool DrawFrame(Action<int, int> draw)
+        public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
             GLDebug.CheckAccess();
 

@@ -1,6 +1,7 @@
 ﻿namespace Nine.Graphics.Rendering
 {
     using System;
+    using System.Runtime.CompilerServices;
 
     public interface IGraphicsHost
     {
@@ -14,6 +15,6 @@
         /// <returns>
         /// Returns true if the host can accept more frames.
         /// </returns>
-        bool DrawFrame(Action<int, int> draw);
+        bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null);
     }
 }

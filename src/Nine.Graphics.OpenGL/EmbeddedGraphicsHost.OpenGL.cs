@@ -6,7 +6,9 @@
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
     using OpenTK.Platform;
-    
+    using System.Runtime.CompilerServices;
+
+
     /// <summary>
     /// Represents a graphics host that is embedded inside a designated window.
     /// </summary>
@@ -20,10 +22,10 @@
 
             GraphicsContext = new GraphicsContext(mode ?? GraphicsMode.Default, Utilities.CreateWindowsWindowInfo(windowHandle));
 
-            GL.ClearColor(Color.FromArgb(Branding.Color.R, Branding.Color.G, Branding.Color.B, Branding.Color.A));
+            GL.ClearColor(Color.FromArgb(Branding.Color.A, Branding.Color.R, Branding.Color.G, Branding.Color.B));
         }
 
-        public bool DrawFrame(Action<int, int> draw)
+        public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
             GLDebug.CheckAccess();
 
