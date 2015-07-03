@@ -33,6 +33,7 @@
         public static IContainer CreateDirectXContainer(int width, int height, bool hide = false, Action<IContainer> setup = null)
         {
             var container = new Container();
+            var host = new DirectX.GraphicsHost(width, height, hide);
 
             container
                .Map<IContentProvider, ContentProvider>()
@@ -42,7 +43,8 @@
                .Map<IFontPreloader, DirectX.FontTextureFactory>()
                .Map<ISpriteRenderer, DirectX.SpriteRenderer>()
                .Map<ITextSpriteRenderer, DirectX.TextSpriteRenderer>()
-               .Map<IGraphicsHost>(new DirectX.GraphicsHost(width, height, hide));
+               .Map<IGraphicsHost>(host)
+               .Map(host.Device);
 
             if (setup != null)
             {

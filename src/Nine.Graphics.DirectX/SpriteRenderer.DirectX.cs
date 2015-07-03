@@ -5,9 +5,7 @@
     using SharpDX.D3DCompiler;
     using SharpDX.Direct3D12;
     using System.Numerics;
-
-    // TODO: DirectX requires access to the device
-
+    
     partial class SpriteRenderer
     {
         private static readonly string structShaderSource = @"
@@ -52,9 +50,22 @@ float4 main(PS_IN input) : SV_Target
 
         //private VertexShader vertexShader;
         //private PixelShader pixelShader;
-        
+
         //private BufferDescription vertexBufferDesc;
         //private Buffer vertexBuffer;
+
+        public SpriteRenderer(Device device, TextureFactory textureFactory, QuadListIndexBuffer quadIndexBuffer, int initialSpriteCapacity = 1024)
+        {
+            if (device == null) throw new ArgumentNullException(nameof(device));
+            if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
+            if (quadIndexBuffer == null) throw new ArgumentNullException(nameof(quadIndexBuffer));
+
+            this.textureFactory = textureFactory;
+            this.quadIndexBuffer = quadIndexBuffer;
+            this.CreateBuffers(initialSpriteCapacity);
+            this.PlatformCreateBuffers();
+            this.PlatformCreateShaders();
+        }
 
         private void PlatformCreateBuffers()
         {

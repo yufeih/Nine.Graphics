@@ -25,18 +25,6 @@ namespace Nine.Graphics.OpenGL
 
         private Vertex[] vertexData;
 
-        public SpriteRenderer(TextureFactory textureFactory, QuadListIndexBuffer quadIndexBuffer, int initialSpriteCapacity = 1024)
-        {
-            if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
-            if (quadIndexBuffer == null) throw new ArgumentNullException(nameof(quadIndexBuffer));
-
-            this.textureFactory = textureFactory;
-            this.quadIndexBuffer = quadIndexBuffer;
-            this.CreateBuffers(initialSpriteCapacity);
-            this.PlatformCreateBuffers();
-            this.PlatformCreateShaders();
-        }
-
         public unsafe void Draw(Matrix4x4 projection, Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null)
         {
             if (sprites.Length <= 0)

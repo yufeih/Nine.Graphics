@@ -48,6 +48,18 @@ void main(void)
 
         private int shaderProgramHandle, transformLocation;
         private int vertexBufferId;
+        
+        public SpriteRenderer(TextureFactory textureFactory, QuadListIndexBuffer quadIndexBuffer, int initialSpriteCapacity = 1024)
+        {
+            if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
+            if (quadIndexBuffer == null) throw new ArgumentNullException(nameof(quadIndexBuffer));
+
+            this.textureFactory = textureFactory;
+            this.quadIndexBuffer = quadIndexBuffer;
+            this.CreateBuffers(initialSpriteCapacity);
+            this.PlatformCreateBuffers();
+            this.PlatformCreateShaders();
+        }
 
         private void PlatformCreateBuffers()
         {
