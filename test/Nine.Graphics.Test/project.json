@@ -27,6 +27,6 @@
 
     "commands": {
         "test": "Nine.Graphics.Test --test",
-        "run": "Nine.Graphics.Test"
+        "run": "Nine.Graphics.Runner"
     }
 }

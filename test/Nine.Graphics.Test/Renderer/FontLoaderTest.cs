@@ -1,20 +1,21 @@
 ﻿namespace Nine.Graphics
 {
-    using System;
-    using System.Threading.Tasks;
     using Microsoft.Framework.Runtime;
     using Nine.Graphics.Content;
+    using Nine.Imaging;
     using Nine.Injection;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
     using Xunit;
 
-    public class FontRendererTest : GraphicsTest
+    class FontLoaderTest : GraphicsTest
     {
-        [Theory]
-        [MemberData(nameof(Containers))]
-        public async Task build_default_ascii_table(Lazy<IContainer> container)
+        [Fact]
+        public async Task build_default_ascii_table()
         {
             var textureCount = 0;
-            var fontLoader = container.Value.Get<IFontLoader>();
+            var fontLoader = DefaultContainer.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
@@ -28,18 +29,16 @@
                 }
             }
 
-            // TODO:
-            //SaveFrame(
-            //    ExpandMonoTexture(lastGlyph.Texture),
-            //    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
+            SaveFrame(
+                ExpandMonoTexture(lastGlyph.Texture),
+                $"{ nameof(build_default_ascii_table) }-{ textureCount++ }.png");
         }
 
-        //[Theory]
-        //[MemberData(nameof(Containers))]
+        [Fact]
         public async Task build_full_unicode_table(Lazy<IContainer> container)
         {
             var textureCount = 0;
-            var fontLoader = container.Value.Get<IFontLoader>();
+            var fontLoader = DefaultContainer.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
@@ -49,10 +48,9 @@
                 var glyph = font.LoadGlyph(c);
                 if (glyph.CreatesNewTexture && lastGlyph.Texture != null)
                 {
-                    // TODO:
-                    //SaveFrame(
-                    //    ExpandMonoTexture(lastGlyph.Texture),
-                    //    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
+                    SaveFrame(
+                        ExpandMonoTexture(lastGlyph.Texture),
+                        $"{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
                 }
 
                 if (glyph.Texture != null)
@@ -63,10 +61,9 @@
 
             if (lastGlyph.Texture != null)
             {
-                // TODO:
-                //SaveFrame(
-                //    ExpandMonoTexture(lastGlyph.Texture),
-                //    $"{ OutputPath }/{ nameof(FontRendererTest) }/{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
+                SaveFrame(
+                    ExpandMonoTexture(lastGlyph.Texture),
+                    $"{ nameof(build_full_unicode_table) }-{ textureCount++ }.png");
             }
         }
 
@@ -79,6 +76,23 @@
                 pixels[i * 4 + 3] = 255;
             }
             return new TextureContent(texture.Width, texture.Height, pixels, texture.IsTransparent);
+        }
+
+        private void SaveFrame(TextureContent textureContent, string path)
+        {
+            path = $"{ OutputPath }/{ nameof(FontLoaderTest) }/{ path }";
+
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
+
+            using (var stream = File.OpenWrite(path))
+            {
+                var img = new Image();
+                img.SetPixels(textureContent.Width, textureContent.Height, textureContent.Pixels);
+                img.SaveAsPng(stream);
+            }
         }
     }
 }

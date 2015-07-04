@@ -13,7 +13,7 @@
         public readonly GameWindow Window;
 
         public GraphicsHost(int width, int height, GraphicsMode mode = null, bool vSync = true)
-            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.FixedWindow) { VSync = vSync ? VSyncMode.On : VSyncMode.Off })
+            : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.Default) { VSync = vSync ? VSyncMode.On : VSyncMode.Off, Visible = true })
         { }
 
         public GraphicsHost(GameWindow window)

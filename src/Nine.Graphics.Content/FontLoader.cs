@@ -80,7 +80,7 @@
             if (sharpFontDependencies == null) throw new InvalidOperationException("Cannot load SharpFont.Dependencies");
 
             var freetypePath = Path.Combine(sharpFontDependencies.Path, "bin/msvc9");
-            var arch = IntPtr.Size == 8 ? "x64" : "x86";
+            var arch = Environment.Is64BitProcess ? "x64" : "x86";
 
             Interop.LoadLibrary(Path.Combine(freetypePath, arch, "freetype6.dll"));
 
