@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics
+﻿namespace Nine.Graphics.Runner
 {
     using System;
     using System.Runtime.InteropServices;
@@ -6,9 +6,9 @@
     /// <summary>
     /// http://stackoverflow.com/questions/3342941/kill-child-process-when-parent-process-is-killed
     /// </summary>
-    class KillChildProcess
+    class ProcessHelper
     {
-        public enum JobObjectInfoType
+        enum JobObjectInfoType
         {
             AssociateCompletionPortInformation = 7,
             BasicLimitInformation = 2,
@@ -68,7 +68,7 @@
         static extern bool CloseHandle(IntPtr hObject);
 
         static IntPtr job;
-        static KillChildProcess()
+        static ProcessHelper()
         {
             job = CreateJobObject(IntPtr.Zero, null);
 
@@ -85,7 +85,7 @@
             SetInformationJobObject(job, JobObjectInfoType.ExtendedLimitInformation, extendedInfoPtr, (uint)length);
         }
 
-        public static void AddProcess(IntPtr handle)
+        public static void AddChildProcessToKill(IntPtr handle)
         {
             AssignProcessToJobObject(job, handle);
         }

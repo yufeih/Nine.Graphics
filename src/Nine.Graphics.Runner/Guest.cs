@@ -1,14 +1,15 @@
-﻿namespace Nine.Graphics
+﻿namespace Nine.Graphics.Runner
 {
     using MemoryMessagePipe;
     using Microsoft.Framework.Runtime;
     using System;
-    using System.Diagnostics;
 
-    class Guest
+    class Guest : IHostWindow
     {
         private readonly IApplicationShutdown shutdown;
         private MemoryMappedFileMessageSender host;
+        private IntPtr childWindow;
+        private IntPtr parentWindow;
 
         public Guest(IApplicationShutdown shutdown)
         {
@@ -41,8 +42,21 @@
             switch (message.MessageType)
             {
                 case MessageType.AttachWindow:
-                    Console.WriteLine(message.Pointer);
+                    if (childWindow != IntPtr.Zero)
+                    {
+                        parentWindow = message.Pointer;
+                        WindowHelper.EmbedWindow(childWindow, parentWindow);
+                    }
                     break;
+            }
+        }
+
+        public void Attach(IntPtr childWindow)
+        {
+            this.childWindow = childWindow;
+            if (parentWindow != IntPtr.Zero)
+            {
+                WindowHelper.EmbedWindow(childWindow, parentWindow);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics
+﻿namespace Nine.Graphics.Runner
 {
     using Microsoft.Framework.Runtime;
     using Microsoft.Framework.Runtime.Common.CommandLine;

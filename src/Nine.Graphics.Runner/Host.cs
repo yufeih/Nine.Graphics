@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics
+﻿namespace Nine.Graphics.Runner
 {
     using MemoryMessagePipe;
     using Microsoft.Framework.Runtime;
@@ -67,7 +67,7 @@
         {
             var guestProcess = Process.Start(processStart);
 
-            KillChildProcess.AddProcess(guestProcess.Handle);
+            ProcessHelper.AddChildProcessToKill(guestProcess.Handle);
 
             if (hwnd != IntPtr.Zero)
             {

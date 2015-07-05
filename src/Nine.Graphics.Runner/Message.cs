@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics
+﻿namespace Nine.Graphics.Runner
 {
     using System;
     using System.Runtime.InteropServices;
