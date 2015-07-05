@@ -6,6 +6,7 @@
     enum MessageType
     {
         AttachWindow,
+        GuestWindowAttached,
         GuestShutdown,
     }
 

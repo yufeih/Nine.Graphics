@@ -15,6 +15,7 @@
         private readonly string channel = Guid.NewGuid().ToString("N");
         private readonly string[] args = Environment.GetCommandLineArgs();
         private readonly ProcessStartInfo processStart;
+        private readonly Stopwatch reloadWatch = new Stopwatch();
 
         private MemoryMappedFileMessageSender guest;
 
@@ -64,6 +65,8 @@
 
         private void StartGuestProcess()
         {
+            // TODO: session
+            reloadWatch.Restart();
             var guestProcess = Process.Start(processStart);
 
             ProcessHelper.AddChildProcessToKill(guestProcess.Handle);
@@ -80,6 +83,10 @@
             {
                 case MessageType.GuestShutdown:
                     StartGuestProcess();
+                    break;
+                case MessageType.GuestWindowAttached:
+                    reloadWatch.Stop();
+                    Console.WriteLine($"Application reloaded in { reloadWatch.ElapsedMilliseconds }ms");
                     break;
             }
         }

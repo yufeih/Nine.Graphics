@@ -24,9 +24,6 @@
 
         public void Main(string[] args)
         {
-            Console.WriteLine(Environment.CommandLine);
-            Console.WriteLine(Environment.CurrentDirectory);
-
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
             app.Name = app.FullName = "Nine.Graphics.Test";
             app.HelpOption("-?|--help");
