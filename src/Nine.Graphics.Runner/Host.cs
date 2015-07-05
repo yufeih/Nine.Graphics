@@ -22,14 +22,13 @@
 
         public Host(IApplicationShutdown shutdown)
         {
-            if (shutdown == null) throw new ArgumentNullException(nameof(shutdown));
-
             this.shutdown = shutdown;
             this.processStart = new ProcessStartInfo
             {
                 FileName = args[0],
                 Arguments = $"{ string.Join(" ", args.Skip(1)) } --channel { channel }",
                 UseShellExecute = false,
+                WorkingDirectory = Environment.CurrentDirectory,
             };
         }
 

@@ -8,19 +8,25 @@
     public class Program
     {
         private readonly IApplicationShutdown shutdown;
+        private readonly IServiceProvider serviceProvider;
 
-        public Program(IApplicationShutdown shutdown)
+        public Program(IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
             Trace.Listeners.Add(new ConsoleTraceListener());
             Debug.Listeners.Add(new ConsoleTraceListener());
 
             if (shutdown == null) throw new ArgumentNullException(nameof(shutdown));
+            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
 
             this.shutdown = shutdown;
+            this.serviceProvider = serviceProvider;
         }
 
         public void Main(string[] args)
         {
+            Console.WriteLine(Environment.CommandLine);
+            Console.WriteLine(Environment.CurrentDirectory);
+
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
             app.Name = app.FullName = "Nine.Graphics.Test";
             app.HelpOption("-?|--help");
@@ -44,7 +50,9 @@
             }
             else
             {
-                new Guest(shutdown).Run(channel.Value());
+                new Guest(shutdown, serviceProvider).Run(
+                    channel.Value(),
+                    app.RemainingArguments.ToArray());
             }
         }
     }
