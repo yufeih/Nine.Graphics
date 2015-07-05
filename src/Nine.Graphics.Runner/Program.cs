@@ -3,6 +3,7 @@
     using Microsoft.Framework.Runtime;
     using Microsoft.Framework.Runtime.Common.CommandLine;
     using System;
+    using System.Diagnostics;
 
     public class Program
     {
@@ -10,6 +11,9 @@
 
         public Program(IApplicationShutdown shutdown)
         {
+            Trace.Listeners.Add(new ConsoleTraceListener());
+            Debug.Listeners.Add(new ConsoleTraceListener());
+
             if (shutdown == null) throw new ArgumentNullException(nameof(shutdown));
 
             this.shutdown = shutdown;

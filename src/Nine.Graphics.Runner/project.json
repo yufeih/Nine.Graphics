@@ -7,8 +7,8 @@
   "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
   "dependencies": {
-    "Microsoft.Framework.Runtime.Interfaces": "1.0.0-beta4",
     "Microsoft.Framework.CommandLineUtils": { "version": "1.0.0-*", "type": "build" },
+    "Microsoft.Framework.Runtime.Interfaces": "1.0.0-beta4"
   },
 
   "frameworks": {

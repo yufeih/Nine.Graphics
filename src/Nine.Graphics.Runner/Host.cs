@@ -1,5 +1,6 @@
 ﻿namespace Nine.Graphics
 {
+    using MemoryMessagePipe;
     using Microsoft.Framework.Runtime;
     using System;
     using System.Diagnostics;
@@ -11,23 +12,38 @@
     class Host
     {
         private readonly IApplicationShutdown shutdown;
-        private Process guestProcess;
+        private readonly string channel = Guid.NewGuid().ToString("N");
+        private readonly string[] args = Environment.GetCommandLineArgs();
+        private readonly ProcessStartInfo processStart;
+
+        private MemoryMappedFileMessageSender guest;
+
+        private IntPtr hwnd;
 
         public Host(IApplicationShutdown shutdown)
         {
             if (shutdown == null) throw new ArgumentNullException(nameof(shutdown));
 
             this.shutdown = shutdown;
+            this.processStart = new ProcessStartInfo
+            {
+                FileName = args[0],
+                Arguments = $"{ string.Join(" ", args.Skip(1)) } --channel { channel }",
+                UseShellExecute = false,
+            };
         }
 
         public void Run(int width, int height)
         {
-            var channel = Guid.NewGuid().ToString("N");
+            var guestListener = new MemoryMappedFileMessageReceiver(channel + "*");
+            guestListener.ReceiveMessage((bytes, count) => OnMessage(Message.FromBytes(bytes, count)));
+            guest = new MemoryMappedFileMessageSender(channel);
+
+            StartGuestProcess();
+
             var thread = new Thread(() => RunWindow(width, height));
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-
-            new Thread(() => HostGuestProcess(channel)).Start();
 
             Console.ReadLine();
         }
@@ -38,7 +54,8 @@
 
             window.SourceInitialized += (sender, e) =>
             {
-                var hwnd = new WindowInteropHelper(window).Handle;
+                hwnd = new WindowInteropHelper(window).EnsureHandle();
+                guest.SendMessage(new Message { MessageType = MessageType.AttachWindow, Pointer = hwnd }.ToBytes());
             };
 
             window.ShowDialog();
@@ -46,28 +63,25 @@
             Environment.Exit(0);
         }
 
-        private void HostGuestProcess(string channel)
+        private void StartGuestProcess()
         {
-            var reloadWatch = new Stopwatch();
-            shutdown.ShutdownRequested.Register(() => reloadWatch.Restart());
+            var guestProcess = Process.Start(processStart);
 
-            var args = Environment.GetCommandLineArgs();
-            var ps = new ProcessStartInfo
+            KillChildProcess.AddProcess(guestProcess.Handle);
+
+            if (hwnd != IntPtr.Zero)
             {
-                FileName = args[0],
-                Arguments = $"{ string.Join(" ", args.Skip(1)) } --channel { channel }",
-                UseShellExecute = false,
-            };
+                guest.SendMessage(new Message { MessageType = MessageType.AttachWindow, Pointer = hwnd }.ToBytes());
+            }
+        }
 
-            while (true)
+        private void OnMessage(Message message)
+        {
+            switch (message.MessageType)
             {
-                guestProcess = Process.Start(ps);
-
-                KillChildProcess.AddProcess(guestProcess.Handle);
-
-                guestProcess.WaitForExit();
-
-                // Min time to wait
+                case MessageType.GuestShutdown:
+                    StartGuestProcess();
+                    break;
             }
         }
     }
