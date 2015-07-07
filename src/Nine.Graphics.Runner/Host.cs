@@ -6,6 +6,7 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Interop;
 
@@ -18,8 +19,11 @@
         private readonly Stopwatch reloadWatch = new Stopwatch();
 
         private MemoryMappedFileMessageSender guest;
-
+        private Process guestProcess;
         private IntPtr hwnd;
+
+        private int width;
+        private int height;
 
         public Host(IApplicationShutdown shutdown)
         {
@@ -54,8 +58,18 @@
 
             window.SourceInitialized += (sender, e) =>
             {
+                width = (int)window.ActualWidth;
+                height = (int)window.ActualHeight;
                 hwnd = new WindowInteropHelper(window).EnsureHandle();
-                guest.SendMessage(new Message { MessageType = MessageType.AttachWindow, Pointer = hwnd }.ToBytes());
+                guest.SendMessage(new Message { MessageType = MessageType.HostWindow, Pointer = hwnd, Width = width, Height = height }.ToBytes());
+            };
+
+            window.SizeChanged += (sender, e) =>
+            {
+                // TODO: Optimize send message
+                width = (int)window.ActualWidth;
+                height = (int)window.ActualHeight;
+                guest.SendMessage(new Message { MessageType = MessageType.HostResize, Width = width, Height = height }.ToBytes());
             };
 
             window.ShowDialog();
@@ -65,15 +79,19 @@
 
         private void StartGuestProcess()
         {
-            // TODO: session
             reloadWatch.Restart();
-            var guestProcess = Process.Start(processStart);
+            if (guestProcess != null)
+            {
+                guestProcess.Kill();
+            }
+
+            guestProcess = Process.Start(processStart);
 
             ProcessHelper.AddChildProcessToKill(guestProcess.Handle);
 
             if (hwnd != IntPtr.Zero)
             {
-                guest.SendMessage(new Message { MessageType = MessageType.AttachWindow, Pointer = hwnd }.ToBytes());
+                guest.SendMessage(new Message { MessageType = MessageType.HostWindow, Pointer = hwnd, Width = width, Height = height }.ToBytes());
             }
         }
 
@@ -85,6 +103,8 @@
                     StartGuestProcess();
                     break;
                 case MessageType.GuestWindowAttached:
+                    // TODO:
+                    // guest.SendMessage(new Message { MessageType = MessageType.HostResize, Width = width, Height = height }.ToBytes());
                     reloadWatch.Stop();
                     Console.WriteLine($"Application reloaded in { reloadWatch.ElapsedMilliseconds }ms");
                     break;

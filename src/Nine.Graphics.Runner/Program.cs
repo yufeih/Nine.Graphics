@@ -13,7 +13,6 @@
         public Program(IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
             Trace.Listeners.Add(new ConsoleTraceListener());
-            Debug.Listeners.Add(new ConsoleTraceListener());
 
             if (shutdown == null) throw new ArgumentNullException(nameof(shutdown));
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));

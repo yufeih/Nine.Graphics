@@ -5,7 +5,8 @@
 
     enum MessageType
     {
-        AttachWindow,
+        HostWindow,
+        HostResize,
         GuestWindowAttached,
         GuestShutdown,
     }
@@ -15,6 +16,8 @@
     {
         public MessageType MessageType;
         public IntPtr Pointer;
+        public int Width;
+        public int Height;
         
         public byte[] ToBytes()
         {

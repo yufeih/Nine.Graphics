@@ -5,17 +5,17 @@
     using Microsoft.Framework.Runtime.Common;
     using System;
     using System.Diagnostics;
-    using System.Threading;
-    using System.Windows;
 
     class Guest : IHostWindow, IServiceProvider
     {
         private readonly IApplicationShutdown shutdown;
         private readonly IServiceProvider serviceProvider;
-        private readonly Application app = new Application();
         private MemoryMappedFileMessageSender host;
         private IntPtr childWindow;
         private IntPtr parentWindow;
+        private bool childAttached;
+        private int hostWidth;
+        private int hostHeight;
 
         public Guest(IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
@@ -25,33 +25,13 @@
 
         public void Run(string channel, string[] args)
         {
-            app.Startup += (sender, e) => StartApp(channel, args);
-            app.Run();
-        }
-
-        private void StartApp(string channel, string[] args)
-        {
-            Debug.Assert(SynchronizationContext.Current != null);
-
-            var syncContext = SynchronizationContext.Current;
-
             shutdown.ShutdownRequested.Register(() =>
             {
-                syncContext.Post(_ =>
-                {
-                    host.SendMessage(new Message { MessageType = MessageType.GuestShutdown }.ToBytes());
-                    app.Shutdown();
-                }, null);
+                host.SendMessage(new Message { MessageType = MessageType.GuestShutdown }.ToBytes());
             });
 
             var hostListener = new MemoryMappedFileMessageReceiver(channel);
-            hostListener.ReceiveMessage((bytes, count) =>
-            {
-                syncContext.Post(_ =>
-                {
-                    OnMessage(Message.FromBytes(bytes, count));
-                }, null);
-            });
+            hostListener.ReceiveMessage((bytes, count) => OnMessage(Message.FromBytes(bytes, count)));
             host = new MemoryMappedFileMessageSender(channel + "*");
 
             var appEnv = (IApplicationEnvironment)serviceProvider.GetService(typeof(IApplicationEnvironment));
@@ -65,12 +45,25 @@
         {
             switch (message.MessageType)
             {
-                case MessageType.AttachWindow:
+                case MessageType.HostWindow:
                     parentWindow = message.Pointer;
+                    Debug.Assert(parentWindow != IntPtr.Zero);
+                    if (childWindow != IntPtr.Zero && !childAttached)
+                    {
+                        childAttached = true;
+                        hostWidth = message.Width;
+                        hostHeight = message.Height;
+                        WindowHelper.EmbedWindow(childWindow, parentWindow);
+                        WindowHelper.Resize(childWindow, message.Width, message.Height);
+                        host.SendMessage(new Message { MessageType = MessageType.GuestWindowAttached }.ToBytes());
+                    }
+                    break;
+                case MessageType.HostResize:
+                    hostWidth = message.Width;
+                    hostHeight = message.Height;
                     if (childWindow != IntPtr.Zero)
                     {
-                        WindowHelper.EmbedWindow(childWindow, parentWindow);
-                        host.SendMessage(new Message { MessageType = MessageType.GuestWindowAttached }.ToBytes());
+                        WindowHelper.Resize(childWindow, hostWidth, hostHeight);
                     }
                     break;
             }
@@ -78,10 +71,16 @@
 
         public void Attach(IntPtr childWindow)
         {
+            if (childWindow == IntPtr.Zero) throw new ArgumentException(nameof(childWindow));
+            if (this.childWindow != IntPtr.Zero) throw new InvalidOperationException("A child window is already attached.");
+
             this.childWindow = childWindow;
-            if (parentWindow != IntPtr.Zero)
+
+            if (parentWindow != IntPtr.Zero && !childAttached)
             {
+                childAttached = true;
                 WindowHelper.EmbedWindow(childWindow, parentWindow);
+                WindowHelper.Resize(childWindow, hostWidth, hostHeight);
                 host.SendMessage(new Message { MessageType = MessageType.GuestWindowAttached }.ToBytes());
             }
         }

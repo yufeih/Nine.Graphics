@@ -5,6 +5,9 @@
     using Microsoft.Framework.Runtime;
     using Nine.Injection;
     using Nine.Graphics.Runner;
+    using System.Drawing;
+    using System.Windows.Forms;
+    using System.Runtime.InteropServices;
 
     public class Program
     {
@@ -26,15 +29,31 @@
         {
             if (!CheckIfGacIsNotPatched()) return;
 
+            //RunOpenGL();
+            RunWinForm();
+        }
+
+        private void RunWinForm()
+        {
+            var form = new Form { BackColor = System.Drawing.Color.Red };
+            hostWindow.Attach(form.Handle);
+            Application.Run(form);
+        }
+
+        private void RunOpenGL()
+        {
             var host = new OpenGL.GraphicsHost(100, 100);
             hostWindow.Attach(host.Window.WindowInfo.Handle);
 
-            //host.DrawFrame((w, h) =>
-            //{
+            while (true)
+            {
+                host.DrawFrame((w, h) =>
+                {
 
-            //});
+                });
+            }
         }
-
+        
         private bool CheckIfGacIsNotPatched()
         {
             try
