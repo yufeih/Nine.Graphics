@@ -1,12 +1,12 @@
 ﻿namespace Nine.Graphics.Runner
 {
-    using MemoryMessagePipe;
     using Microsoft.Framework.Runtime;
+    using SharedMemory;
     using System;
     using System.Diagnostics;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Threading;
-    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Interop;
 
@@ -16,18 +16,19 @@
         private readonly string channel = Guid.NewGuid().ToString("N");
         private readonly string[] args = Environment.GetCommandLineArgs();
         private readonly ProcessStartInfo processStart;
+        private readonly CircularBuffer guestBuffer;
+        private readonly CircularBuffer hostBuffer;
         private readonly Stopwatch reloadWatch = new Stopwatch();
 
-        private MemoryMappedFileMessageSender guest;
+        private Window window;
         private Process guestProcess;
         private IntPtr hwnd;
-
-        private int width;
-        private int height;
 
         public Host(IApplicationShutdown shutdown)
         {
             this.shutdown = shutdown;
+            this.guestBuffer = new CircularBuffer(channel, 100, Marshal.SizeOf(typeof(Message)));
+            this.hostBuffer = new CircularBuffer(channel + "*", 100, Marshal.SizeOf(typeof(Message)));
             this.processStart = new ProcessStartInfo
             {
                 FileName = args[0],
@@ -39,39 +40,28 @@
 
         public void Run(int width, int height)
         {
-            var guestListener = new MemoryMappedFileMessageReceiver(channel + "*");
-            guestListener.ReceiveMessage((bytes, count) => OnMessage(Message.FromBytes(bytes, count)));
-            guest = new MemoryMappedFileMessageSender(channel);
-
             StartGuestProcess();
 
-            var thread = new Thread(() => RunWindow(width, height));
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            var uiThread = new Thread(() => RunWindow(width, height));
+            uiThread.SetApartmentState(ApartmentState.STA);
+            uiThread.Start();
+
+            var guestListenerThread = new Thread(ListenGuestEvents);
+            guestListenerThread.Start();
 
             Console.ReadLine();
         }
 
         private void RunWindow(int width, int height)
         {
-            var window = new Window { Topmost = false, Width = width, Height = height };
-
+            window = new Window { Topmost = false, Width = width, Height = height };
             window.SourceInitialized += (sender, e) =>
             {
-                width = (int)window.ActualWidth;
-                height = (int)window.ActualHeight;
                 hwnd = new WindowInteropHelper(window).EnsureHandle();
-                guest.SendMessage(new Message { MessageType = MessageType.HostWindow, Pointer = hwnd, Width = width, Height = height }.ToBytes());
+                SendHostWindow();
             };
 
-            window.SizeChanged += (sender, e) =>
-            {
-                // TODO: Optimize send message
-                width = (int)window.ActualWidth;
-                height = (int)window.ActualHeight;
-                guest.SendMessage(new Message { MessageType = MessageType.HostResize, Width = width, Height = height }.ToBytes());
-            };
-
+            window.SizeChanged += (sender, e) => SendHostResize();
             window.ShowDialog();
 
             Environment.Exit(0);
@@ -91,11 +81,11 @@
 
             if (hwnd != IntPtr.Zero)
             {
-                guest.SendMessage(new Message { MessageType = MessageType.HostWindow, Pointer = hwnd, Width = width, Height = height }.ToBytes());
+                SendHostWindow();
             }
         }
 
-        private void OnMessage(Message message)
+        private void OnMessage(ref Message message)
         {
             switch (message.MessageType)
             {
@@ -103,12 +93,46 @@
                     StartGuestProcess();
                     break;
                 case MessageType.GuestWindowAttached:
-                    // TODO:
-                    // guest.SendMessage(new Message { MessageType = MessageType.HostResize, Width = width, Height = height }.ToBytes());
+                    SendHostResize();
                     reloadWatch.Stop();
                     Console.WriteLine($"Application reloaded in { reloadWatch.ElapsedMilliseconds }ms");
                     break;
             }
+        }
+
+        private void ListenGuestEvents()
+        {
+            while (true)
+            {
+                Message message;
+                if (hostBuffer.Read(out message, Timeout.Infinite) > 0)
+                {
+                    OnMessage(ref message);
+                }
+            }
+        }
+
+        private void SendHostResize()
+        {
+            var message = new Message
+            {
+                MessageType = MessageType.HostResize,
+                Width = (int)window.ActualWidth,
+                Height = (int)window.ActualHeight,
+            };
+
+            guestBuffer.Write(ref message);
+        }
+
+        private void SendHostWindow()
+        {
+            var message = new Message
+            {
+                MessageType = MessageType.HostWindow,
+                Pointer = hwnd
+            };
+
+            guestBuffer.Write(ref message);
         }
     }
 }

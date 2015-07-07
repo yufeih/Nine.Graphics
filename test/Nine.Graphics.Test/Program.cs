@@ -26,7 +26,7 @@
 
         private void RunWinForm()
         {
-            var form = new Form { BackColor = System.Drawing.Color.Red };
+            var form = new Form { BackColor = System.Drawing.Color.Green };
             hostWindow.Attach(form.Handle);
             Application.Run(form);
         }

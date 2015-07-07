@@ -46,9 +46,7 @@
             }
             else
             {
-                new Guest(shutdown, serviceProvider).Run(
-                    channel.Value(),
-                    app.RemainingArguments.ToArray());
+                new Guest(channel.Value(), shutdown, serviceProvider).Run(app.RemainingArguments.ToArray());
             }
         }
     }

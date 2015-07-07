@@ -1,38 +1,40 @@
 ﻿namespace Nine.Graphics.Runner
 {
-    using MemoryMessagePipe;
     using Microsoft.Framework.Runtime;
     using Microsoft.Framework.Runtime.Common;
+    using SharedMemory;
     using System;
     using System.Diagnostics;
+    using System.Threading;
 
     class Guest : IHostWindow, IServiceProvider
     {
         private readonly IApplicationShutdown shutdown;
         private readonly IServiceProvider serviceProvider;
-        private MemoryMappedFileMessageSender host;
+        private readonly CircularBuffer guestBuffer;
+        private readonly CircularBuffer hostBuffer;
+
         private IntPtr childWindow;
         private IntPtr parentWindow;
         private bool childAttached;
-        private int hostWidth;
-        private int hostHeight;
 
-        public Guest(IApplicationShutdown shutdown, IServiceProvider serviceProvider)
+        public Guest(string channel, IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
             this.shutdown = shutdown;
             this.serviceProvider = serviceProvider;
+            this.guestBuffer = new CircularBuffer(channel);
+            this.hostBuffer = new CircularBuffer(channel + "*");
         }
 
-        public void Run(string channel, string[] args)
+        public void Run(string[] args)
         {
             shutdown.ShutdownRequested.Register(() =>
             {
-                host.SendMessage(new Message { MessageType = MessageType.GuestShutdown }.ToBytes());
+                var message = new Message { MessageType = MessageType.GuestShutdown };
+                hostBuffer.Write(ref message);
             });
 
-            var hostListener = new MemoryMappedFileMessageReceiver(channel);
-            hostListener.ReceiveMessage((bytes, count) => OnMessage(Message.FromBytes(bytes, count)));
-            host = new MemoryMappedFileMessageSender(channel + "*");
+            new Thread(ListenHostEvents).Start();
 
             var appEnv = (IApplicationEnvironment)serviceProvider.GetService(typeof(IApplicationEnvironment));
             var accessor = (IAssemblyLoadContextAccessor)serviceProvider.GetService(typeof(IAssemblyLoadContextAccessor));
@@ -41,29 +43,19 @@
             EntryPointExecutor.Execute(assembly, args, this);
         }
 
-        private void OnMessage(Message message)
+        private void OnMessage(ref Message message)
         {
             switch (message.MessageType)
             {
                 case MessageType.HostWindow:
                     parentWindow = message.Pointer;
                     Debug.Assert(parentWindow != IntPtr.Zero);
-                    if (childWindow != IntPtr.Zero && !childAttached)
-                    {
-                        childAttached = true;
-                        hostWidth = message.Width;
-                        hostHeight = message.Height;
-                        WindowHelper.EmbedWindow(childWindow, parentWindow);
-                        WindowHelper.Resize(childWindow, message.Width, message.Height);
-                        host.SendMessage(new Message { MessageType = MessageType.GuestWindowAttached }.ToBytes());
-                    }
+                    TryAttach();
                     break;
                 case MessageType.HostResize:
-                    hostWidth = message.Width;
-                    hostHeight = message.Height;
                     if (childWindow != IntPtr.Zero)
                     {
-                        WindowHelper.Resize(childWindow, hostWidth, hostHeight);
+                        WindowHelper.Resize(childWindow, message.Width, message.Height);
                     }
                     break;
             }
@@ -76,12 +68,18 @@
 
             this.childWindow = childWindow;
 
-            if (parentWindow != IntPtr.Zero && !childAttached)
+            TryAttach();
+        }
+
+        private void TryAttach()
+        {
+            if (parentWindow != IntPtr.Zero && childWindow != IntPtr.Zero && !childAttached)
             {
                 childAttached = true;
                 WindowHelper.EmbedWindow(childWindow, parentWindow);
-                WindowHelper.Resize(childWindow, hostWidth, hostHeight);
-                host.SendMessage(new Message { MessageType = MessageType.GuestWindowAttached }.ToBytes());
+
+                var message = new Message { MessageType = MessageType.GuestWindowAttached };
+                hostBuffer.Write(ref message);
             }
         }
 
@@ -92,6 +90,18 @@
                 return this;
             }
             return serviceProvider.GetService(serviceType);
+        }
+
+        private void ListenHostEvents()
+        {
+            while (true)
+            {
+                Message message;
+                if (guestBuffer.Read(out message, Timeout.Infinite) > 0)
+                {
+                    OnMessage(ref message);
+                }
+            }
         }
     }
 }
