@@ -4,10 +4,12 @@
     using Nine.Graphics.Content;
     using Nine.Graphics.Rendering;
     using Nine.Injection;
+    using Microsoft.Framework.Runtime.Infrastructure;
+    using Microsoft.Framework.Runtime;
 
     public static class GraphicsContainer
     {
-        public static IContainer CreateOpenGLContainer(int width, int height, bool test = false, Action<IContainer> setup = null)
+        public static IContainer CreateOpenGLContainer(int width, int height, bool test = false)
         {
             var container = new Container();
 
@@ -29,16 +31,12 @@
                 container.Map<IGraphicsHost>(new OpenGL.GraphicsHost(width, height));
             }
 
-            if (setup != null)
-            {
-                setup(container);
-            }
-
+            SetupDnxDependencies(container);
             container.Freeze();
             return container;
         }
 
-        public static IContainer CreateDirectXContainer(int width, int height, bool test = false, Action<IContainer> setup = null)
+        public static IContainer CreateDirectXContainer(int width, int height, bool test = false)
         {
             var container = new Container();
 
@@ -64,13 +62,24 @@
                 container.Map(host.Device);
             }
 
-            if (setup != null)
-            {
-                setup(container);
-            }
-
+            SetupDnxDependencies(container);
             container.Freeze();
             return container;
+        }
+
+        private static void SetupDnxDependencies(IContainer container)
+        {
+            try
+            {
+                // https://github.com/xunit/dnx.xunit/issues/27
+                var sp = CallContextServiceLocator.Locator.ServiceProvider;
+                container.Map((IApplicationEnvironment)sp.GetService(typeof(IApplicationEnvironment)))
+                         .Map((NuGetDependencyResolver)sp.GetService(typeof(NuGetDependencyResolver)));
+            }
+            catch
+            {
+
+            }
         }
     }
 }

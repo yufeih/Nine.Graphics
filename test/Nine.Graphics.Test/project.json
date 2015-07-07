@@ -27,7 +27,7 @@
   },
 
   "commands": {
-    "test": "Nine.Graphics.Test --test",
+    "test": "xunit.runner.dnx",
     "run": "Nine.Graphics.Runner"
   }
 }

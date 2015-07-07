@@ -1,27 +1,18 @@
 ﻿namespace Nine.Graphics
 {
+    using Microsoft.Framework.Runtime;
+    using Nine.Graphics.Runner;
+    using Nine.Injection;
     using System;
     using System.Diagnostics;
-    using Microsoft.Framework.Runtime;
-    using Nine.Injection;
-    using Nine.Graphics.Runner;
-    using System.Drawing;
     using System.Windows.Forms;
-    using System.Runtime.InteropServices;
 
     public class Program
     {
         private readonly IHostWindow hostWindow;
 
-        public Program(
-            IApplicationEnvironment appEnv, IServiceProvider services,
-            IHostWindow hostWindow, NuGetDependencyResolver nuget)
+        public Program(IHostWindow hostWindow)
         {
-            GraphicsTest.Setup = container =>
-            {
-                container.Map(nuget).Map(appEnv);
-            };
-
             this.hostWindow = hostWindow;
         }
 
