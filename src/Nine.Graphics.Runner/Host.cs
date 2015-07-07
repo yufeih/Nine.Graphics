@@ -38,11 +38,11 @@
             };
         }
 
-        public void Run(int width, int height)
+        public void Run(int width, int height, bool topMost)
         {
             StartGuestProcess();
 
-            var uiThread = new Thread(() => RunWindow(width, height));
+            var uiThread = new Thread(() => RunWindow(width, height, topMost));
             uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.Start();
 
@@ -52,9 +52,9 @@
             Console.ReadLine();
         }
 
-        private void RunWindow(int width, int height)
+        private void RunWindow(int width, int height, bool topMost)
         {
-            window = new Window { Topmost = false, Width = width, Height = height };
+            window = new Window { Topmost = topMost, Width = width, Height = height };
             window.SourceInitialized += (sender, e) =>
             {
                 hwnd = new WindowInteropHelper(window).EnsureHandle();
