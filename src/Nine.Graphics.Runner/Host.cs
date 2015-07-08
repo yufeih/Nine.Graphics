@@ -7,8 +7,6 @@
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading;
-    using System.Windows;
-    using System.Windows.Interop;
 
     class Host
     {
@@ -21,9 +19,8 @@
         private readonly CircularBuffer hostBuffer;
         private readonly Stopwatch reloadWatch = new Stopwatch();
 
-        private Window window;
+        private HostForm form;
         private Process guestProcess;
-        private IntPtr hwnd;
 
         public Host(IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
@@ -36,6 +33,7 @@
                 FileName = args[0],
                 Arguments = $"{ string.Join(" ", args.Skip(1)) } --channel { channel }",
                 UseShellExecute = false,
+                RedirectStandardError = true,
                 WorkingDirectory = Environment.CurrentDirectory,
             };
         }
@@ -56,15 +54,11 @@
 
         private void RunWindow(int width, int height)
         {
-            window = new Window { Topmost = false, Width = width, Height = height };
-            window.SourceInitialized += (sender, e) =>
-            {
-                hwnd = new WindowInteropHelper(window).EnsureHandle();
-                SendHostWindow();
-            };
-
-            window.SizeChanged += (sender, e) => SendHostResize();
-            window.ShowDialog();
+            form = new HostForm { TopMost = false, Width = width, Height = height };
+            form.SetText("Loading");
+            form.HandleCreated += (sender, e) => SendHostWindow();
+            form.SizeChanged += (sender, e) => SendHostResize();
+            form.ShowDialog();
 
             Environment.Exit(0);
         }
@@ -79,17 +73,20 @@
             }
             else
             {
-                if (guestProcess != null)
+                var process = guestProcess;
+                if (process != null)
                 {
-                    guestProcess.Kill();
+                    process.Kill();
                 }
 
-                guestProcess = Process.Start(processStart);
+                process = Process.Start(processStart);
+                ProcessHelper.AddChildProcessToKill(process.Handle);
+                WatchProcessExit(process);
 
-                ProcessHelper.AddChildProcessToKill(guestProcess.Handle);
+                guestProcess = process;
             }
 
-            if (hwnd != IntPtr.Zero)
+            if (form != null && form.Handle != IntPtr.Zero)
             {
                 SendHostWindow();
             }
@@ -110,6 +107,23 @@
             }
         }
 
+        private void WatchProcessExit(Process process)
+        {
+            new Thread(() =>
+            {
+                process.WaitForExit();
+
+                var error = process.StandardError.ReadToEnd();
+                form.SetText(error);
+                Console.Error.Write(error);
+
+                if (process == guestProcess)
+                {
+                    guestProcess = null;
+                }
+            }) { Name = "Guest Watch" }.Start();
+        }
+
         private void ListenGuestEvents()
         {
             while (true)
@@ -124,25 +138,31 @@
 
         private void SendHostResize()
         {
-            var message = new Message
+            if (guestProcess != null)
             {
-                MessageType = MessageType.HostResize,
-                Width = (int)window.ActualWidth,
-                Height = (int)window.ActualHeight,
-            };
+                var message = new Message
+                {
+                    MessageType = MessageType.HostResize,
+                    Width = form.Width,
+                    Height = form.Height,
+                };
 
-            guestBuffer.Write(ref message);
+                guestBuffer.Write(ref message);
+            }
         }
 
         private void SendHostWindow()
         {
-            var message = new Message
+            if (guestProcess != null)
             {
-                MessageType = MessageType.HostWindow,
-                Pointer = hwnd
-            };
+                var message = new Message
+                {
+                    MessageType = MessageType.HostWindow,
+                    Pointer = form.Handle
+                };
 
-            guestBuffer.Write(ref message);
+                guestBuffer.Write(ref message);
+            }
         }
     }
 }

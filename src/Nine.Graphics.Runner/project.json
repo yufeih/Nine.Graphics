@@ -15,10 +15,8 @@
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
-        "WindowsBase": "4.0.0.0",
-        "PresentationCore": "4.0.0.0",
-        "PresentationFramework": "4.0.0.0",
-        "System.Windows.Forms": "4.0.0.0"
+        "System.Windows.Forms": "4.0.0.0",
+        "System.Drawing": "4.0.0.0"
       }
     }
   }
