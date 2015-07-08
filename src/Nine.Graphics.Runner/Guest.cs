@@ -28,13 +28,16 @@
 
         public void Run(string[] args)
         {
-            shutdown.ShutdownRequested.Register(() =>
+            if (!Debugger.IsAttached)
             {
-                var message = new Message { MessageType = MessageType.GuestShutdown };
-                hostBuffer.Write(ref message);
-            });
+                shutdown.ShutdownRequested.Register(() =>
+                {
+                    var message = new Message { MessageType = MessageType.GuestShutdown };
+                    hostBuffer.Write(ref message);
+                });
+            }
 
-            new Thread(ListenHostEvents).Start();
+            new Thread(ListenHostEvents) { Name = "Host Listener" }.Start();
 
             var appEnv = (IApplicationEnvironment)serviceProvider.GetService(typeof(IApplicationEnvironment));
             var accessor = (IAssemblyLoadContextAccessor)serviceProvider.GetService(typeof(IAssemblyLoadContextAccessor));
