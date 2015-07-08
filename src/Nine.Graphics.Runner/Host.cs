@@ -3,9 +3,11 @@
     using Microsoft.Framework.Runtime;
     using SharedMemory;
     using System;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Text;
     using System.Threading;
     using System.Windows;
     using System.Windows.Interop;
@@ -20,6 +22,7 @@
         private readonly CircularBuffer guestBuffer;
         private readonly CircularBuffer hostBuffer;
         private readonly Stopwatch reloadWatch = new Stopwatch();
+        private readonly ConcurrentDictionary<string, BufferReadWrite> namedBuffers = new ConcurrentDictionary<string, BufferReadWrite>();
 
         private Window window;
         private Process guestProcess;
@@ -95,7 +98,7 @@
             }
         }
 
-        private void OnMessage(ref Message message)
+        private unsafe void OnMessage(ref Message message)
         {
             switch (message.MessageType)
             {
@@ -107,7 +110,15 @@
                     reloadWatch.Stop();
                     Console.WriteLine($"Application reloaded in { reloadWatch.ElapsedMilliseconds }ms");
                     break;
+                case MessageType.GuestRequestSharedMemory:
+                    var name = GetName(ref message);
+                    break;
             }
+        }
+
+        private unsafe string GetName(ref Message message)
+        {
+            return null;
         }
 
         private void ListenGuestEvents()

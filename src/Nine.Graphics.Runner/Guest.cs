@@ -4,15 +4,19 @@
     using Microsoft.Framework.Runtime.Common;
     using SharedMemory;
     using System;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
+    using System.Text;
     using System.Threading;
 
-    class Guest : IHostWindow, IServiceProvider
+    class Guest : IHostWindow, ISharedMemory, IServiceProvider
     {
+        private readonly string channel;
         private readonly IApplicationShutdown shutdown;
         private readonly IServiceProvider serviceProvider;
         private readonly CircularBuffer guestBuffer;
         private readonly CircularBuffer hostBuffer;
+        private readonly ConcurrentDictionary<string, BufferReadWrite> namedBuffers = new ConcurrentDictionary<string, BufferReadWrite>();
 
         private IntPtr childWindow;
         private IntPtr parentWindow;
@@ -20,6 +24,7 @@
 
         public Guest(string channel, IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
+            this.channel = channel;
             this.shutdown = shutdown;
             this.serviceProvider = serviceProvider;
             this.guestBuffer = new CircularBuffer(channel);
@@ -86,15 +91,6 @@
             }
         }
 
-        public object GetService(Type serviceType)
-        {
-            if (serviceType == typeof(IHostWindow))
-            {
-                return this;
-            }
-            return serviceProvider.GetService(serviceType);
-        }
-
         private void ListenHostEvents()
         {
             while (true)
@@ -105,6 +101,54 @@
                     OnMessage(ref message);
                 }
             }
+        }
+
+        public unsafe byte[] Get(string name, int sizeInBytes)
+        {
+            var sharedBuffer = namedBuffers.GetOrAdd(name, key =>
+            {
+                if (sizeInBytes <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(sizeInBytes));
+                }
+
+                var message = new Message { MessageType = MessageType.GuestRequestSharedMemory, Text = name };
+
+                lock (namedBuffers)
+                {
+                    hostBuffer.Write(ref message);
+
+                    return new BufferReadWrite(channel + name, sizeInBytes);
+                }
+            });
+
+            // To expose a byte array that can be managed by GC, we need this copy.
+            var bytes = new byte[sharedBuffer.BufferSize];
+            sharedBuffer.Read(bytes);
+            return bytes;
+        }
+
+        public bool Remove(string name)
+        {
+            BufferReadWrite buffer;
+            if (namedBuffers.TryRemove(name, out buffer))
+            {
+                var message = new Message { MessageType = MessageType.GuestRemoveSharedMemory, Text = name };
+                hostBuffer.Write(ref message);
+                buffer.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
+        public object GetService(Type serviceType)
+        {
+            if (serviceType == typeof(IHostWindow) || serviceType == typeof(ISharedMemory))
+            {
+                return this;
+            }
+            return serviceProvider.GetService(serviceType);
         }
     }
 }
