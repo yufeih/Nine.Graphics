@@ -1,11 +1,11 @@
 ﻿namespace Nine.Graphics
 {
-    using Microsoft.Framework.Runtime;
     using Nine.Graphics.Runner;
     using Nine.Injection;
     using System;
     using System.Diagnostics;
     using System.Windows.Forms;
+    using System.Runtime.InteropServices;
 
     public class Program
     {
@@ -20,8 +20,8 @@
         {
             if (!CheckIfGacIsNotPatched()) return;
 
-            //RunOpenGL();
-            RunWinForm();
+            RunOpenGL();
+            // RunWinForm();
         }
 
         private void RunWinForm()
@@ -34,7 +34,13 @@
         private void RunOpenGL()
         {
             var host = new OpenGL.GraphicsHost(100, 100);
-            hostWindow.Attach(host.Window.WindowInfo.Handle);
+
+            // OpenTK internally creates a child window docked inside a parent window,
+            // the handle returned here is the child window, we need to attach the
+            // parent window to the host.
+            var handle = host.Window.WindowInfo.Handle;
+            var parentHandle = GetParent(handle);
+            hostWindow.Attach(parentHandle != IntPtr.Zero ? parentHandle : handle);
 
             while (true)
             {
@@ -44,7 +50,10 @@
                 });
             }
         }
-        
+
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        private static extern IntPtr GetParent(IntPtr hWnd);
+
         private bool CheckIfGacIsNotPatched()
         {
             try
