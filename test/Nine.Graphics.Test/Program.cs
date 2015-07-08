@@ -1,11 +1,13 @@
 ﻿namespace Nine.Graphics
 {
+    using Nine.Graphics.Rendering;
     using Nine.Graphics.Runner;
     using Nine.Injection;
     using System;
     using System.Diagnostics;
-    using System.Windows.Forms;
+    using System.Numerics;
     using System.Runtime.InteropServices;
+    using System.Windows.Forms;
 
     public class Program
     {
@@ -33,7 +35,12 @@
 
         private void RunOpenGL()
         {
-            var host = new OpenGL.GraphicsHost(100, 100);
+            // Delay loaded assemblies will block the current thread due to 
+            // DesignTimeHostProjectCompiler consumes the result of an async task. 
+            var img = new Nine.Imaging.Image();
+
+            var container = GraphicsContainer.CreateOpenGLContainer(100, 100);
+            var host = (OpenGL.GraphicsHost)container.Get<IGraphicsHost>();
 
             // OpenTK internally creates a child window docked inside a parent window,
             // the handle returned here is the child window, we need to attach the
@@ -42,11 +49,24 @@
             var parentHandle = GetParent(handle);
             hostWindow.Attach(parentHandle != IntPtr.Zero ? parentHandle : handle);
 
+            // var texture = "https://avatars0.githubusercontent.com/u/511355?v=3&s=460";
+            var texture = TextureId.White;
+            var sprites = new[]
+            {
+                new Sprite(texture, size:new Vector2(80, 80), rotation:50),
+                new Sprite(texture, size:new Vector2(80, 80), position:new Vector2(80, 0)),
+                new Sprite(texture, size:new Vector2(80, 80), position:new Vector2(160, 0)),
+                new Sprite(texture, size:new Vector2(80, 80), position:new Vector2(240, 0)),
+            };
+
+            var renderer = container.Get<ISpriteRenderer>();
+            var camera = Matrix4x4.CreateOrthographicOffCenter(0, 100, 100, 0, 0, 1);
+
             while (true)
             {
                 host.DrawFrame((w, h) =>
                 {
-
+                    renderer.Draw(camera, sprites);
                 });
             }
         }

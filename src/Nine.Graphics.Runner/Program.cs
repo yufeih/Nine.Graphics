@@ -29,7 +29,7 @@
 
             var width = app.Option("--width <WIDTH>", "Set the width of the host window", CommandOptionType.SingleValue);
             var height = app.Option("--height <HEIGHT>", "Set the height of the host window", CommandOptionType.SingleValue);
-            var topMost = app.Option("--topmost", "Enables the host window to be top most", CommandOptionType.NoValue);
+            var topMost = app.Option("--pin", "Enables the host window to be top most", CommandOptionType.NoValue);
             var channel = app.Option("--channel <CHANNEL>", "", CommandOptionType.SingleValue);
 
             app.Execute(args);
