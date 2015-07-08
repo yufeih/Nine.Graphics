@@ -12,6 +12,7 @@
 
     class Host
     {
+        private readonly IServiceProvider serviceProvider;
         private readonly IApplicationShutdown shutdown;
         private readonly string channel = Guid.NewGuid().ToString("N");
         private readonly string[] args = Environment.GetCommandLineArgs();
@@ -24,9 +25,10 @@
         private Process guestProcess;
         private IntPtr hwnd;
 
-        public Host(IApplicationShutdown shutdown)
+        public Host(IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
             this.shutdown = shutdown;
+            this.serviceProvider = serviceProvider;
             this.guestBuffer = new CircularBuffer(channel, 100, Marshal.SizeOf(typeof(Message)));
             this.hostBuffer = new CircularBuffer(channel + "*", 100, Marshal.SizeOf(typeof(Message)));
             this.processStart = new ProcessStartInfo
@@ -38,16 +40,16 @@
             };
         }
 
-        public void Run(int width, int height, bool topMost)
+        public void Run(int width, int height, bool topMost, string[] args)
         {
-            StartGuestProcess();
+            StartGuestProcess(args);
 
             var uiThread = new Thread(() => RunWindow(width, height, topMost));
+            uiThread.Name = "Host UI";
             uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.Start();
 
-            var guestListenerThread = new Thread(ListenGuestEvents);
-            guestListenerThread.Start();
+            new Thread(ListenGuestEvents) { Name = "Guest Listener" }.Start();
 
             Console.ReadLine();
         }
@@ -67,17 +69,25 @@
             Environment.Exit(0);
         }
 
-        private void StartGuestProcess()
+        private void StartGuestProcess(params string[] args)
         {
             reloadWatch.Restart();
-            if (guestProcess != null)
+
+            if (Debugger.IsAttached)
             {
-                guestProcess.Kill();
+                new Thread(() => new Guest(channel, shutdown, serviceProvider).Run(args)) { Name = "Guest UI" }.Start();
             }
+            else
+            {
+                if (guestProcess != null)
+                {
+                    guestProcess.Kill();
+                }
 
-            guestProcess = Process.Start(processStart);
+                guestProcess = Process.Start(processStart);
 
-            ProcessHelper.AddChildProcessToKill(guestProcess.Handle);
+                ProcessHelper.AddChildProcessToKill(guestProcess.Handle);
+            }
 
             if (hwnd != IntPtr.Zero)
             {

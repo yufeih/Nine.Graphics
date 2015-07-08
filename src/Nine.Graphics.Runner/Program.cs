@@ -41,10 +41,11 @@
             
             if (!channel.HasValue())
             {
-                new Host(shutdown).Run(
+                new Host(shutdown, serviceProvider).Run(
                     width.HasValue() ? int.Parse(width.Value()) : 1024,
                     width.HasValue() ? int.Parse(height.Value()) : 768,
-                    topMost.HasValue());
+                    topMost.HasValue(),
+                    app.RemainingArguments.ToArray());
             }
             else
             {
