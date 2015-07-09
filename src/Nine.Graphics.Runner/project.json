@@ -11,6 +11,10 @@
     "Microsoft.Framework.Runtime.Interfaces": "1.0.0-beta4",
     "SharedMemory": "1.1.4"
   },
+  
+  "compilationOptions": {
+    "allowUnsafe": true
+  },
 
   "frameworks": {
     "dnx451": {

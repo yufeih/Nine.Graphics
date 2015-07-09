@@ -3,10 +3,12 @@
     using Microsoft.Framework.Runtime;
     using SharedMemory;
     using System;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading;
+    using System.IO.MemoryMappedFiles;
 
     class Host
     {
@@ -18,6 +20,7 @@
         private readonly CircularBuffer guestBuffer;
         private readonly CircularBuffer hostBuffer;
         private readonly Stopwatch reloadWatch = new Stopwatch();
+        private readonly ConcurrentDictionary<string, MemoryMappedFile> mmfMap = new ConcurrentDictionary<string, MemoryMappedFile>();
 
         private HostForm form;
         private Process guestProcess;
@@ -38,11 +41,11 @@
             };
         }
 
-        public void Run(int width, int height, string[] args)
+        public void Run(int width, int height, bool topMost, string[] args)
         {
             StartGuestProcess(args);
 
-            var uiThread = new Thread(() => RunWindow(width, height));
+            var uiThread = new Thread(() => RunWindow(width, height, topMost));
             uiThread.Name = "Host UI";
             uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.Start();
@@ -52,9 +55,9 @@
             Console.ReadLine();
         }
 
-        private void RunWindow(int width, int height)
+        private void RunWindow(int width, int height, bool topMost)
         {
-            form = new HostForm { TopMost = false, Width = width, Height = height };
+            form = new HostForm { TopMost = topMost, Width = width, Height = height };
             form.SetText("Loading");
             form.HandleCreated += (sender, e) => SendHostWindow();
             form.SizeChanged += (sender, e) => SendHostResize();
@@ -92,7 +95,7 @@
             }
         }
 
-        private void OnMessage(ref Message message)
+        private unsafe void OnMessage(ref Message message)
         {
             switch (message.MessageType)
             {
@@ -103,6 +106,13 @@
                     SendHostResize();
                     reloadWatch.Stop();
                     Console.WriteLine($"Application reloaded in { reloadWatch.ElapsedMilliseconds }ms");
+                    break;
+                case MessageType.GuestRequestSharedMemory:
+                    mmfMap.GetOrAdd(channel + message.GetName(), MemoryMappedFile.OpenExisting);
+                    break;
+                case MessageType.GuestRemoveSharedMemory:
+                    MemoryMappedFile mmf;
+                    if (mmfMap.TryRemove(channel + message.GetName(), out mmf)) mmf.Dispose();
                     break;
             }
         }
@@ -140,29 +150,29 @@
         {
             if (guestProcess != null)
             {
-                var message = new Message
-                {
-                    MessageType = MessageType.HostResize,
+            var message = new Message
+            {
+                MessageType = MessageType.HostResize,
                     Width = form.Width,
                     Height = form.Height,
-                };
+            };
 
-                guestBuffer.Write(ref message);
-            }
+            guestBuffer.Write(ref message);
+        }
         }
 
         private void SendHostWindow()
         {
             if (guestProcess != null)
             {
-                var message = new Message
-                {
-                    MessageType = MessageType.HostWindow,
+            var message = new Message
+            {
+                MessageType = MessageType.HostWindow,
                     Pointer = form.Handle
-                };
+            };
 
-                guestBuffer.Write(ref message);
-            }
+            guestBuffer.Write(ref message);
         }
     }
+}
 }

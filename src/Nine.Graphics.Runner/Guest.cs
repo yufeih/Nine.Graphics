@@ -4,15 +4,20 @@
     using Microsoft.Framework.Runtime.Common;
     using SharedMemory;
     using System;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Threading;
+    using System.IO;
+    using System.IO.MemoryMappedFiles;
 
-    class Guest : IHostWindow, IServiceProvider
+    class Guest : IHostWindow, ISharedMemory, IServiceProvider
     {
+        private readonly string channel;
         private readonly IApplicationShutdown shutdown;
         private readonly IServiceProvider serviceProvider;
         private readonly CircularBuffer guestBuffer;
         private readonly CircularBuffer hostBuffer;
+        private readonly ConcurrentDictionary<string, MemoryMappedFile> mmfMap = new ConcurrentDictionary<string, MemoryMappedFile>();
 
         private IntPtr childWindow;
         private IntPtr parentWindow;
@@ -20,6 +25,7 @@
 
         public Guest(string channel, IApplicationShutdown shutdown, IServiceProvider serviceProvider)
         {
+            this.channel = channel;
             this.shutdown = shutdown;
             this.serviceProvider = serviceProvider;
             this.guestBuffer = new CircularBuffer(channel);
@@ -86,15 +92,6 @@
             }
         }
 
-        public object GetService(Type serviceType)
-        {
-            if (serviceType == typeof(IHostWindow))
-            {
-                return this;
-            }
-            return serviceProvider.GetService(serviceType);
-        }
-
         private void ListenHostEvents()
         {
             while (true)
@@ -105,6 +102,51 @@
                     OnMessage(ref message);
                 }
             }
+        }
+
+        public unsafe Stream GetStream(string name, int sizeInBytes)
+        {
+            var mmf = mmfMap.GetOrAdd(name, key =>
+            {
+                if (sizeInBytes <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(sizeInBytes));
+                }
+
+                var message = new Message(MessageType.GuestRequestSharedMemory).WithName(name);
+
+                lock (mmfMap)
+                {
+                    hostBuffer.Write(ref message);
+
+                    return MemoryMappedFile.CreateNew(channel + name, sizeInBytes);
+                }
+            });
+
+            return mmf.CreateViewStream();
+        }
+
+        public bool Remove(string name)
+        {
+            MemoryMappedFile mmf;
+            if (mmfMap.TryRemove(name, out mmf))
+            {
+                var message = new Message(MessageType.GuestRemoveSharedMemory).WithName(name);
+                hostBuffer.Write(ref message);
+                mmf.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
+        public object GetService(Type serviceType)
+        {
+            if (serviceType == typeof(IHostWindow) || serviceType == typeof(ISharedMemory))
+            {
+                return this;
+            }
+            return serviceProvider.GetService(serviceType);
         }
     }
 }
