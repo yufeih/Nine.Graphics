@@ -31,7 +31,7 @@
         private void RunWinForm()
         {
             var form = new Form { BackColor = System.Drawing.Color.DarkGray };
-            hostWindow.Attach(form.Handle);
+            hostWindow?.Attach(form.Handle);
             Application.Run(form);
         }
 
@@ -49,7 +49,7 @@
             // parent window to the host.
             var handle = host.Window.WindowInfo.Handle;
             var parentHandle = GetParent(handle);
-            hostWindow.Attach(parentHandle != IntPtr.Zero ? parentHandle : handle);
+            hostWindow?.Attach(parentHandle != IntPtr.Zero ? parentHandle : handle);
 
             var texture = "https://avatars0.githubusercontent.com/u/511355?v=3&s=460";
             // var texture = TextureId.White;
