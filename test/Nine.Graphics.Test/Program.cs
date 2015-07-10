@@ -18,16 +18,14 @@
         {
             this.hostWindow = hostWindow;
             this.sharedMemory = sharedMemory;
-
-            sharedMemory.GetStream(@"c://aslf;asldkfjsldflaskfdjsklsjdfl/alsdjkfls/elf", 10000);
         }
 
         public void Main(string[] args)
         {
             if (!CheckIfGacIsNotPatched()) return;
 
-            // RunOpenGL();
-            RunWinForm();
+            RunOpenGL();
+            // RunWinForm();
         }
 
         private void RunWinForm()
@@ -53,8 +51,8 @@
             var parentHandle = GetParent(handle);
             hostWindow.Attach(parentHandle != IntPtr.Zero ? parentHandle : handle);
 
-            // var texture = "https://avatars0.githubusercontent.com/u/511355?v=3&s=460";
-            var texture = TextureId.White;
+            var texture = "https://avatars0.githubusercontent.com/u/511355?v=3&s=460";
+            // var texture = TextureId.White;
             var sprites = new[]
             {
                 new Sprite(texture, size:new Vector2(80, 80), rotation:50),
@@ -64,12 +62,12 @@
             };
 
             var renderer = container.Get<ISpriteRenderer>();
-            var camera = Matrix4x4.CreateOrthographicOffCenter(0, 100, 100, 0, 0, 1);
 
             while (true)
             {
                 host.DrawFrame((w, h) =>
                 {
+                    var camera = Matrix4x4.CreateOrthographicOffCenter(0, w, h, 0, 0, 1);
                     renderer.Draw(camera, sprites);
                 });
             }
