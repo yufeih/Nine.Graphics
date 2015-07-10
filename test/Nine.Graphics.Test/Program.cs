@@ -42,7 +42,7 @@
             var img = new Nine.Imaging.Image();
 
             var container = GraphicsContainer.CreateOpenGLContainer(100, 100);
-            var host = (OpenGL.GraphicsHost)container.Get<IGraphicsHost>();
+            var host = container.Get<OpenGL.GraphicsHost>();
 
             // OpenTK internally creates a child window docked inside a parent window,
             // the handle returned here is the child window, we need to attach the
