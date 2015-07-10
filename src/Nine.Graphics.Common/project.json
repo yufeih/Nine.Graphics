@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "Microsoft.Framework.Runtime.Roslyn.Interfaces": "1.0.0-beta4",
+    "Microsoft.Framework.Runtime.Roslyn.Abstractions": "1.0.0-beta5",
     "Nine.Graphics": "1.0.0-*",
     "Nine.Imaging": "1.1.0-*",
     "System.Numerics.Vectors": "4.0.0"

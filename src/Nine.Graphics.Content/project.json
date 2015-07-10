@@ -7,7 +7,7 @@
   "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
   "dependencies": {
-    "Microsoft.Framework.Runtime": "1.0.0-beta4",
+    "Microsoft.Framework.Runtime": "1.0.0-beta5",
     "Nine.Graphics": "1.0.0-*",
     "Nine.Imaging": "1.1.0-*",
     "SharpFont": "3.0.1",

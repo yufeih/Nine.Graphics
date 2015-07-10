@@ -5,7 +5,7 @@ environment:
   DNX_FEED: https://www.nuget.org/api/v2 
 install:
   - git submodule -q update --init
-  - dnvm install 1.0.0-beta4
+  - dnvm install 1.0.0-beta5
   - dnu restore
 build:
   project: Nine.Graphics.sln
