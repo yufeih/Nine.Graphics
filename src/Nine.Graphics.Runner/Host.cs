@@ -9,6 +9,9 @@
     using System.Runtime.InteropServices;
     using System.Threading;
     using System.IO.MemoryMappedFiles;
+    using System.Windows.Forms;
+    using System.IO;
+    using System.Text;
 
     class Host
     {
@@ -57,12 +60,22 @@
 
         private void RunWindow(int width, int height, bool topMost)
         {
-            form = new HostForm(topMost) { Width = width, Height = height };
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            var env = (IApplicationEnvironment)serviceProvider.GetService(typeof(IApplicationEnvironment));
+            form = new HostForm(topMost)
+            {
+                Text = env.ApplicationName,
+                ShowIcon = false, ShowInTaskbar = false,
+                Width = width, Height = height
+            };
+
             form.SetText("Loading");
             form.HandleCreated += (sender, e) => SendHostWindow();
             form.SizeChanged += (sender, e) => SendHostResize();
-            form.ShowDialog();
-
+            
+            Application.Run(form);
             Environment.Exit(0);
         }
 
