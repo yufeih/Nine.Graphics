@@ -29,7 +29,7 @@
 
   "commands": {
     "test": "xunit.runner.dnx",
-    "dev": "Nine.Graphics.Runner --width 200 --height 100 --pin",
+    "dev": "Nine.Graphics.Runner --width 400 --height 300 --pin",
     "run": "Nine.Graphics.Test"
   }
 }

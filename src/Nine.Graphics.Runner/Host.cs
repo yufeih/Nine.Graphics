@@ -57,7 +57,7 @@
 
         private void RunWindow(int width, int height, bool topMost)
         {
-            form = new HostForm { TopMost = topMost, Width = width, Height = height };
+            form = new HostForm(topMost) { Width = width, Height = height };
             form.SetText("Loading");
             form.HandleCreated += (sender, e) => SendHostWindow();
             form.SizeChanged += (sender, e) => SendHostResize();
