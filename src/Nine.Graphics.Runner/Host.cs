@@ -60,10 +60,8 @@
 
         private void RunWindow(int width, int height, bool topMost)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
             var env = (IApplicationEnvironment)serviceProvider.GetService(typeof(IApplicationEnvironment));
+
             form = new HostForm(topMost)
             {
                 Text = env.ApplicationName,
@@ -74,8 +72,8 @@
             form.SetText("Loading");
             form.HandleCreated += (sender, e) => SendHostWindow();
             form.SizeChanged += (sender, e) => SendHostResize();
-            
-            Application.Run(form);
+            form.ShowDialog();
+
             Environment.Exit(0);
         }
 

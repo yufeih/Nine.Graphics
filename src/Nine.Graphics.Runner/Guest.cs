@@ -9,6 +9,7 @@
     using System.Threading;
     using System.IO;
     using System.IO.MemoryMappedFiles;
+    using Microsoft.Framework.Runtime.Infrastructure;
 
     class Guest : IHostWindow, ISharedMemory, IServiceProvider
     {
@@ -48,6 +49,8 @@
             var appEnv = (IApplicationEnvironment)serviceProvider.GetService(typeof(IApplicationEnvironment));
             var accessor = (IAssemblyLoadContextAccessor)serviceProvider.GetService(typeof(IAssemblyLoadContextAccessor));
             var assembly = accessor.Default.Load(appEnv.ApplicationName);
+
+            CallContextServiceLocator.Locator.ServiceProvider = this;
 
             EntryPointExecutor.Execute(assembly, args, this);
         }
