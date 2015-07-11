@@ -64,7 +64,11 @@
                 case MessageType.HostResize:
                     if (childWindow != IntPtr.Zero)
                     {
-                        WindowHelper.Resize(childWindow, message.Width, message.Height);
+                        var msg = message;
+                        ThreadPool.QueueUserWorkItem(_ =>
+                        {
+                            WindowHelper.Resize(childWindow, msg.Width, msg.Height);
+                        });
                     }
                     break;
             }
