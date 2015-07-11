@@ -42,8 +42,8 @@
             if (!channel.HasValue())
             {
                 new Host(shutdown, serviceProvider).Run(
-                    width.HasValue() ? int.Parse(width.Value()) : 1024,
-                    width.HasValue() ? int.Parse(height.Value()) : 768,
+                    width.HasValue() ? int.Parse(width.Value()) : (int?)null,
+                    width.HasValue() ? int.Parse(height.Value()) : (int?)null,
                     topMost.HasValue(),
                     app.RemainingArguments.ToArray());
             }

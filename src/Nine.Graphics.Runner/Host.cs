@@ -44,7 +44,7 @@
             };
         }
 
-        public void Run(int width, int height, bool topMost, string[] args)
+        public void Run(int? width, int? height, bool topMost, string[] args)
         {
             StartGuestProcess(args);
 
@@ -58,17 +58,11 @@
             Console.ReadLine();
         }
 
-        private void RunWindow(int width, int height, bool topMost)
+        private void RunWindow(int? width, int? height, bool topMost)
         {
             var env = (IApplicationEnvironment)serviceProvider.GetService(typeof(IApplicationEnvironment));
 
-            form = new HostForm(topMost)
-            {
-                Text = env.ApplicationName,
-                ShowIcon = false, ShowInTaskbar = false,
-                Width = width, Height = height
-            };
-
+            form = new HostForm(env.ApplicationName, width, height, topMost);
             form.SetText("Loading");
             form.HandleCreated += (sender, e) => SendHostWindow();
             form.SizeChanged += (sender, e) => SendHostResize();
