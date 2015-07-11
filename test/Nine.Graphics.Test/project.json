@@ -2,10 +2,7 @@
   "dependencies": {
     "Microsoft.Framework.CommandLineUtils": { "version": "1.0.0-*", "type": "build" },
     "Nine.Graphics": "1.0.0-*",
-    "Nine.Graphics.Content": "1.0.0-*",
-    "Nine.Graphics.DirectX": "1.0.0-*",
-    "Nine.Graphics.OpenGL": "1.0.0-*",
-    "Nine.Graphics.Runner": "1.0.0-*",
+    "Nine.Hosting": "1.0.0",
     "Nine.Imaging": "1.1.0-*",
     "Nine.Injection": "1.2.0-*",
     "System.Numerics.Vectors": "4.0.0",
@@ -29,7 +26,7 @@
 
   "commands": {
     "test": "xunit.runner.dnx",
-    "dev": "Nine.Graphics.Runner --pin",
+    "dev": "Nine.Hosting --pin",
     "run": "Nine.Graphics.Test"
   }
 }

@@ -8,11 +8,10 @@
 
   "dependencies": {
     "Microsoft.Framework.Runtime": "1.0.0-beta5",
-    "Nine.Graphics": "1.0.0-*",
+    "Nine.Graphics.Abstractions": "1.0.0-*",
     "Nine.Imaging": "1.1.0-*",
     "SharpFont": "3.0.1",
-    "SharpFont.Dependencies": "2.5.5.1",
-    "System.Numerics.Vectors": "4.0.0"
+    "SharpFont.Dependencies": "2.5.5.1"
   },
 
   "compilationOptions": {

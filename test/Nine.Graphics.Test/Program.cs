@@ -1,7 +1,7 @@
 ﻿namespace Nine.Graphics
 {
     using Nine.Graphics.Rendering;
-    using Nine.Graphics.Runner;
+    using Nine.Hosting;
     using Nine.Injection;
     using System;
     using System.Diagnostics;
