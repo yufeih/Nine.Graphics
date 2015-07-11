@@ -105,7 +105,15 @@
                 case MessageType.GuestWindowAttached:
                     SendHostResize();
                     reloadWatch.Stop();
-                    Console.WriteLine($"Application reloaded in { reloadWatch.ElapsedMilliseconds }ms");
+                    var runtimeOptions = (IRuntimeOptions)serviceProvider.GetService(typeof(IRuntimeOptions));
+                    if (runtimeOptions.CompilationServerPort.HasValue)
+                    {
+                        Console.WriteLine($"Application loaded in { reloadWatch.ElapsedMilliseconds }ms using compilation server port { runtimeOptions.CompilationServerPort }");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Application loaded in { reloadWatch.ElapsedMilliseconds }ms");
+                    }
                     break;
                 case MessageType.GuestRequestSharedMemory:
                     mmfMap.GetOrAdd(channel + message.GetName(), MemoryMappedFile.OpenExisting);

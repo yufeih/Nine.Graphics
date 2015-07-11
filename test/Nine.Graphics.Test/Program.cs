@@ -22,6 +22,7 @@
 
         public void Main(string[] args)
         {
+            // Run "dnx --watch --port [PORT] . dev" in this directory
             if (!CheckIfGacIsNotPatched()) return;
 
             RunOpenGL();
