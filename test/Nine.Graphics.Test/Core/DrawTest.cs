@@ -18,17 +18,17 @@
         public static IContainer OpenGlContainer => glContainer.Value;
         public static IContainer DirectXContainer => dxContainer.Value;
 
-        private static readonly Lazy<IContainer> glContainer = new Lazy<IContainer>(() => GraphicsContainer.CreateOpenGLContainer(1024, 768, true));
-        private static readonly Lazy<IContainer> dxContainer = new Lazy<IContainer>(() => GraphicsContainer.CreateDirectXContainer(1024, 768, true));
+        private static readonly Lazy<IContainer> glContainer = new Lazy<IContainer>(() => GraphicsContainer.CreateOpenGLContainer(400, 300, true));
+        private static readonly Lazy<IContainer> dxContainer = new Lazy<IContainer>(() => GraphicsContainer.CreateDirectXContainer(400, 300, true));
 
-        public static readonly TheoryData<Drawing> TestDimensions = new DrawingBuilder();
+        public static readonly TheoryData<Drawing> Drawings = new DrawingBuilder();
 
         [Theory]
-        [MemberData(nameof(TestDimensions))]
+        [MemberData(nameof(Drawings))]
         public Task gl(Drawing scene) => scene?.Draw(OpenGlContainer) ?? Task.FromResult(0);
 
         [Theory]
-        [MemberData(nameof(TestDimensions))]
+        [MemberData(nameof(Drawings))]
         public Task dx(Drawing scene) => scene?.Draw(DirectXContainer) ?? Task.FromResult(0);
 
         class DrawingBuilder : TheoryData<Drawing>
@@ -47,6 +47,7 @@
                     }
 
                     drawing.Name = name;
+                    drawing.FrameName = $"{ typeof(T).Name }/{ name }";
                     Add(drawing);
                 }
             }

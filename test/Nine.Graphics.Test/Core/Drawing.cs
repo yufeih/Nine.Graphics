@@ -9,6 +9,7 @@
     public class Drawing : IXunitSerializable
     {
         public string Name;
+        public string FrameName;
 
         private readonly Func<IContainer, Task> beforeDraw;
         private readonly Action<IContainer, int, int> draw;
@@ -31,18 +32,18 @@
             var host = container.Get<IGraphicsHost>();
             if (host != null)
             {
-                host.DrawFrame((w, h) => draw?.Invoke(container, w, h), Name ?? "<noname>");
+                host.DrawFrame((w, h) => draw?.Invoke(container, w, h), FrameName ?? "<noname>");
             }
         }
 
         public void Deserialize(IXunitSerializationInfo info)
         {
-
+            Name = info.GetValue<string>(nameof(Name));
         }
 
         public void Serialize(IXunitSerializationInfo info)
         {
-
+            info.AddValue(nameof(Name), Name);
         }
 
         public override string ToString()
