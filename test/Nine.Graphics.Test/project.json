@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "Microsoft.Framework.CommandLineUtils": { "version": "1.0.0-*", "type": "build" },
     "Nine.Graphics": "1.0.0-*",
     "Nine.Hosting": "1.0.0",
     "Nine.Imaging": "1.1.0-*",
@@ -13,9 +12,7 @@
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
-        "System.Runtime": "4.0.10.0",
-        "System.Drawing": "4.0.0.0",
-        "System.Windows.Forms": "4.0.0.0"
+        "System.Runtime": "4.0.10.0"
       }
     }
   },

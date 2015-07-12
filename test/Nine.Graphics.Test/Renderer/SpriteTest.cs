@@ -1,17 +1,15 @@
 ﻿namespace Nine.Graphics
 {
-    using System;
-    using System.Linq;
-    using System.Numerics;
-    using System.Threading.Tasks;
     using Nine.Graphics.Content;
     using Nine.Graphics.Rendering;
     using Nine.Injection;
-    using Xunit;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Numerics;
 
-    public class SpriteRendererTest : GraphicsTest
+    public class SpriteTest : DrawTest<SpriteTest>, IDrawTest
     {
-        public static readonly TextureId[] textures =
+        private static readonly TextureId[] textures =
         {
             "http://findicons.com/files/icons/1700/2d/512/game.png",
             "https://avatars0.githubusercontent.com/u/511355?v=3&s=460",
@@ -19,7 +17,7 @@
             TextureId.White,
         };
 
-        public static readonly Sprite[][] scenes =
+        private static readonly Sprite[][] scenes =
         {
             new [] { new Sprite(), new Sprite("not exist"), new Sprite(textures[0]) },
             new []
@@ -47,20 +45,28 @@
                 new Sprite(textures[1], size:new Vector2(80, 80), color:new Color(255, 255, 0), position:new Vector2(120, 0)),
             },
         };
-        
-        [Theory]
-        [MemberData(nameof(Containers))]
-        public async Task draw_an_image(Lazy<IContainer> container)
+
+        public IEnumerable<Drawing> GetDrawings()
         {
-            var renderer = container.Value.Get<ISpriteRenderer>();
-            var camera = Matrix4x4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
+            return scenes.Select(CreateDrawing);
+        }
 
-            await container.Value.Get<ITexturePreloader>().Preload(textures);
+        private static Drawing CreateDrawing(Sprite[] scene)
+        {
+            return new Drawing(
 
-            foreach (var scene in scenes)
-            {
-                Frame(container.Value, () => renderer.Draw(camera, scene));
-            }
+                draw: (container, width, height) => 
+                {
+                    var renderer = container.Get<ISpriteRenderer>();
+                    var camera = Matrix4x4.CreateOrthographicOffCenter(0, width, height, 0, 0, 1);
+                    renderer.Draw(camera, scene);
+                },
+
+                beforeDraw: container =>
+                {
+                    return container.Get<ITexturePreloader>().Preload(textures);
+                }
+            );
         }
     }
 }

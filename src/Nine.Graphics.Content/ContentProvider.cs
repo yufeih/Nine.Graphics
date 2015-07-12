@@ -4,14 +4,17 @@
     using System.IO;
     using System.Threading.Tasks;
     using System.Net.Http;
+    using Nine.Hosting;
 
     public class ContentProvider : IContentProvider
     {
         private readonly Lazy<HttpClient> http;
+        private readonly ISharedMemory sharedMemory;
 
-        public ContentProvider(HttpMessageHandler messageHandler = null)
+        public ContentProvider(ISharedMemory sharedMemory = null, HttpMessageHandler messageHandler = null)
         {
-            http = new Lazy<HttpClient>(() => new HttpClient(messageHandler ?? new HttpClientHandler()));
+            this.sharedMemory = sharedMemory;
+            this.http = new Lazy<HttpClient>(() => new HttpClient(messageHandler ?? new HttpClientHandler()));
         }
 
         public async Task<Stream> Open(string name)

@@ -8,14 +8,20 @@
     using System.IO;
     using System.Threading.Tasks;
     using Xunit;
+    using System.Collections.Generic;
 
-    class FontLoaderTest : GraphicsTest
+    class FontTest : DrawTest<FontTest>, IDrawTest
     {
+        public IEnumerable<Drawing> GetDrawings()
+        {
+            yield break;
+        }
+
         [Fact]
         public async Task build_default_ascii_table()
         {
             var textureCount = 0;
-            var fontLoader = DefaultContainer.Get<IFontLoader>();
+            var fontLoader = OpenGlContainer.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
@@ -38,7 +44,7 @@
         public async Task build_full_unicode_table(Lazy<IContainer> container)
         {
             var textureCount = 0;
-            var fontLoader = DefaultContainer.Get<IFontLoader>();
+            var fontLoader = OpenGlContainer.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
@@ -80,7 +86,7 @@
 
         private void SaveFrame(TextureContent textureContent, string path)
         {
-            path = $"{ OutputPath }/{ nameof(FontLoaderTest) }/{ path }";
+            path = $"{ OutputPath }/{ nameof(FontTest) }/{ path }";
 
             if (!Directory.Exists(Path.GetDirectoryName(path)))
             {

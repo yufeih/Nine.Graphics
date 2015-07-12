@@ -4,6 +4,6 @@
 [submodule "dep/Nine.Geometry"]
 	path = dep/Nine.Geometry
 	url = https://github.com/studio-nine/Nine.Geometry.git
-[submodule "dep/Nine.Injection"]
-	path = dep/Nine.Injection
-	url = https://github.com/studio-nine/Nine.Injection.git
+[submodule "dep/Nine.Hosting"]
+	path = dep/Nine.Hosting
+	url = https://github.com/studio-nine/Nine.Hosting.git
