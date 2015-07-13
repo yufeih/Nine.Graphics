@@ -1,19 +1,11 @@
-configuration: Release
 os: Visual Studio 2015 RC
 environment:
   VisualStudioVersion: 14.0
-  DNX_FEED: https://www.nuget.org/api/v2 
+  DNX_FEED: https://www.nuget.org/api/v2
 install:
-  - git submodule -q update --init
-  - dnvm install 1.0.0-beta4
+  - dnvm install 1.0.0-beta5
   - dnu restore
-build:
-  project: Nine.Graphics.sln
-test_script:
-  - cd test\Nine.Graphics.Test
-deploy:
-- provider: NuGet
-  api_key:
-    secure: /Aez/maYDiX55BgGX9EkbhXBaBySsfdKifgB9SZxqySOrwtMVgPf7jOwS2XwKYJR
-  on:
-    branch: master
+  - dnu pack src/Nine.Graphics --configuration Release --out artifacts
+build: off
+artifacts:
+  - path: artifacts\**\*.nupkg
