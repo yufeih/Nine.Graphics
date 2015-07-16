@@ -7,7 +7,7 @@
   "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
   "dependencies": {
-    "Nine.Graphics.Common": { "version": "1.0.0-*", "type": "build" },
+    "Nine.Graphics.Common": { "version": "", "type": "build" },
     "SharpDX": "3.0.0-*",
     "SharpDX.Direct3D12": "3.0.0-*",
     "SharpDX.DXGI": "3.0.0-*",
