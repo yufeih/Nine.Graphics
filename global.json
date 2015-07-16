@@ -1,11 +1,5 @@
 {
-  "projects": [
-    "src",
-    "test",
-    "dep/Nine.Imaging/src",
-    "dep/Nine.Injection/src",
-    "dep/Nine.Geometry/src"
-  ],
+  "projects": [ "src", "test" ],
   "sdk": {
     "version": "1.0.0-beta5"
   }
