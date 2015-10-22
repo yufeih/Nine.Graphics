@@ -13,7 +13,6 @@ namespace Nine.Graphics.DirectX
     public class GraphicsHost : Rendering.IGraphicsHost
     {
         public IntPtr WindowHandle => window.Handle;
-        public System.Windows.Forms.Form WindowForm => window;
 
         public Device Device => device;
 
@@ -22,8 +21,9 @@ namespace Nine.Graphics.DirectX
         // Pipeline Objects
         private Device device;
         private SwapChain3 swapChain;
-        private Resource[] renderTargets = new Resource[FrameCount];
+        private readonly Resource[] renderTargets = new Resource[FrameCount];
 
+        private RootSignature rootSignature;
         private CommandAllocator commandAllocator;
         private CommandQueue commandQueue;
         private DescriptorHeap renderTargetViewHeap;
@@ -42,6 +42,9 @@ namespace Nine.Graphics.DirectX
         private readonly RenderForm window;
         private RenderLoop renderLoop;
 
+        private ViewportF viewport;
+        private Rectangle scissorRect;
+
         public GraphicsHost(int width, int height, bool hidden = false) // FormBorderStyle = FormBorderStyle.FixedSingle
             : this(new RenderForm("Nine.Graphics") { Width = width, Height = height }, hidden)
         { }
@@ -57,6 +60,13 @@ namespace Nine.Graphics.DirectX
 
             int width = window.ClientSize.Width;
             int height = window.ClientSize.Height;
+
+            viewport.Width = width;
+            viewport.Height = height;
+            viewport.MaxDepth = 1.0f;
+
+            scissorRect.Right = width;
+            scissorRect.Bottom = height;
 
             /// 
             /// Pipeline
@@ -124,6 +134,10 @@ namespace Nine.Graphics.DirectX
             /// 
             /// Assets
             /// 
+
+            // Create an empty root signature.
+            var rootSignatureDesc = new RootSignatureDescription(RootSignatureFlags.AllowInputAssemblerInputLayout);
+            rootSignature = device.CreateRootSignature(rootSignatureDesc.Serialize());
 
             // Create the command list.
             commandList = device.CreateCommandList(CommandListType.Direct, commandAllocator, null);
@@ -200,6 +214,8 @@ namespace Nine.Graphics.DirectX
             var clearColor = new RawColor4(Branding.Color.R / 255.0f, Branding.Color.G / 255.0f, Branding.Color.B / 255.0f, Branding.Color.A / 255.0f);
             commandList.ClearRenderTargetView(rtvHandle, clearColor, 0, null);
 
+            // TODO: Draw should be called here!
+
             // Indicate that the back buffer will now be used to present.
             commandList.ResourceBarrierTransition(renderTargets[frameIndex], ResourceStates.RenderTarget, ResourceStates.Present);
 
@@ -240,6 +256,7 @@ namespace Nine.Graphics.DirectX
 
             commandAllocator.Dispose();
             commandQueue.Dispose();
+            rootSignature.Dispose();
             renderTargetViewHeap.Dispose();
             commandList.Dispose();
             fence.Dispose();
