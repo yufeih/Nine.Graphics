@@ -5,5 +5,7 @@
     public interface IDynamicPrimitiveRenderer
     {
         void Draw(Matrix4x4 projection, Matrix4x4 view);
+
+        void Clear();
     }
 }
