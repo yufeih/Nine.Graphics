@@ -1,56 +1,23 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿#if DX
+namespace Nine.Graphics.DirectX
 {
-    using OpenTK.Graphics.OpenGL;
+#else
+namespace Nine.Graphics.OpenGL
+{
+#endif
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Numerics;
 
-    partial class DynamicPrimitive
+    public partial class DynamicPrimitiveRenderer
     {
-        private bool hasPrimitiveBegin = false;
-        private Vertex[] vertexData;
-        private ushort[] indexData;
-
-        private List<PrimitiveGroupEntry> batches = new List<PrimitiveGroupEntry>();
-        private List<int> vertexSegments = new List<int>();
-        private List<int> indexSegments = new List<int>();
-
-        private PrimitiveGroupEntry currentPrimitive;
-        private int currentSegment;
-        private int currentVertex;
-        private int currentIndex;
-        private int currentBaseVertex;
-        private int currentBaseIndex;
-        private int baseSegmentVertex;
-        private int baseSegmentIndex;
-        private int beginSegment;
-        private bool isDirty = true;
-
-        private int initialBufferCapacity;
-        private int maxBufferSizePerPrimitive;
-        
-        private uint[] VBOid = new uint[2];
-
-        void CreateBuffers(int initialBufferCapacity, int maxBufferSizePerPrimitive)
-        {
-            this.initialBufferCapacity = initialBufferCapacity;
-            this.maxBufferSizePerPrimitive = maxBufferSizePerPrimitive;
-
-            this.vertexData = new Vertex[512];
-            this.indexData = new ushort[6];
-
-            GL.GenBuffers(2, VBOid);
-        }
-        
         /// <summary>
         /// 
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void BeginPrimitive(PrimitiveType primitiveType, TextureId? texture, Matrix4x4? world = null, float lineWidth = 1)
         {
-            if (hasPrimitiveBegin)
-                throw new InvalidOperationException("Begin cannot be called until End has been successfully called.");
+            if (hasPrimitiveBegin) throw new InvalidOperationException("Begin cannot be called until End has been successfully called.");
 
             hasPrimitiveBegin = true;
 
@@ -81,24 +48,24 @@
             currentPrimitive.VertexCount = currentVertex - currentPrimitive.StartVertex;
             currentPrimitive.IndexCount = currentIndex - currentPrimitive.StartIndex;
 
-            vertexSegments[vertexSegments.Count - 1] = baseSegmentVertex + currentVertex;
-            indexSegments[indexSegments.Count - 1] = baseSegmentIndex + currentIndex;
-            
+            //vertexSegments[vertexSegments.Count] = baseSegmentVertex + currentVertex;
+            //indexSegments[indexSegments.Count] = baseSegmentIndex + currentIndex;
+
             batches.Add(currentPrimitive);
         }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public void AddVertex(Vector3 position, Nine.Imaging.Color color)
+        public void AddVertex(Vector3 position, Color color)
             => this.AddVertex(position, color, Vector2.Zero);
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public void AddVertex(Vector3 position, Nine.Imaging.Color color, Vector2 uv)
-            => this.AddVertex(position, new Vector4(color.R / 255, color.G / 255, color.B / 255, 1.0f), uv);
+        public void AddVertex(Vector3 position, Color color, Vector2 uv)
+            => this.AddVertex(position, new Vector4(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, 1.0f), uv);
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void AddVertex(Vector3 position, Vector3 color)
             => this.AddVertex(position, new Vector4(color, 1.0f), Vector2.Zero);
-        
+
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void AddVertex(Vector3 position, Vector3 color, Vector2 uv)
             => this.AddVertex(position, new Vector4(color, 1.0f), uv);
@@ -107,18 +74,17 @@
         /// 
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public void AddVertex(Vector3 position, Vector4 color, Vector2 uv) 
+        public void AddVertex(Vector3 position, Vector4 color, Vector2 uv)
             => this.AddVertex(new Vertex { Position = position, Color = color, TextureCoordinate = uv });
 
         private void AddVertex(Vertex vertex)
         {
-            if (!hasPrimitiveBegin)
-                throw new InvalidOperationException("Begin cannot be called until End has been successfully called.");
+            if (!hasPrimitiveBegin) throw new InvalidOperationException("Begin cannot be called until End has been successfully called.");
 
             var index = baseSegmentVertex + currentVertex;
             if (index >= vertexData.Length)
                 Array.Resize(ref vertexData, vertexData.Length * 2);
-            
+
             vertexData[index] = vertex;
             currentVertex++;
         }
@@ -129,14 +95,12 @@
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void AddIndex(int index)
         {
-            if (!hasPrimitiveBegin)
-                throw new InvalidOperationException("Begin cannot be called until End has been successfully called.");
-            if (index > ushort.MaxValue)
-                throw new ArgumentOutOfRangeException("index");
+            if (!hasPrimitiveBegin) throw new InvalidOperationException("Begin cannot be called until End has been successfully called.");
+            if (index > ushort.MaxValue) throw new ArgumentOutOfRangeException(nameof(index));
 
             if (baseSegmentIndex + currentIndex >= indexData.Length)
                 Array.Resize(ref indexData, indexData.Length * 2);
-            
+
             indexData[baseSegmentIndex + currentIndex++] = (ushort)(currentBaseVertex + index);
         }
 
@@ -160,11 +124,6 @@
             this.currentVertex = 0;
             this.baseSegmentIndex = 0;
             this.baseSegmentVertex = 0;
-        }
-
-        void DisposeBuffers()
-        {
-            GL.DeleteBuffers(2, VBOid);
         }
     }
 }
