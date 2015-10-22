@@ -7,10 +7,10 @@
   "licenseUrl": "https://github.com/studio-nine/Nine.Graphics/blob/master/LICENSE",
 
   "dependencies": {
-    "Nine.Graphics.Abstractions": "1.0.0-*",
-    "Nine.Graphics.OpenGL": "1.0.0-*",
-    "Nine.Graphics.DirectX": "1.0.0-*",
-    "Nine.Graphics.Content": "1.0.0-*"
+    "Nine.Graphics.Abstractions": "",
+    "Nine.Graphics.OpenGL": "",
+    "Nine.Graphics.DirectX": "",
+    "Nine.Graphics.Content": ""
   },
 
   "frameworks": {

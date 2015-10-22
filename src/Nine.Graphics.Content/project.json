@@ -8,7 +8,7 @@
 
   "dependencies": {
     "Microsoft.Framework.Runtime": "1.0.0-*",
-    "Nine.Graphics.Abstractions": "1.0.0-*",
+    "Nine.Graphics.Abstractions": "",
     "Nine.Hosting.Abstractions": "1.0.0",
     "Nine.Imaging": "1.1.0-*",
     "SharpFont": "3.0.1",
