@@ -163,10 +163,32 @@ namespace Nine.Graphics.DirectX
             if (!this.renderLoop.NextFrame())
                 return false;
 
-            // Record all the commands we need to render the scene into the command list.
-            PopulateCommandList();
+            // Command list allocators can only be reset when the associated 
+            // command lists have finished execution on the GPU; apps should use 
+            // fences to determine GPU execution progress.
+            commandAllocator.Reset();
+
+            // However, when ExecuteCommandList() is called on a particular command 
+            // list, that command list can then be reset at any time and must be before 
+            // re-recording.
+            commandList.Reset(commandAllocator, null);
+
+            // Indicate that the back buffer will be used as a render target.
+            commandList.ResourceBarrierTransition(renderTargets[frameIndex], ResourceStates.Present, ResourceStates.RenderTarget);
+
+            CpuDescriptorHandle rtvHandle = renderTargetViewHeap.CPUDescriptorHandleForHeapStart;
+            rtvHandle += frameIndex * rtvDescriptorSize;
+
+            // Record commands.
+            var clearColor = new RawColor4(Branding.Color.R / 255.0f, Branding.Color.G / 255.0f, Branding.Color.B / 255.0f, Branding.Color.A / 255.0f);
+            commandList.ClearRenderTargetView(rtvHandle, clearColor, 0, null);
 
             draw(window.Width, window.Height);
+
+            // Indicate that the back buffer will now be used to present.
+            commandList.ResourceBarrierTransition(renderTargets[frameIndex], ResourceStates.RenderTarget, ResourceStates.Present);
+
+            commandList.Close();
 
             // Execute the command list.
             commandQueue.ExecuteCommandList(commandList);
@@ -195,37 +217,7 @@ namespace Nine.Graphics.DirectX
 
             throw new NotImplementedException();
         }
-
-        private void PopulateCommandList()
-        {
-            // Command list allocators can only be reset when the associated 
-            // command lists have finished execution on the GPU; apps should use 
-            // fences to determine GPU execution progress.
-            commandAllocator.Reset();
-
-            // However, when ExecuteCommandList() is called on a particular command 
-            // list, that command list can then be reset at any time and must be before 
-            // re-recording.
-            commandList.Reset(commandAllocator, null);
-
-            // Indicate that the back buffer will be used as a render target.
-            commandList.ResourceBarrierTransition(renderTargets[frameIndex], ResourceStates.Present, ResourceStates.RenderTarget);
-
-            CpuDescriptorHandle rtvHandle = renderTargetViewHeap.CPUDescriptorHandleForHeapStart;
-            rtvHandle += frameIndex * rtvDescriptorSize;
-
-            // Record commands.
-            var clearColor = new RawColor4(Branding.Color.R / 255.0f, Branding.Color.G / 255.0f, Branding.Color.B / 255.0f, Branding.Color.A / 255.0f);
-            commandList.ClearRenderTargetView(rtvHandle, clearColor, 0, null);
-
-            // TODO: Draw should be called here!
-
-            // Indicate that the back buffer will now be used to present.
-            commandList.ResourceBarrierTransition(renderTargets[frameIndex], ResourceStates.RenderTarget, ResourceStates.Present);
-
-            commandList.Close();
-        }
-
+        
         /// <summary>
         /// Wait the previous command list to finish executing. 
         /// </summary>

@@ -2,10 +2,7 @@
 
 namespace Nine.Graphics.DirectX
 {
-    using System.Diagnostics;
     using System;
-    using System.Linq;
-    using SharpDX.D3DCompiler;
     using SharpDX.Direct3D12;
     using System.Numerics;
 
@@ -29,7 +26,7 @@ PS_IN main(float2 position : POSITION, float4 color : COLOR, float2 uv : TEXCOOR
 
     output.uv = uv;
     output.color = color;
-    output.position = mul(float4(position, 0, 1), transform);
+    output.position = float4(position, 0, 1); //mul(float4(position, 0, 1), transform);
 	
     return output;
 }";
@@ -66,12 +63,11 @@ float4 main(PS_IN input) : SV_Target
 
         private void PlatformCreateBuffers()
         {
-            float aspectRatio = graphicsHost.Viewport.Width / graphicsHost.Viewport.Height;
             var triangleVertices = new[]
             {
-                new Vertex() {Position=new Vector2(0.0f, 0.25f * aspectRatio), Color=Color.Red.Bgra, TextureCoordinate=Vector2.Zero },
-                new Vertex() {Position=new Vector2(0.25f, -0.25f * aspectRatio), Color=Color.Red.Bgra, TextureCoordinate=Vector2.Zero },
-                new Vertex() {Position=new Vector2(-0.25f, -0.25f * aspectRatio), Color=Color.Red.Bgra, TextureCoordinate=Vector2.Zero },
+                new Vertex() {Position=new Vector2(10, 10), Color=Color.Red.Bgra, TextureCoordinate=Vector2.Zero },
+                new Vertex() {Position=new Vector2(10, 100), Color=Color.Red.Bgra, TextureCoordinate=Vector2.Zero },
+                new Vertex() {Position=new Vector2(100, 100), Color=Color.Red.Bgra, TextureCoordinate=Vector2.Zero },
             };
 
             int vertexBufferSize = triangleVertices.Length * Vertex.SizeInBytes;
@@ -159,6 +155,7 @@ float4 main(PS_IN input) : SV_Target
         {
             graphicsHost.CommandList.Reset(graphicsHost.CommandAllocator, pipelineState);
 
+            // TODO: projection
             // TODO: Update buffers
 
             graphicsHost.CommandList.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
@@ -167,6 +164,8 @@ float4 main(PS_IN input) : SV_Target
 
         private unsafe void PlatformDraw(Vertex* pVertex, int vertexCount, Resource texture, bool isTransparent)
         {
+            // TODO: texture
+
             graphicsHost.CommandList.DrawInstanced(vertexCount, 1, 0, 0);
         }
 
