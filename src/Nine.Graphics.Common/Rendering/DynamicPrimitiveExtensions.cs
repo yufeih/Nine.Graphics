@@ -5,11 +5,10 @@ namespace Nine.Graphics.DirectX
 namespace Nine.Graphics.OpenGL
 {
 #endif
+    using Rendering;
     using System;
     using System.Collections.Generic;
     using System.Numerics;
-
-    // TODO: Change so it uses the interface instead of DynamicPrimitiveRenderer
 
     enum Flip
     {
@@ -20,7 +19,7 @@ namespace Nine.Graphics.OpenGL
     }
 
     /// <summary>
-    /// Contains extension method for <see cref="DynamicPrimitiveRenderer"/>.
+    /// Contains extension method for <see cref="IDynamicPrimitiveRenderer"/>.
     /// </summary>
     //[EditorBrowsable(EditorBrowsableState.Never)]
     public static class DynamicPrimitiveExtensions
@@ -28,7 +27,7 @@ namespace Nine.Graphics.OpenGL
         // TODO: Add more advanced texture rectangles
         //       Like texture region and texture rotation
 
-        public static void AddRectangle(this DynamicPrimitiveRenderer dynamicPrimitive, Vector2 min, Vector2 max, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddRectangle(this IDynamicPrimitiveRenderer dynamicPrimitive, Vector2 min, Vector2 max, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             dynamicPrimitive.BeginPrimitive(PrimitiveType.Lines, null, world, lineWidth);
             {
@@ -49,7 +48,7 @@ namespace Nine.Graphics.OpenGL
             dynamicPrimitive.EndPrimitive();
         }
 
-        public static void AddRectangle(this DynamicPrimitiveRenderer dynamicPrimitive, Vector2 min, Vector2 max, Vector3 up, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddRectangle(this IDynamicPrimitiveRenderer dynamicPrimitive, Vector2 min, Vector2 max, Vector3 up, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             var transform = MathHelper.CreateRotation(new Vector3(0, 1, 0), up);
 
@@ -73,13 +72,13 @@ namespace Nine.Graphics.OpenGL
         }
 
         // TODO: Add with Nine.Geometry
-        //public static void AddSolidRectangle(this DynamicPrimitiveRenderer dynamicPrimitive, BoundingRectangle rectangle, Color color, TextureId? texture = null, Matrix4x4? world = null)
+        //public static void AddSolidRectangle(this IDynamicPrimitiveRenderer dynamicPrimitive, BoundingRectangle rectangle, Color color, TextureId? texture = null, Matrix4x4? world = null)
         //    => AddSolidRectangle(dynamicPrimitive, new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Bottom), color, texture, world);
 
-        public static void AddSolidRectangle(this DynamicPrimitiveRenderer dynamicPrimitive, Imaging.Rectangle rectangle, Color color, TextureId? texture = null, Matrix4x4? world = null)
+        public static void AddSolidRectangle(this IDynamicPrimitiveRenderer dynamicPrimitive, Imaging.Rectangle rectangle, Color color, TextureId? texture = null, Matrix4x4? world = null)
             => AddSolidRectangle(dynamicPrimitive, new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Bottom), color, texture, world);
 
-        public static void AddSolidRectangle(this DynamicPrimitiveRenderer dynamicPrimitive, Vector2 min, Vector2 max, Color color, TextureId? texture = null, Matrix4x4? world = null)
+        public static void AddSolidRectangle(this IDynamicPrimitiveRenderer dynamicPrimitive, Vector2 min, Vector2 max, Color color, TextureId? texture = null, Matrix4x4? world = null)
         {
             dynamicPrimitive.BeginPrimitive(PrimitiveType.Triangles, texture, world);
             {
@@ -99,7 +98,7 @@ namespace Nine.Graphics.OpenGL
             dynamicPrimitive.EndPrimitive();
         }
 
-        public static void AddCircle(this DynamicPrimitiveRenderer dynamicPrimitive, Vector3 center, float radius, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddCircle(this IDynamicPrimitiveRenderer dynamicPrimitive, Vector3 center, float radius, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             dynamicPrimitive.BeginPrimitive(PrimitiveType.LineStrip, null, world, lineWidth);
             {
@@ -124,7 +123,7 @@ namespace Nine.Graphics.OpenGL
             dynamicPrimitive.EndPrimitive();
         }
 
-        public static void AddCircle(this DynamicPrimitiveRenderer dynamicPrimitive, Vector3 center, float radius, Vector3 up, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddCircle(this IDynamicPrimitiveRenderer dynamicPrimitive, Vector3 center, float radius, Vector3 up, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             var transform = Matrix4x4.CreateScale(radius) *
                             MathHelper.CreateRotation(new Vector3(0, 1, 0), up) *
@@ -155,13 +154,13 @@ namespace Nine.Graphics.OpenGL
 
         // TODO: AddGrid(...) is stepping in Z, should be Y
 
-        public static void AddGrid(this DynamicPrimitiveRenderer dynamicPrimitive, float step, int countX, int countZ, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddGrid(this IDynamicPrimitiveRenderer dynamicPrimitive, float step, int countX, int countZ, Color color, Matrix4x4? world = null, float lineWidth = 1)
             => AddGrid(dynamicPrimitive, -step * countX * 0.5f, 0, -step * countZ * 0.5f, step * countX, step * countZ, countX, countZ, color, world, lineWidth);
 
-        public static void AddGrid(this DynamicPrimitiveRenderer dynamicPrimitive, float x, float y, float z, float step, int countX, int countZ, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddGrid(this IDynamicPrimitiveRenderer dynamicPrimitive, float x, float y, float z, float step, int countX, int countZ, Color color, Matrix4x4? world = null, float lineWidth = 1)
             => AddGrid(dynamicPrimitive, x, y, z, step * countX, step * countZ, countX, countZ, color, world, lineWidth);
 
-        public static void AddGrid(this DynamicPrimitiveRenderer dynamicPrimitive, float x, float y, float z, float width, float height, int countX, int countZ, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddGrid(this IDynamicPrimitiveRenderer dynamicPrimitive, float x, float y, float z, float width, float height, int countX, int countZ, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             dynamicPrimitive.BeginPrimitive(PrimitiveType.Lines, null, world, lineWidth);
             {
@@ -185,7 +184,7 @@ namespace Nine.Graphics.OpenGL
         
         // TODO: Plane is in 3D
 
-        public static void AddPlane(this DynamicPrimitiveRenderer dynamicPrimitive, Plane plane, float size, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddPlane(this IDynamicPrimitiveRenderer dynamicPrimitive, Plane plane, float size, int tessellation, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             var transform = MathHelper.CreateRotation(new Vector3(0, 1, 0), plane.Normal) *
                             Matrix4x4.CreateTranslation(plane.Normal * plane.D);
@@ -196,7 +195,7 @@ namespace Nine.Graphics.OpenGL
             AddGrid(dynamicPrimitive, 0, 0, 0, size, size, tessellation, tessellation, color, transform, lineWidth);
         }
         
-        public static void AddLine(this DynamicPrimitiveRenderer dynamicPrimitive, Vector3 v1, Vector3 v2, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddLine(this IDynamicPrimitiveRenderer dynamicPrimitive, Vector3 v1, Vector3 v2, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             dynamicPrimitive.BeginPrimitive(PrimitiveType.Lines, null, world, lineWidth);
             {
@@ -206,7 +205,7 @@ namespace Nine.Graphics.OpenGL
             dynamicPrimitive.EndPrimitive();
         }
 
-        public static void AddLine(this DynamicPrimitiveRenderer dynamicPrimitive, IEnumerable<Vector3> lineStrip, Color color, Matrix4x4? world = null, float lineWidth = 1)
+        public static void AddLine(this IDynamicPrimitiveRenderer dynamicPrimitive, IEnumerable<Vector3> lineStrip, Color color, Matrix4x4? world = null, float lineWidth = 1)
         {
             dynamicPrimitive.BeginPrimitive(PrimitiveType.LineStrip, null, world, lineWidth);
             {

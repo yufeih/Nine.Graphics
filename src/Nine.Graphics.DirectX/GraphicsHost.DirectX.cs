@@ -15,6 +15,10 @@ namespace Nine.Graphics.DirectX
         public IntPtr WindowHandle => window.Handle;
 
         public Device Device => device;
+        public RootSignature RootSignature => rootSignature;
+        public CommandAllocator CommandAllocator => commandAllocator;
+        public GraphicsCommandList CommandList => commandList;
+        public ViewportF Viewport => viewport;
 
         const int FrameCount = 2;
 

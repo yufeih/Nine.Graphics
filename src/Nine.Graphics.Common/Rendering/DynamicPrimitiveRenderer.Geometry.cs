@@ -5,6 +5,7 @@ namespace Nine.Graphics.DirectX
 namespace Nine.Graphics.OpenGL
 {
 #endif
+    using Rendering;
     using System;
     using System.ComponentModel;
     using System.Numerics;
