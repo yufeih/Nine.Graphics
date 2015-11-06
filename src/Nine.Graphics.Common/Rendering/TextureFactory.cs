@@ -9,6 +9,7 @@ namespace Nine.Graphics.OpenGL
     using System.Threading;
     using System.Threading.Tasks;
     using Nine.Graphics.Content;
+    using Rendering;
 
     public partial class TextureFactory : ITexturePreloader
     {
@@ -23,13 +24,16 @@ namespace Nine.Graphics.OpenGL
         }
 
         private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
+        private readonly IGraphicsHost graphicsHost;
         private readonly ITextureLoader loader;
         private Entry[] textures;
 
-        public TextureFactory(ITextureLoader loader, int capacity = 1024)
+        public TextureFactory(IGraphicsHost graphicsHost, ITextureLoader loader, int capacity = 1024)
         {
+            if (graphicsHost == null) throw new ArgumentNullException(nameof(graphicsHost));
             if (loader == null) throw new ArgumentNullException(nameof(loader));
 
+            this.graphicsHost = graphicsHost;
             this.loader = loader;
             this.textures = new Entry[capacity];
         }

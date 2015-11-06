@@ -5,6 +5,7 @@ namespace Nine.Graphics.DirectX
 namespace Nine.Graphics.OpenGL
 {
 #endif
+    using Rendering;
     using System;
     using System.Runtime.InteropServices;
 
@@ -14,8 +15,14 @@ namespace Nine.Graphics.OpenGL
         private ushort[] indexData;
         private object indexDataLock = new object();
 
-        public QuadListIndexBuffer(int initialQuadCapacity = 1024)
+        private readonly IGraphicsHost graphicsHost;
+
+        public QuadListIndexBuffer(IGraphicsHost graphicsHost, int initialQuadCapacity = 1024)
         {
+            if (graphicsHost == null) throw new ArgumentNullException(nameof(graphicsHost));
+
+            this.graphicsHost = graphicsHost;
+
             indexData = new ushort[initialQuadCapacity * 6];
             PopulateIndex(0, initialQuadCapacity);
             pinnedIndex = GCHandle.Alloc(indexData, GCHandleType.Pinned);

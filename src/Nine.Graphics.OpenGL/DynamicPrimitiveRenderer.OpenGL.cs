@@ -91,9 +91,6 @@ void main(void)
             GL.DeleteShader(vertexShaderHandle);
             GL.DeleteShader(fragmentShaderHandle);
 
-            //OpenGLExtensions.PrintProgramInfo(shaderProgramHandle);
-            Console.WriteLine(GL.GetProgramInfoLog(shaderProgramHandle));
-
             GL.UseProgram(shaderProgramHandle);
 
             // Set uniforms

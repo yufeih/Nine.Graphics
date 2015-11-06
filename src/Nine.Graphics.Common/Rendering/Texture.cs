@@ -1,7 +1,7 @@
 ﻿#if DX
 namespace Nine.Graphics.DirectX
 {
-    using PlatformTexture = SharpDX.Direct3D12.Resource;
+    using PlatformTexture = Nine.Graphics.DirectX.DXTexture;
 #else
 namespace Nine.Graphics.OpenGL
 {

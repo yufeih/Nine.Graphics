@@ -4,43 +4,78 @@ using System;
 
 namespace Nine.Graphics.DirectX
 {
+    using Content;
     using SharpDX;
     using SharpDX.Direct3D12;
     using SharpDX.Mathematics.Interop;
     using SharpDX.Windows;
+    using System.Linq;
     using System.Runtime.CompilerServices;
 
     public class GraphicsHost : Rendering.IGraphicsHost
     {
+        public readonly int FrameCount = 1;
+
+
         public IntPtr WindowHandle => window.Handle;
 
+        /// <summary> Gets the current graphics device. </summary>
         public Device Device => device;
-        public RootSignature RootSignature => rootSignature;
-        public CommandAllocator CommandAllocator => commandAllocator;
-        public GraphicsCommandList CommandList => commandList;
+        /// <summary> Gets the current swapchain. </summary>
+        public SwapChain3 SwapChain => swapChain;
+        /// <summary> Gets the front buffer render target. </summary>
+        public Resource RenderTarget => renderTargets[currentFrame];
+        /// <summary> Gets the command queue. </summary>
+        public CommandQueue CommandQueue => commandQueue;
+        /// <summary> Gets the command allocator. </summary>
+        public CommandAllocator CommandAllocator => commandAllocators[currentFrame];
+        /// <summary> Gets the viewport. </summary>
         public ViewportF Viewport => viewport;
+        /// <summary> Gets the ScissorRect. </summary>
+        public Rectangle ScissorRect => scissorRect;
+        /// <summary> Gets the current frame index. </summary>
+        public int CurrentFrameIndex => currentFrame;
 
-        const int FrameCount = 2;
+        public RootSignature RootSignature => rootSignature;
+
+        //public DescriptorHeap RTVHeap => rtvHeap;
+        //public int RTVDescriptorSize => rtvDescriptorSize;
+
+        public GraphicsCommandList RequestBundle(PipelineState initialState = null) => bundlePool.GetObject(initialState);
+        private readonly GraphicsCommandListPool bundlePool;
+
+        public GraphicsCommandList RequestCommandList() => commandListPool.GetObject(null);
+        private readonly GraphicsCommandListPool commandListPool;
 
         // Pipeline Objects
         private Device device;
         private SwapChain3 swapChain;
-        private readonly Resource[] renderTargets = new Resource[FrameCount];
+        private Resource[] renderTargets;
+        private CommandAllocator[] commandAllocators;
 
-        private RootSignature rootSignature;
-        private CommandAllocator commandAllocator;
         private CommandQueue commandQueue;
-        private DescriptorHeap renderTargetViewHeap;
 
         private GraphicsCommandList commandList;
+        private CommandAllocator bundleAllocator;
+        //private ObjectPool<GraphicsCommandList> commandListPool;
+
+        private DescriptorHeap rtvHeap;
         private int rtvDescriptorSize;
 
+        public DescriptorHeap CBVHeap => cbvHeap;
+        public DescriptorHeap SRVHeap => srvHeap;
+
+        private DescriptorHeap cbvHeap; // Constant Buffer View
+        private DescriptorHeap srvHeap; // Shader Render View
+
+        private RootSignature rootSignature;
+
         // Synchronization Objects
-        private int frameIndex;
+        private int currentFrame;
         private AutoResetEvent fenceEvent;
 
         private Fence fence;
-        private int fenceValue;
+        private int[] fenceValues;
 
         // Window Objects
         private readonly RenderForm window;
@@ -49,7 +84,7 @@ namespace Nine.Graphics.DirectX
         private ViewportF viewport;
         private Rectangle scissorRect;
 
-        public GraphicsHost(int width, int height, bool hidden = false) // FormBorderStyle = FormBorderStyle.FixedSingle
+        public GraphicsHost(int width, int height, bool hidden = false) 
             : this(new RenderForm("Nine.Graphics") { Width = width, Height = height }, hidden)
         { }
 
@@ -60,22 +95,126 @@ namespace Nine.Graphics.DirectX
             this.window = window;
             this.window.Visible = !hidden;
 
+            // Buffering
+            this.FrameCount = 3; // Triple Buffering
+            this.renderTargets = new Resource[FrameCount];
+            this.commandAllocators = new CommandAllocator[FrameCount];
+            this.fenceValues = new int[FrameCount];
+
             this.renderLoop = new RenderLoop(this.window);
 
-            int width = window.ClientSize.Width;
-            int height = window.ClientSize.Height;
+            this.CreateDeviceResources();
+            this.CreateWindowResources();
+            
+            commandList = Device.CreateCommandList(CommandListType.Direct, CommandAllocator, null);
+            commandList.Name = $"Main CommandList";
+            commandList.Close();
+            
+            bundleAllocator = device.CreateCommandAllocator(CommandListType.Bundle);
+            bundlePool = new GraphicsCommandListPool(this, bundleAllocator, CommandListType.Bundle, "Bundle");
+            commandListPool = new GraphicsCommandListPool(this, CommandAllocator, CommandListType.Direct);
+        }
+        
+        public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
+        {
+            if (!this.renderLoop.NextFrame())
+                return false;
 
-            viewport.Width = width;
-            viewport.Height = height;
-            viewport.MaxDepth = 1.0f;
+            CommandAllocator.Reset();
+            bundleAllocator.Reset();
 
-            scissorRect.Right = width;
-            scissorRect.Bottom = height;
+            commandList.Reset(CommandAllocator, null);
 
-            /// 
-            /// Pipeline
-            /// 
+            BeginFrame(commandList);
 
+            commandList.SetViewport(viewport);
+            commandList.SetScissorRectangles(scissorRect);
+
+            var commandLists = commandListPool.ToArray();
+            commandQueue.ExecuteCommandLists(commandLists.Length, commandLists);
+            bundlePool.Reset();
+
+            commandList.ResourceBarrierTransition(RenderTarget, ResourceStates.Present, ResourceStates.RenderTarget);
+
+            CpuDescriptorHandle rtvHandle = rtvHeap.CPUDescriptorHandleForHeapStart;
+            rtvHandle += CurrentFrameIndex * rtvDescriptorSize;
+            commandList.SetRenderTargets(1, rtvHandle, false, null);
+
+            var clearColor = new RawColor4(Branding.Color.R / 255.0f, Branding.Color.G / 255.0f, Branding.Color.B / 255.0f, Branding.Color.A / 255.0f);
+            commandList.ClearRenderTargetView(rtvHandle, clearColor, 0, null);
+
+            draw(window.Width, window.Height);
+
+            foreach (var bundle in bundlePool)
+            {
+                commandList.ExecuteBundle(bundle);
+            }
+
+            bundlePool.Reset();
+
+            commandList.ResourceBarrierTransition(RenderTarget, ResourceStates.RenderTarget, ResourceStates.Present);
+
+            commandList.Close();
+
+            commandQueue.ExecuteCommandList(commandList);
+
+            swapChain.Present(1, PresentFlags.None);
+
+            WaitForPrevFrame();
+
+            return true;
+        }
+
+        public TextureContent GetTexture()
+        {
+            throw new NotImplementedException();
+        }
+        
+        internal void BeginFrame(GraphicsCommandList commandList)
+        {
+            var heaps = new DescriptorHeap[] { cbvHeap };
+
+            commandList.SetGraphicsRootSignature(rootSignature);
+            commandList.SetDescriptorHeaps(heaps.Length, heaps);
+        }
+
+        /// <summary> Wait the previous command list to finish executing. </summary>
+        private void WaitForPrevFrame()
+        {
+            // Schedule a Signal command in the queue.
+            int currentFenceValue = fenceValues[currentFrame];
+            commandQueue.Signal(fence, currentFenceValue);
+
+            // Advance the frame index.
+            currentFrame = (currentFrame + 1) % FrameCount;
+
+            // Check to see if the next frame is ready to start.
+            if (fence.CompletedValue < fenceValues[currentFrame])
+            {
+                fence.SetEventOnCompletion(fenceValues[currentFrame], fenceEvent.SafeWaitHandle.DangerousGetHandle());
+                fenceEvent.WaitOne();
+            }
+
+            // Increment the fence value for the current frame.
+            fenceValues[currentFrame] = currentFenceValue + 1;
+        }
+
+        /// <summary> Wait for pending GPU work to complete. </summary>
+        private void WaitForGPU()
+        {
+            // Schedule a Signal command in the queue.
+            commandQueue.Signal(fence, fenceValues[currentFrame]);
+
+            // Wait until the fence has been crossed.
+            fence.SetEventOnCompletion(fenceValues[currentFrame], fenceEvent.SafeWaitHandle.DangerousGetHandle());
+            fenceEvent.WaitOne();
+
+            // Increment the fence value for the current frame.
+            fenceValues[currentFrame]++;
+        }
+
+        private void CreateDeviceResources()
+        {
 #if DEBUG
             Configuration.EnableObjectTracking = true;
             Configuration.ThrowOnShaderCompileError = false;
@@ -84,159 +223,174 @@ namespace Nine.Graphics.DirectX
             DebugInterface.Get().EnableDebugLayer();
 #endif
 
-            device = new Device(null, SharpDX.Direct3D.FeatureLevel.Level_11_0);
             using (var factory = new Factory4())
             {
-                // Describe and create the command queue.
-                CommandQueueDescription queueDesc = new CommandQueueDescription(CommandListType.Direct);
-                commandQueue = device.CreateCommandQueue(queueDesc);
-
-
-                // Describe and create the swap chain.
-                SwapChainDescription swapChainDesc = new SwapChainDescription()
+                // Create the Direct3D 12 API device object
+                device = new Device(null, SharpDX.Direct3D.FeatureLevel.Level_11_0);
+                if (device == null)
                 {
-                    BufferCount = FrameCount,
-                    ModeDescription = new ModeDescription(width, height, new Rational(60, 1), Format.R8G8B8A8_UNorm),
-                    Usage = Usage.RenderTargetOutput,
-                    SwapEffect = SwapEffect.FlipDiscard,
-                    OutputHandle = window.Handle,
-                    //Flags = SwapChainFlags.None,
-                    SampleDescription = new SampleDescription(1, 0),
-                    IsWindowed = true
-                };
+                    // TODO: We want to be able to specify adaptor
+                    var adapter = factory.Adapters[0];
+                    device = new Device(adapter, SharpDX.Direct3D.FeatureLevel.Level_11_0);
+                }
 
-                SwapChain tempSwapChain = new SwapChain(factory, commandQueue, swapChainDesc);
-                swapChain = tempSwapChain.QueryInterface<SwapChain3>();
-                tempSwapChain.Dispose();
-                frameIndex = swapChain.CurrentBackBufferIndex;
+                // Create the command queue.
+                var queueDesc = new CommandQueueDescription(CommandListType.Direct);
+                commandQueue = device.CreateCommandQueue(queueDesc);
+                commandQueue.Name = $"CommandQueue";
+
+                // Create Command Allocator buffers.
+                for (int i = 0; i < FrameCount; i++)
+                {
+                    commandAllocators[i] = device.CreateCommandAllocator(CommandListType.Direct);
+                    commandAllocators[i].Name = $"CommandAllocator F{i}";
+                }
             }
 
-            // Create descriptor heaps.
-            // Describe and create a render target view (RTV) descriptor heap.
-            DescriptorHeapDescription rtvHeapDesc = new DescriptorHeapDescription()
-            {
-                DescriptorCount = FrameCount,
-                Flags = DescriptorHeapFlags.None,
-                Type = DescriptorHeapType.RenderTargetView
-            };
+            // Create RootSignature.
+            var rootSignatureDesc = new RootSignatureDescription(RootSignatureFlags.AllowInputAssemblerInputLayout,
+                new[]
+                {
+                    new RootParameter(ShaderVisibility.Vertex,
+                        new DescriptorRange()
+                        {
+                            RangeType = DescriptorRangeType.ConstantBufferView,
+                            DescriptorCount = 1,
+                            OffsetInDescriptorsFromTableStart = int.MinValue,
+                            BaseShaderRegister = 0,
+                        }),
+                    new RootParameter(ShaderVisibility.Pixel,
+                        new DescriptorRange()
+                        {
+                            RangeType = DescriptorRangeType.ShaderResourceView,
+                            DescriptorCount = 1,
+                            OffsetInDescriptorsFromTableStart = int.MinValue,
+                            BaseShaderRegister = 0
+                        })
+                },
+                new[]
+                {
+                    new StaticSamplerDescription(ShaderVisibility.Pixel, 0, 0)
+                    {
+                        Filter = Filter.MinimumMinMagMipPoint,
+                        AddressUVW = TextureAddressMode.Border,
+                    }
+                });
 
-            renderTargetViewHeap = device.CreateDescriptorHeap(rtvHeapDesc);
-
-            rtvDescriptorSize = device.GetDescriptorHandleIncrementSize(DescriptorHeapType.RenderTargetView);
-
-            // Create frame resources.
-            CpuDescriptorHandle rtvHandle = renderTargetViewHeap.CPUDescriptorHandleForHeapStart;
-            for (int n = 0; n < FrameCount; n++)
-            {
-                renderTargets[n] = swapChain.GetBackBuffer<Resource>(n);
-                device.CreateRenderTargetView(renderTargets[n], null, rtvHandle);
-                rtvHandle += rtvDescriptorSize;
-            }
-
-            commandAllocator = device.CreateCommandAllocator(CommandListType.Direct);
-
-            /// 
-            /// Assets
-            /// 
-
-            // Create an empty root signature.
-            var rootSignatureDesc = new RootSignatureDescription(RootSignatureFlags.AllowInputAssemblerInputLayout);
             rootSignature = device.CreateRootSignature(rootSignatureDesc.Serialize());
 
-            // Create the command list.
-            commandList = device.CreateCommandList(CommandListType.Direct, commandAllocator, null);
+            // Create Constant Buffer View Heap.
+            var cbvHeapDesc = new DescriptorHeapDescription()
+            {
+                DescriptorCount = 1,
+                Flags = DescriptorHeapFlags.ShaderVisible,
+                Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
+            };
+            cbvHeap = device.CreateDescriptorHeap(cbvHeapDesc);
+            cbvHeap.Name = "CBV Heap";
 
-            // Command lists are created in the recording state, but there is nothing
-            // to record yet. The main loop expects it to be closed, so close it now.
-            commandList.Close();
+            // Create Shader Render View Heap.
+            var srvHeapDesc = new DescriptorHeapDescription()
+            {
+                DescriptorCount = 1,
+                Flags = DescriptorHeapFlags.ShaderVisible,
+                Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
+            };
+            srvHeap = device.CreateDescriptorHeap(srvHeapDesc);
+            srvHeap.Name = "SRV Heap";
 
             // Create synchronization objects.
-            fence = device.CreateFence(0, FenceFlags.None);
-            fenceValue = 1;
+            fence = device.CreateFence(fenceValues[currentFrame], FenceFlags.None);
+            fence.Name = $"Fence";
+            fenceValues[currentFrame]++;
 
             // Create an event handle to use for frame synchronization.
             fenceEvent = new AutoResetEvent(false);
         }
         
-        public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
+        private void CreateWindowResources()
         {
-            if (!this.renderLoop.NextFrame())
-                return false;
+            // Wait until all previous GPU work is complete.
+            WaitForGPU();
 
-            // Command list allocators can only be reset when the associated 
-            // command lists have finished execution on the GPU; apps should use 
-            // fences to determine GPU execution progress.
-            commandAllocator.Reset();
+            // Clear the previous window size specific content.
+            for (int i = 0; i < FrameCount; i++)
+                renderTargets[i] = null;
 
-            // However, when ExecuteCommandList() is called on a particular command 
-            // list, that command list can then be reset at any time and must be before 
-            // re-recording.
-            commandList.Reset(commandAllocator, null);
+            // Calculate the necessary render target size in pixels.
+            var outputSize = new Size2();
+            outputSize.Width = window.ClientSize.Width;
+            outputSize.Height = window.ClientSize.Height;
 
-            // Indicate that the back buffer will be used as a render target.
-            commandList.ResourceBarrierTransition(renderTargets[frameIndex], ResourceStates.Present, ResourceStates.RenderTarget);
+            // Prevent zero size DirectX content from being created.
+            outputSize.Width = Math.Max(outputSize.Width, 640);
+            outputSize.Height = Math.Max(outputSize.Width, 480);
 
-            CpuDescriptorHandle rtvHandle = renderTargetViewHeap.CPUDescriptorHandleForHeapStart;
-            rtvHandle += frameIndex * rtvDescriptorSize;
-
-            // Record commands.
-            var clearColor = new RawColor4(Branding.Color.R / 255.0f, Branding.Color.G / 255.0f, Branding.Color.B / 255.0f, Branding.Color.A / 255.0f);
-            commandList.ClearRenderTargetView(rtvHandle, clearColor, 0, null);
-
-            draw(window.Width, window.Height);
-
-            // Indicate that the back buffer will now be used to present.
-            commandList.ResourceBarrierTransition(renderTargets[frameIndex], ResourceStates.RenderTarget, ResourceStates.Present);
-
-            commandList.Close();
-
-            // Execute the command list.
-            commandQueue.ExecuteCommandList(commandList);
-
-            // Present the frame.
-            swapChain.Present(1, PresentFlags.None);
-
-            WaitForPrevFrame();
-            return true;
-        }
-
-        public Content.TextureContent GetTexture()
-        {
-            var buffer = swapChain.GetBackBuffer<Resource>(0);
-
-            // TODO: Format?
-            if (buffer.Description.Format == Format.R8G8B8A8_UNorm)
+            if (swapChain != null)
             {
-                var width  = (int)buffer.Description.Width;
-                var height = (int)buffer.Description.Height;
+                // If the swap chain already exists, resize it.
+                swapChain.ResizeBuffers(FrameCount, outputSize.Width, outputSize.Height, Format.B8G8R8A8_UNorm, SwapChainFlags.None);
 
-                // TODO: Get Data
+                if (!DXDebug.ValidateDevice(device))
+                    throw new ArgumentNullException(nameof(device));
+            }
+            else
+            {
+                using (var factory = new Factory4())
+                {
+                    // Otherwise, create a new one using the same adapter as the existing Direct3D device.
+                    SwapChainDescription swapChainDesc = new SwapChainDescription()
+                    {
+                        BufferCount = FrameCount,
+                        ModeDescription = new ModeDescription(outputSize.Width, outputSize.Height, new Rational(60, 1), Format.R8G8B8A8_UNorm),
+                        Usage = Usage.RenderTargetOutput,
+                        SwapEffect = SwapEffect.FlipDiscard,
+                        OutputHandle = window.Handle,
+                        SampleDescription = new SampleDescription(1, 0),
+                        IsWindowed = true,
+                    };
 
-                return new Content.TextureContent(width, height, null);
+                    var tempSwapChain = new SwapChain(factory, commandQueue, swapChainDesc);
+                    swapChain = tempSwapChain.QueryInterface<SwapChain3>();
+                    swapChain.DebugName = "SwapChain";
+                    tempSwapChain.Dispose();
+                }
             }
 
-            throw new NotImplementedException();
-        }
-        
-        /// <summary>
-        /// Wait the previous command list to finish executing. 
-        /// </summary>
-        private void WaitForPrevFrame()
-        {
-            // WAITING FOR THE FRAME TO COMPLETE BEFORE CONTINUING IS NOT BEST PRACTICE. 
-            // This is code implemented as such for simplicity. 
-
-            int fence = fenceValue;
-            commandQueue.Signal(this.fence, fence);
-            fenceValue++;
-
-            if (this.fence.CompletedValue < fence)
+            // Create a render target view of the swap chain back buffer.
+            var descriptorHeapDesc = new DescriptorHeapDescription()
             {
-                this.fence.SetEventOnCompletion(fence, fenceEvent.SafeWaitHandle.DangerousGetHandle());
-                fenceEvent.WaitOne();
+                DescriptorCount = FrameCount,
+                Type = DescriptorHeapType.RenderTargetView,
+                Flags = DescriptorHeapFlags.None
+            };
+            rtvHeap = device.CreateDescriptorHeap(descriptorHeapDesc);
+            rtvHeap.Name = "Render Target View Descriptor Heap";
+
+            // All pending GPU work was already finished. Update the tracked fence values
+            // to the last value signaled.
+            for (int i = 0; i < FrameCount; i++)
+                fenceValues[i] = fenceValues[currentFrame];
+
+            currentFrame = 0;
+            var rtvDescriptor = rtvHeap.CPUDescriptorHandleForHeapStart;
+            rtvDescriptorSize = device.GetDescriptorHandleIncrementSize(DescriptorHeapType.RenderTargetView);
+            for (int i = 0; i < FrameCount; i++)
+            {
+                renderTargets[i] = swapChain.GetBackBuffer<Resource>(i);
+                device.CreateRenderTargetView(renderTargets[i], null, rtvDescriptor + (rtvDescriptorSize * i));
+
+                renderTargets[i].Name = $"Render Target {i}";
             }
 
-            frameIndex = swapChain.CurrentBackBufferIndex;
+            viewport = new ViewportF();
+            viewport.Width = outputSize.Width;
+            viewport.Height = outputSize.Height;
+            viewport.MaxDepth = 1.0f;
+
+            scissorRect = new Rectangle();
+            scissorRect.Right = outputSize.Width;
+            scissorRect.Bottom = outputSize.Height;
         }
 
         public void Dispose()
@@ -246,15 +400,11 @@ namespace Nine.Graphics.DirectX
             swapChain.SetFullscreenState(false, null);
 
             foreach (var target in renderTargets)
-            {
                 target.Dispose();
-            }
 
-            commandAllocator.Dispose();
-            commandQueue.Dispose();
-            rootSignature.Dispose();
-            renderTargetViewHeap.Dispose();
-            commandList.Dispose();
+            CommandAllocator.Dispose();
+            CommandQueue.Dispose();
+            rtvHeap.Dispose();
             fence.Dispose();
             swapChain.Dispose();
             device.Dispose();

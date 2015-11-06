@@ -9,7 +9,7 @@ namespace Nine.Graphics.OpenGL
     using System;
     using System.Collections.Generic;
     using System.Numerics;
-
+    
     public sealed partial class DynamicPrimitiveRenderer : IDynamicPrimitiveRenderer, IDisposable
     {
         struct Vertex
@@ -64,14 +64,14 @@ namespace Nine.Graphics.OpenGL
                 return;
             }
 
-            Matrix4x4 wvp = view * projection;
-            PlatformBeginDraw(ref wvp);
-
             if (isDirty)
             {
                 PlatformUpdateBuffers();
                 isDirty = false;
             }
+
+            Matrix4x4 wvp = view * projection;
+            PlatformBeginDraw(ref wvp);
             
             for (int i = 0; i < batches.Count; ++i)
                 PlatformDrawBatch(batches[i]);
