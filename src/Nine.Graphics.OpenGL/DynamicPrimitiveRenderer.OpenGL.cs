@@ -67,6 +67,8 @@ void main(void)
 
         private void PlatformCreateShaders()
         {
+            GLDebug.CheckAccess();
+
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
@@ -105,6 +107,8 @@ void main(void)
 
         private unsafe void PlatformBeginDraw(ref Matrix4x4 wvp)
         {
+            GLDebug.CheckAccess();
+
             // Apply shaders
             GL.UseProgram(shaderProgramHandle);
 
@@ -136,18 +140,18 @@ void main(void)
         {
             if (entry.VertexCount <= 0 && entry.IndexCount <= 0)
                 return;
-
+            
             // TODO: Add entry transform matrix
-
+            
             GL.LineWidth(entry.LineWidth);
-
+            
             // Apply texture
             var texture = textureFactory.GetTexture(entry.Texture ?? TextureId.White);
             if (texture == null)
                 return;
-
+            
             GL.BindTexture(TextureTarget.Texture2D, texture.PlatformTexture);
-
+            
             // Draw geometry
             if (entry.IndexCount > 0)
             {
@@ -161,6 +165,8 @@ void main(void)
 
         private void PlatformEndDraw()
         {
+            GLDebug.CheckAccess();
+
             // Reset features
             GL.LineWidth(1.0f);
             GL.Disable(EnableCap.DepthTest);

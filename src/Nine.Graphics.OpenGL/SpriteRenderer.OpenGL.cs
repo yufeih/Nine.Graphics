@@ -93,7 +93,7 @@ void main(void)
 
             GL.LinkProgram(shaderProgramHandle);
 
-            Debug.WriteLine(GL.GetProgramInfoLog(shaderProgramHandle));
+            //Debug.WriteLine(GL.GetProgramInfoLog(shaderProgramHandle));
             GL.UseProgram(shaderProgramHandle);
 
             // Set uniforms

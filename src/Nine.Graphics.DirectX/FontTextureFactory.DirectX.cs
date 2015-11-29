@@ -10,7 +10,7 @@
             throw new NotImplementedException();
         }
 
-        private void PlatformUpdate8bppTexture(Resource texture, int width, int height, byte[] pixels)
+        private void PlatformUpdate8bppTexture(DXTexture texture, int width, int height, byte[] pixels)
         {
             throw new NotImplementedException();
         }

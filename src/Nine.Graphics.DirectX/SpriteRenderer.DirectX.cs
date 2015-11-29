@@ -163,7 +163,7 @@ float4 main(PS_IN input) : SV_Target
             commandList.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, int vertexCount, Resource texture, bool isTransparent)
+        private unsafe void PlatformDraw(Vertex* pVertex, int vertexCount, DXTexture texture, bool isTransparent)
         {
             // TODO: texture, isTransparent
 
