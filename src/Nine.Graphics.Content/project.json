@@ -12,7 +12,8 @@
     "Nine.Hosting.Abstractions": "1.0.0",
     "Nine.Imaging": "1.1.0-*",
     "SharpFont": "3.0.1",
-    "SharpFont.Dependencies": "2.5.5.1"
+    "SharpFont.Dependencies": "2.6.0",
+    "AssimpNet": "3.3.1"
   },
 
   "compilationOptions": {

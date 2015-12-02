@@ -6,6 +6,8 @@ environment:
   DNX_FEED: https://www.nuget.org/api/v2 
 install:
   - git submodule -q update --init
-  - dnvm install 1.0.0-beta5
+  - dnvm install 1.0.0-rc1-update1
+  - dnu pack src\Nine.Graphics --configuration Release --out artifacts
+  - dnx -p test\Nine.Graphics.Test test
 artifacts:
   - path: artifacts\*.nupkg
