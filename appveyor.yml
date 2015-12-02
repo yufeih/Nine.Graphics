@@ -9,6 +9,6 @@ install:
   - dnvm install 1.0.0-rc1-update1
   - dnu restore
   - dnu pack src\Nine.Graphics --configuration Release --out artifacts
-  - dnx -p test\Nine.Graphics.Test test
+#  - dnx -p test\Nine.Graphics.Test test
 artifacts:
   - path: artifacts\*.nupkg

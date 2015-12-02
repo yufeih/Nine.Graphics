@@ -14,15 +14,18 @@
         public static IContainer CreateOpenGLContainer(int width, int height, bool test = false)
         {
             var container = new Container();
-
+            
             container
                .Map<IContentProvider, ContentProvider>()
                .Map<ITextureLoader, TextureLoader>()
                .Map<IFontLoader, FontLoader>()
+               .Map<IModelLoader, ModelLoader>()
                .Map<ITexturePreloader, OpenGL.TextureFactory>()
                .Map<IFontPreloader, OpenGL.FontTextureFactory>()
+               .Map<IModelPreloader, OpenGL.ModelFactory>()
                .Map<ISpriteRenderer, OpenGL.SpriteRenderer>()
-               .Map<ITextSpriteRenderer, OpenGL.TextSpriteRenderer>();
+               .Map<ITextSpriteRenderer, OpenGL.TextSpriteRenderer>()
+               .Map<IModelRenderer, OpenGL.ModelRenderer>();
 
             SetupCallContextDependencies(container);
 
@@ -59,10 +62,13 @@
                .Map<IContentProvider, ContentProvider>()
                .Map<ITextureLoader, TextureLoader>()
                .Map<IFontLoader, FontLoader>()
+               .Map<IModelLoader, ModelLoader>()
                .Map<ITexturePreloader, DirectX.TextureFactory>()
                .Map<IFontPreloader, DirectX.FontTextureFactory>()
+               .Map<IModelPreloader, DirectX.ModelFactory>()
                .Map<ISpriteRenderer, DirectX.SpriteRenderer>()
-               .Map<ITextSpriteRenderer, DirectX.TextSpriteRenderer>();
+               .Map<ITextSpriteRenderer, DirectX.TextSpriteRenderer>()
+               .Map<IModelRenderer, DirectX.ModelRenderer>();
 
             SetupCallContextDependencies(container);
 
