@@ -1,0 +1,3 @@
+[submodule "dep/Nine.Imaging"]
+	path = dep/Nine.Imaging
+	url = https://github.com/yufeih/Nine.Imaging
