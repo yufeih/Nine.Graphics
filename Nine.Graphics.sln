@@ -1,30 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D39F8CA0-94D2-45B5-A868-2520C470EFD3}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{226AD4D7-30D8-4F0B-BB59-F7C4530227BD}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics", "src\Nine.Graphics\Nine.Graphics.xproj", "{6DAFE35E-24E6-4AB6-9FE0-3B3127DDA3E8}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics.Test", "test\Nine.Graphics.Test\Nine.Graphics.Test.xproj", "{7B016FB3-0690-4811-AD61-58AF1C981FB2}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{C6EDB720-43B7-43B9-BD35-B9C408897DE8}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics.OpenGL", "src\Nine.Graphics.OpenGL\Nine.Graphics.OpenGL.xproj", "{84BDFA75-23C2-4905-B1A2-B73D38C7C4CC}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics.DirectX", "src\Nine.Graphics.DirectX\Nine.Graphics.DirectX.xproj", "{21AD05CA-931C-49DE-9929-634888EAE1B8}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics.Common", "src\Nine.Graphics.Common\Nine.Graphics.Common.xproj", "{F5C9B144-B46F-40B0-87F0-9615542AAF89}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics.Content", "src\Nine.Graphics.Content\Nine.Graphics.Content.xproj", "{37965734-401E-4C12-BF36-0055E24201D6}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nine.Graphics.Abstractions", "src\Nine.Graphics.Abstractions\Nine.Graphics.Abstractions.xproj", "{45F3A755-8E2B-48D8-9942-C9AFC8ED264C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nine.Graphics.Test", "test\Nine.Graphics.Test.csproj", "{65252ACE-C744-44C8-9AC1-197F54B329E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,45 +11,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6DAFE35E-24E6-4AB6-9FE0-3B3127DDA3E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DAFE35E-24E6-4AB6-9FE0-3B3127DDA3E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DAFE35E-24E6-4AB6-9FE0-3B3127DDA3E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DAFE35E-24E6-4AB6-9FE0-3B3127DDA3E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B016FB3-0690-4811-AD61-58AF1C981FB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B016FB3-0690-4811-AD61-58AF1C981FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B016FB3-0690-4811-AD61-58AF1C981FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B016FB3-0690-4811-AD61-58AF1C981FB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{84BDFA75-23C2-4905-B1A2-B73D38C7C4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{84BDFA75-23C2-4905-B1A2-B73D38C7C4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{84BDFA75-23C2-4905-B1A2-B73D38C7C4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{84BDFA75-23C2-4905-B1A2-B73D38C7C4CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21AD05CA-931C-49DE-9929-634888EAE1B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21AD05CA-931C-49DE-9929-634888EAE1B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21AD05CA-931C-49DE-9929-634888EAE1B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21AD05CA-931C-49DE-9929-634888EAE1B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5C9B144-B46F-40B0-87F0-9615542AAF89}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37965734-401E-4C12-BF36-0055E24201D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37965734-401E-4C12-BF36-0055E24201D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37965734-401E-4C12-BF36-0055E24201D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37965734-401E-4C12-BF36-0055E24201D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{45F3A755-8E2B-48D8-9942-C9AFC8ED264C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45F3A755-8E2B-48D8-9942-C9AFC8ED264C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{45F3A755-8E2B-48D8-9942-C9AFC8ED264C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45F3A755-8E2B-48D8-9942-C9AFC8ED264C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65252ACE-C744-44C8-9AC1-197F54B329E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65252ACE-C744-44C8-9AC1-197F54B329E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65252ACE-C744-44C8-9AC1-197F54B329E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65252ACE-C744-44C8-9AC1-197F54B329E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{6DAFE35E-24E6-4AB6-9FE0-3B3127DDA3E8} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
-		{7B016FB3-0690-4811-AD61-58AF1C981FB2} = {226AD4D7-30D8-4F0B-BB59-F7C4530227BD}
-		{84BDFA75-23C2-4905-B1A2-B73D38C7C4CC} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
-		{21AD05CA-931C-49DE-9929-634888EAE1B8} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
-		{F5C9B144-B46F-40B0-87F0-9615542AAF89} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
-		{37965734-401E-4C12-BF36-0055E24201D6} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
-		{45F3A755-8E2B-48D8-9942-C9AFC8ED264C} = {D39F8CA0-94D2-45B5-A868-2520C470EFD3}
 	EndGlobalSection
 EndGlobal
