@@ -1,5 +1,4 @@
-﻿#if DX
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.DirectX
 {
     public struct DXTexture
     {
@@ -19,4 +18,3 @@ namespace Nine.Graphics.DirectX
         }
     }
 }
-#endif

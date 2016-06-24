@@ -1,8 +1,4 @@
-﻿#if DX
-namespace Nine.Graphics.DirectX
-#else
-namespace Nine.Graphics.OpenGL
-#endif
+﻿namespace Nine.Graphics.Rendering
 {
     using System;
     using System.Collections.Generic;

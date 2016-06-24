@@ -1,12 +1,5 @@
-﻿#if DX
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
-    using PlatformTexture = Nine.Graphics.DirectX.DXTexture;
-#else
-namespace Nine.Graphics.OpenGL
-{
-    using PlatformTexture = System.Int32;
-#endif
     using System.Diagnostics;
 
     public partial class Texture

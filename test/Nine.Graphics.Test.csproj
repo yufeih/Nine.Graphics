@@ -54,10 +54,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\dep\Nine.Imaging\src\*.cs" />
+    <Compile Include="..\dep\Nine.Imaging\src\Encoding\**\*.cs" />
     <Compile Include="..\src\**\*.cs" />
     <Compile Include="*.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib.Portable, Version=0.86.0.51803, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.Portable.0.86.0.0003\lib\portable-net45+netcore45+wp8+win8+wpa81+MonoTouch+MonoAndroid+Xamarin.iOS10\ICSharpCode.SharpZipLib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Nine.Injection, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nine.Injection.1.2.2-alpha3\lib\net451\Nine.Injection.dll</HintPath>

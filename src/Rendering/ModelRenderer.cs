@@ -1,10 +1,5 @@
-﻿#if DX
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
-#else
-namespace Nine.Graphics.OpenGL
-{
-#endif
     using System;
     using System.Numerics;
 
