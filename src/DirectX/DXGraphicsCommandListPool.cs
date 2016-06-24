@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
     using SharpDX.Direct3D12;
     using System;

@@ -1,29 +1,24 @@
-﻿#if DX
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
-#else
-namespace Nine.Graphics.OpenGL
-{
-#endif
     using System;
+    using System.Collections.Generic;
     using System.Numerics;
-    using Nine.Graphics.Rendering;
 
-    public sealed partial class SpriteRenderer : ISpriteRenderer, IDisposable
+    public abstract class SpriteRenderer<T> : ISpriteRenderer
     {
-        struct Vertex
+        private readonly TextureFactory<T> _textureFactory;
+        private readonly IEqualityComparer<T> _equaltyComparer = EqualityComparer<T>.Default;
+
+        private Vertex2D[] _vertexData;
+
+        public SpriteRenderer(TextureFactory<T> textureFactory, int initialSpriteCapacity)
         {
-            public Vector2 Position;
-            public int Color;
-            public Vector2 TextureCoordinate;
+            if (_textureFactory == null) throw new ArgumentNullException(nameof(_textureFactory));
 
-            public const int SizeInBytes = 8 + 4 + 8;
+            _textureFactory = textureFactory;
+
+            _vertexData = new Vertex2D[initialSpriteCapacity * 4];
         }
-
-        private readonly TextureFactory textureFactory;
-        private readonly QuadListIndexBuffer quadIndexBuffer;
-
-        private Vertex[] vertexData;
 
         public unsafe void Draw(Matrix4x4 projection, Slice<Sprite> sprites, Slice<Matrix3x2>? transforms = null)
         {
@@ -32,22 +27,26 @@ namespace Nine.Graphics.OpenGL
                 return;
             }
 
-            EnsureBufferCapacity(sprites.Length);
+            if (sprites.Length * 4 > _vertexData.Length)
+            {
+                Array.Resize(ref _vertexData, sprites.Length * 4);
+            }
 
-            fixed (Vertex* pVertex = vertexData)
+            fixed (ushort* pIndex = QuadListIndexData.GetIndices(sprites.Length))
+            fixed (Vertex2D* pVertex = _vertexData)
             fixed (Sprite* pSprite = &sprites.Items[sprites.Begin])
             {
                 var vertexCount = 0;
                 var drawing = false;
                 var isTransparent = false;
-                var previousTexture = (Texture)null;
+                var previousTexture = (Texture<T>)null;
 
-                Vertex* vertex = pVertex;
+                Vertex2D* vertex = pVertex;
                 Sprite* sprite = pSprite;
 
                 for (var i = 0; i < sprites.Length; i++)
                 {
-                    var currentTexture = textureFactory.GetTexture(sprite->Texture);
+                    var currentTexture = _textureFactory.GetTexture(sprite->Texture);
                     if (currentTexture == null)
                     {
                         continue;
@@ -57,16 +56,15 @@ namespace Nine.Graphics.OpenGL
                     {
                         previousTexture = currentTexture;
                     }
-                    else if (currentTexture.PlatformTexture != previousTexture.PlatformTexture)
+                    else if (_equaltyComparer.Equals(currentTexture.PlatformTexture, previousTexture.PlatformTexture))
                     {
                         if (!drawing)
                         {
                             drawing = true;
-                            quadIndexBuffer.Apply();
-                            PlatformBeginDraw(ref projection);
+                            BeginDraw(ref projection, pIndex, sprites.Length * 6);
                         }
 
-                        PlatformDraw(pVertex, vertexCount, previousTexture.PlatformTexture, isTransparent);
+                        Draw(pVertex, vertexCount, previousTexture.PlatformTexture, isTransparent);
 
                         vertexCount = 0;
                         vertex = pVertex;
@@ -113,38 +111,26 @@ namespace Nine.Graphics.OpenGL
                     if (!drawing)
                     {
                         drawing = true;
-                        quadIndexBuffer.Apply();
-                        PlatformBeginDraw(ref projection);
+                        BeginDraw(ref projection, pIndex, sprites.Length * 6);
                     }
 
-                    PlatformDraw(pVertex, vertexCount, previousTexture.PlatformTexture, isTransparent);
+                    Draw(pVertex, vertexCount, previousTexture.PlatformTexture, isTransparent);
                 }
 
                 if (drawing)
                 {
-                    PlatformEndDraw();
+                    EndDraw();
                 }
             }
         }
 
-        private void CreateBuffers(int initialSpriteCapacity)
-        {
-            this.vertexData = new Vertex[initialSpriteCapacity * 4];
-        }
-
-        private void EnsureBufferCapacity(int spriteCount)
-        {
-            if (spriteCount * 4 > vertexData.Length)
-            {
-                Array.Resize(ref vertexData, spriteCount * 4);
-            }
-
-            quadIndexBuffer.EnsureCapacity(spriteCount);
-        }
+        protected abstract unsafe void BeginDraw(ref Matrix4x4 projection, ushort* pIndex, int indexCount);
+        protected abstract unsafe void Draw(Vertex2D* pVertex, int vertexCount, T texture, bool isTransparent);
+        protected abstract void EndDraw();
 
         private unsafe void PopulateVertex(
-            Sprite* sprite, Texture texture,
-            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
+            Sprite* sprite, Texture<T> texture,
+            Vertex2D* tl, Vertex2D* tr, Vertex2D* bl, Vertex2D* br)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
@@ -178,8 +164,8 @@ namespace Nine.Graphics.OpenGL
         }
 
         private unsafe void PopulateVertexWithTransform(
-            Sprite* sprite, Texture texture,
-            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br, Matrix3x2 transform)
+            Sprite* sprite, Texture<T> texture,
+            Vertex2D* tl, Vertex2D* tr, Vertex2D* bl, Vertex2D* br, Matrix3x2 transform)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
@@ -218,8 +204,8 @@ namespace Nine.Graphics.OpenGL
         }
 
         private unsafe void PopulateVertexWithRotation(
-            Sprite* sprite, Texture texture,
-            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br)
+            Sprite* sprite, Texture<T> texture,
+            Vertex2D* tl, Vertex2D* tr, Vertex2D* bl, Vertex2D* br)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
@@ -261,8 +247,8 @@ namespace Nine.Graphics.OpenGL
         }
 
         private unsafe void PopulateVertexWithRotationAndTransform(
-            Sprite* sprite, Texture texture,
-            Vertex* tl, Vertex* tr, Vertex* bl, Vertex* br, Matrix3x2 transform)
+            Sprite* sprite, Texture<T> texture,
+            Vertex2D* tl, Vertex2D* tr, Vertex2D* bl, Vertex2D* br, Matrix3x2 transform)
         {
             var w = (sprite->Size.X > 0 ? sprite->Size.X : texture.Width) * sprite->Scale.X;
             var h = (sprite->Size.Y > 0 ? sprite->Size.Y : texture.Height) * sprite->Scale.Y;
@@ -308,14 +294,6 @@ namespace Nine.Graphics.OpenGL
             br->Position = Vector2.Transform(br->Position, transform);
         }
 
-        public void Dispose()
-        {
-            PlatformDispose();
-        }
-
-        public override string ToString()
-        {
-            return $"{ nameof(SpriteRenderer) }: { vertexData.Length / 4 } sprites";
-        }
+        public override string ToString() => $"{GetType().Name}: {_vertexData.Length / 4} sprites";
     }
 }

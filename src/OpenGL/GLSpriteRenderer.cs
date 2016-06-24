@@ -1,12 +1,10 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿namespace Nine.Graphics.Rendering
 {
-    using Nine.Graphics.OpenGL;
     using OpenTK.Graphics.OpenGL;
     using System;
-    using System.Diagnostics;
     using System.Numerics;
 
-    partial class SpriteRenderer
+    public class GLSpriteRenderer : SpriteRenderer<int>, IDisposable
     {
         private static readonly string vertexShaderSource = @"
 #version 140
@@ -48,27 +46,24 @@ void main(void)
 
         private int shaderProgramHandle, transformLocation;
         private int vertexBufferId;
+        private int indexBufferId;
         
-        public SpriteRenderer(TextureFactory textureFactory, QuadListIndexBuffer quadIndexBuffer, int initialSpriteCapacity = 1024)
+        public GLSpriteRenderer(GLTextureFactory textureFactory, int initialSpriteCapacity = 1024)
+            : base(textureFactory, initialSpriteCapacity)
         {
-            if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
-            if (quadIndexBuffer == null) throw new ArgumentNullException(nameof(quadIndexBuffer));
-
-            this.textureFactory = textureFactory;
-            this.quadIndexBuffer = quadIndexBuffer;
-            this.CreateBuffers(initialSpriteCapacity);
-            this.PlatformCreateBuffers();
-            this.PlatformCreateShaders();
+            CreateBuffers();
+            CreateShaders();
         }
 
-        private void PlatformCreateBuffers()
+        private void CreateBuffers()
         {
             GLDebug.CheckAccess();
 
             vertexBufferId = GL.GenBuffer();
+            indexBufferId = GL.GenBuffer();
         }
 
-        private void PlatformCreateShaders()
+        private void CreateShaders()
         {
             GLDebug.CheckAccess();
 
@@ -100,17 +95,20 @@ void main(void)
             transformLocation = GL.GetUniformLocation(shaderProgramHandle, "transform");
         }
 
-        private unsafe void PlatformBeginDraw(ref Matrix4x4 projection)
+        protected override unsafe void BeginDraw(ref Matrix4x4 projection, ushort* pIndex, int indexCount)
         {
             GLDebug.CheckAccess();
 
             GL.UseProgram(shaderProgramHandle);
 
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indexCount * sizeof(ushort)), (IntPtr)pIndex, BufferUsageHint.StaticDraw);
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
 
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 0);
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, Vertex.SizeInBytes, 8);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, 8 + 4);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, Vertex2D.SizeInBytes, 0);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.UnsignedByte, true, Vertex2D.SizeInBytes, 8);
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, Vertex2D.SizeInBytes, 8 + 4);
 
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
@@ -122,11 +120,11 @@ void main(void)
             }
         }
 
-        private unsafe void PlatformDraw(Vertex* pVertex, int vertexCount, int texture, bool isTransparent)
+        protected override unsafe void Draw(Vertex2D* pVertex, int vertexCount, int texture, bool isTransparent)
         {
             GLDebug.CheckAccess();
 
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexCount * Vertex.SizeInBytes), (IntPtr)pVertex, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertexCount * Vertex2D.SizeInBytes), (IntPtr)pVertex, BufferUsageHint.StaticDraw);
             GL.BindTexture(TextureTarget.Texture2D, texture);
 
             if (isTransparent)
@@ -142,12 +140,12 @@ void main(void)
             GL.DrawElements(BeginMode.Triangles, vertexCount / 4 * 6, DrawElementsType.UnsignedShort, 0);
         }
 
-        private void PlatformEndDraw()
+        protected override void EndDraw()
         {
             
         }
 
-        private void PlatformDispose()
+        public void Dispose()
         {
             GLDebug.CheckAccess();
 

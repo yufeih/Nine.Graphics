@@ -1,10 +1,14 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿namespace Nine.Graphics.Rendering
 {
+    using System;
+    using Nine.Graphics.Content;
     using OpenTK.Graphics.OpenGL;
 
-    partial class FontTextureFactory
+    public class GLFontTextureFactory : FontTextureFactory<int>
     {
-        private Texture PlatformCreate8BppTexture(int width, int height, byte[] pixels)
+        public GLFontTextureFactory(IFontLoader loader) : base(loader) { }
+
+        protected override Texture<int> Create8BppTexture(int width, int height, byte[] pixels)
         {
             GLDebug.CheckAccess();
 
@@ -15,13 +19,18 @@
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0, PixelFormat.Red, PixelType.UnsignedByte, pixels);
 
-            return new Texture(texture, width, height, true);
+            return new Texture<int>(texture, width, height, true);
         }
 
-        private void PlatformUpdate8bppTexture(int texture, int width, int height, byte[] pixels)
+        protected override void Update8bppTexture(int texture, int width, int height, byte[] pixels)
         {
             GL.BindTexture(TextureTarget.Texture2D, texture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0, PixelFormat.Red, PixelType.UnsignedByte, pixels);
+        }
+
+        protected override Texture<int> Create8BppTexture(int width, int height, byte[] pixels)
+        {
+            throw new NotImplementedException();
         }
     }
 }

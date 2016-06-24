@@ -2,7 +2,7 @@
 using System.Threading;
 using System;
 
-namespace Nine.Graphics.DirectX
+namespace Nine.Graphics.Rendering
 {
     using Content;
     using SharpDX;

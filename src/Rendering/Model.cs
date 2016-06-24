@@ -1,16 +1,9 @@
-﻿#if DX
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
-    using PlatformBuffer = System.Int32; // TODO: Change
-#else
-namespace Nine.Graphics.OpenGL
-{
-    using PlatformBuffer = System.Int32;
-#endif
-    using Content;
     using System;
     using System.Diagnostics;
     using System.Numerics;
+    using Nine.Graphics.Content;
     
     public partial class ModelBone
     {

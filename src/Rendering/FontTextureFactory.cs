@@ -8,16 +8,16 @@
     using System.Threading.Tasks;
     using Nine.Graphics.Content;
 
-    public partial class FontTextureFactory : IFontPreloader
+    public abstract class FontTextureFactory<T> : IFontPreloader
     {
         struct FontFace { public IFontFace Font; public bool IsLoaded; }
 
         private readonly IFontLoader loader;
         private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
         private readonly Dictionary<int, FontFace> fontMap = new Dictionary<int, FontFace>();
-        private readonly Dictionary<long, Texture> charactorMap = new Dictionary<long, Texture>();
+        private readonly Dictionary<long, Texture<T>> charactorMap = new Dictionary<long, Texture<T>>();
 
-        private Texture textureBuilder;
+        private Texture<T> textureBuilder;
 
         public FontTextureFactory(IFontLoader loader)
         {
@@ -26,9 +26,9 @@
             this.loader = loader;
         }
 
-        public Texture GetGlyphTexture(FontId font, char charactor)
+        public Texture<T> GetGlyphTexture(FontId font, char charactor)
         {
-            Texture result = null;
+            Texture<T> result = null;
             FontFace fontface = new FontFace();
 
             var key = (font.Id << 32 | charactor);
@@ -57,7 +57,7 @@
             fontMap[font.Id] = new FontFace { Font = fontFace, IsLoaded = true };
         }
 
-        private Texture CreateGlyphTexture(GlyphLoadResult glyph)
+        private Texture<T> CreateGlyphTexture(GlyphLoadResult glyph)
         {
             if (glyph.Texture == null)
             {
@@ -66,14 +66,18 @@
 
             if (glyph.CreatesNewTexture)
             {
-                return textureBuilder = PlatformCreate8BppTexture(glyph.Texture.Width, glyph.Texture.Height, glyph.Texture.Pixels);
+                return textureBuilder = Create8BppTexture(glyph.Texture.Width, glyph.Texture.Height, glyph.Texture.Pixels);
             }
 
             Debug.Assert(textureBuilder != null);
 
-            PlatformUpdate8bppTexture(textureBuilder.PlatformTexture, glyph.Texture.Width, glyph.Texture.Height, glyph.Texture.Pixels);
+            Update8bppTexture(textureBuilder.PlatformTexture, glyph.Texture.Width, glyph.Texture.Height, glyph.Texture.Pixels);
+
             return textureBuilder;
         }
+
+        protected abstract Texture<T> Create8BppTexture(int width, int height, byte[] pixels);
+        protected abstract void Update8bppTexture(T texture, int width, int height, byte[] pixels);
 
         Task IFontPreloader.Preload(params FontId[] fonts)
         {

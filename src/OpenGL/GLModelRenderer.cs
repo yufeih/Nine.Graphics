@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.OpenGL
+﻿namespace Nine.Graphics.Rendering
 {
     using System.Numerics;
 

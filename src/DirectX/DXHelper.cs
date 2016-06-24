@@ -1,6 +1,5 @@
-﻿namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
-    using Rendering;
     using SharpDX.D3DCompiler;
     using SharpDX.Direct3D12;
     using System;
@@ -8,20 +7,6 @@
 
     static class DXHelper
     {
-        public static SharpDX.Direct3D.PrimitiveTopology ToDXPrimitiveType(PrimitiveType primitiveType)
-        {
-            switch (primitiveType)
-            {
-                case PrimitiveType.Points: return SharpDX.Direct3D.PrimitiveTopology.PointList;
-                case PrimitiveType.Lines: 
-                case PrimitiveType.LineLoop: return SharpDX.Direct3D.PrimitiveTopology.LineList;
-                case PrimitiveType.LineStrip: return SharpDX.Direct3D.PrimitiveTopology.LineStrip;
-                default:
-                case PrimitiveType.Triangles: return SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-                case PrimitiveType.TriangleStrip: return SharpDX.Direct3D.PrimitiveTopology.TriangleStrip;
-            }
-        }
-
         public static byte[] CompileShader(string shaderSource, string entryPoint, string profile)
         {
             byte[] compiled = null;

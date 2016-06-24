@@ -1,24 +1,18 @@
-﻿#if DX
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
-#else
-namespace Nine.Graphics.OpenGL
-{
-#endif
     using System;
     using System.Diagnostics;
     using System.Numerics;
-    using Nine.Graphics.Rendering;
 
-    public sealed partial class TextSpriteRenderer : ITextSpriteRenderer, IDisposable
+    public abstract class TextSpriteRenderer<T> : ITextSpriteRenderer, IDisposable
     {
-        private readonly FontTextureFactory textureFactory;
+        private readonly FontTextureFactory<T> _textureFactory;
         
-        public TextSpriteRenderer(FontTextureFactory textureFactory)
+        public TextSpriteRenderer(FontTextureFactory<T> textureFactory)
         {
             if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
 
-            this.textureFactory = textureFactory;
+            _textureFactory = textureFactory;
         }
 
         public unsafe void Draw(Matrix4x4 projection, Slice<TextSprite> textSprites, Slice<Matrix3x2>? transforms = null)

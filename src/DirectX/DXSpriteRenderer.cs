@@ -1,12 +1,11 @@
-﻿using SharpDX.DXGI;
-
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
-    using SharpDX.Direct3D12;
     using System;
     using System.Numerics;
+    using SharpDX.Direct3D12;
+    using SharpDX.DXGI;
 
-    partial class DynamicPrimitiveRenderer
+    public class DXSpriteRenderer : SpriteRenderer<DXTexture>, IDisposable
     {
         private static readonly string structShaderSource = @"
 struct PS_IN
@@ -46,68 +45,67 @@ float4 main(PS_IN input) : SV_Target
         {
             public Matrix4x4 transform;
         }
-
+        
         private PipelineState pipelineState;
         private GraphicsCommandList commandList;
 
         private ConstantBuffer constantBufferData;
-        private Resource constantBuffer;
+        private SharpDX.Direct3D12.Resource constantBuffer;
         private IntPtr mappedConstantBuffer;
 
-        private Resource vertexBuffer;
+        private SharpDX.Direct3D12.Resource vertexBuffer;
         private VertexBufferView vertexBufferView;
 
-        private Resource indexBuffer;
-        private IndexBufferView indexBufferView;
-
         private readonly GraphicsHost graphicsHost;
-
-        public DynamicPrimitiveRenderer(GraphicsHost graphicsHost, TextureFactory textureFactory, int initialBufferCapacity = 32)
+        
+        public DXSpriteRenderer(GraphicsHost graphicsHost, DXTextureFactory textureFactory, int initialSpriteCapacity = 1024)
+            : base(textureFactory, initialSpriteCapacity)
         {
             if (graphicsHost == null) throw new ArgumentNullException(nameof(graphicsHost));
-            if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
 
             this.graphicsHost = graphicsHost;
-            this.textureFactory = textureFactory;
 
-            this.PlatformCreateBuffers(initialBufferCapacity);
+            this.constantBufferData = new ConstantBuffer();
+
+            this.PlatformCreateBuffers();
             this.PlatformCreateShaders();
         }
 
-        private void PlatformCreateBuffers(int initialBufferCapacity)
+        private void PlatformCreateBuffers()
         {
-            this.vertexData = new Vertex[512];
-            this.indexData = new ushort[512];
+            // Create a upload resource, we are going to update the resource every 
+            // frame so we just upload it every time, instead of doing extra copies.
+            //vertexBuffer = graphicsHost.Device.CreateCommittedResource(new HeapProperties(HeapType.Upload), HeapFlags.None, 
+            //    ResourceDescription.Buffer(vertexData.Length * Vertex.SizeInBytes), ResourceStates.GenericRead);
+            //vertexBuffer.Name = "[SpriteRenderer] Vertex Buffer";
 
-            vertexBuffer = graphicsHost.Device.CreateCommittedResource(new HeapProperties(HeapType.Upload), HeapFlags.None,
-                ResourceDescription.Buffer(vertexData.Length * Vertex.SizeInBytes), ResourceStates.GenericRead);
-            vertexBuffer.Name = "[DynamicPrimitiveRenderer] Vertex Buffer";
-
-            vertexBufferView = new VertexBufferView();
-            vertexBufferView.BufferLocation = vertexBuffer.GPUVirtualAddress;
-            vertexBufferView.StrideInBytes = Vertex.SizeInBytes;
-            vertexBufferView.SizeInBytes = vertexData.Length * Vertex.SizeInBytes;
-
-            indexBuffer = graphicsHost.Device.CreateCommittedResource(new HeapProperties(HeapType.Upload), HeapFlags.None,
-                ResourceDescription.Buffer(indexData.Length * sizeof(ushort)), ResourceStates.GenericRead);
-
-            indexBuffer.Name = "[DynamicPrimitiveRenderer] Index Buffer";
-
-            indexBufferView = new IndexBufferView();
-            indexBufferView.BufferLocation = indexBuffer.GPUVirtualAddress;
-            indexBufferView.SizeInBytes = indexData.Length * sizeof(ushort);
-            indexBufferView.Format = SharpDX.DXGI.Format.R16_UInt;
+            //// Create the view.
+            //vertexBufferView = new VertexBufferView();
+            //vertexBufferView.BufferLocation = vertexBuffer.GPUVirtualAddress;
+            //vertexBufferView.StrideInBytes = Vertex.SizeInBytes;
+            //vertexBufferView.SizeInBytes = vertexData.Length * Vertex.SizeInBytes;
+            
+            //// Describe and create a SRV for the texture.
+            //var srvDesc = new ShaderResourceViewDescription
+            //{
+            //    Shader4ComponentMapping = DXHelper.DefaultComponentMapping(),
+            //    Format = textureDesc.Format,
+            //    Dimension = ShaderResourceViewDimension.Texture2D,
+            //    Texture2D = { MipLevels = 1 },
+            //};
+            //
+            //graphicsHost.Device.CreateShaderResourceView(this.texture, srvDesc, graphicsHost.SRVHeap.CPUDescriptorHandleForHeapStart);
         }
-
+        
         private void PlatformCreateShaders()
         {
             var inputElementDescs = new[]
             {
                 new InputElement("POSITION", 0, Format.R32G32_Float,   0,     0),
-                new InputElement("COLOR",    0, Format.B8G8R8A8_UNorm, 8,     0),
+                new InputElement("COLOR",    0, Format.B8G8R8A8_UNorm, 8,     0), 
                 new InputElement("TEXCOORD", 0, Format.R32G32_Float,   8 + 4, 0)
             };
-
+            
             var psoDesc = new GraphicsPipelineStateDescription()
             {
                 InputLayout = new InputLayoutDescription(inputElementDescs),
@@ -116,23 +114,23 @@ float4 main(PS_IN input) : SV_Target
                 PixelShader = DXHelper.CompileShader(pixelShaderSource, "main", "ps_5_0"),
                 RasterizerState = RasterizerStateDescription.Default(),
                 BlendState = BlendStateDescription.Default(),
-                DepthStencilFormat = Format.D32_Float,
+                DepthStencilFormat = SharpDX.DXGI.Format.D32_Float,
                 DepthStencilState = new DepthStencilStateDescription() { IsDepthEnabled = false, IsStencilEnabled = false },
                 SampleMask = int.MaxValue,
                 PrimitiveTopologyType = PrimitiveTopologyType.Triangle,
                 RenderTargetCount = 1,
                 Flags = PipelineStateFlags.None,
-                SampleDescription = new SampleDescription(1, 0),
+                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
                 StreamOutput = new StreamOutputDescription()
             };
             psoDesc.RenderTargetFormats[0] = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
-
+            
             pipelineState = graphicsHost.Device.CreateGraphicsPipelineState(psoDesc);
 
             // TODO: Move buffer
             var constantBufferDesc = ResourceDescription.Buffer(1024 * 64);
             constantBuffer = graphicsHost.Device.CreateCommittedResource(new HeapProperties(HeapType.Upload), HeapFlags.None, constantBufferDesc, ResourceStates.GenericRead);
-            constantBuffer.Name = "[DynamicPrimitiveRenderer] Constant Buffer";
+            constantBuffer.Name = "[SpriteRenderer] Constant Buffer";
 
             var cbvDesc = new ConstantBufferViewDescription()
             {
@@ -145,56 +143,46 @@ float4 main(PS_IN input) : SV_Target
             SharpDX.Utilities.Write(mappedConstantBuffer, ref constantBufferData);
         }
 
-        private void PlatformUpdateBuffers()
+        protected override unsafe void BeginDraw(ref Matrix4x4 projection, ushort* pIndex, int indexCount)
         {
-            IntPtr vertexDataBegin = vertexBuffer.Map(0);
-            SharpDX.Utilities.Write(vertexDataBegin, vertexData, 0, currentBaseVertex + currentVertex);
-            vertexBuffer.Unmap(0);
-
-            IntPtr indexDataBegin = indexBuffer.Map(0);
-            SharpDX.Utilities.Write(indexDataBegin, indexData, 0, currentBaseIndex + currentIndex);
-            indexBuffer.Unmap(0);
-        }
-
-        private void PlatformBeginDraw(ref Matrix4x4 wvp)
-        {
-            constantBufferData.transform = wvp;
+            // Update constant buffer resource.
+            constantBufferData.transform = projection;
             SharpDX.Utilities.Write(mappedConstantBuffer, ref constantBufferData);
 
+            // Request a new bundle.
             commandList = graphicsHost.RequestBundle(pipelineState);
 
+            // Record the commands.
             commandList.SetGraphicsRootDescriptorTable(0, graphicsHost.CBVHeap.GPUDescriptorHandleForHeapStart);
-            
+            commandList.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+        }
+
+        protected override unsafe void Draw(Vertex2D* pVertex, int vertexCount, DXTexture texture, bool isTransparent)
+        {
+            // TODO: texture, isTransparent
+
+            commandList.SetGraphicsRootDescriptorTable(1, graphicsHost.SRVHeap.GPUDescriptorHandleForHeapStart);
+
+            // Update the vertex buffer
+            IntPtr dataBegin = vertexBuffer.Map(0);
+            SharpDX.Utilities.CopyMemory(dataBegin, new IntPtr(pVertex), vertexCount * Vertex2D.SizeInBytes);
+            vertexBuffer.Unmap(0);
+
+            // Record the commands.
             commandList.SetVertexBuffer(0, vertexBufferView);
-            commandList.SetIndexBuffer(indexBufferView);
+            // commandList.SetIndexBuffer(quadIndexBuffer.indexBufferView);
+
+            // Call draw.
+            commandList.DrawIndexedInstanced(vertexCount / 4 * 6, 1, 0, 0, 0);
         }
 
-        private void PlatformDrawBatch(PrimitiveGroupEntry entry)
+        protected override void EndDraw()
         {
-            commandList.PrimitiveTopology = DXHelper.ToDXPrimitiveType(entry.PrimitiveType);
-
-            var texture = textureFactory.GetTexture(entry.Texture ?? TextureId.White);
-            if (texture == null)
-                return;
-
-            // TODO: Bind texture
-
-            if (entry.IndexCount > 0)
-            {
-                commandList.DrawIndexedInstanced(entry.IndexCount, 1, entry.StartIndex, 0, 0);
-            }
-            else
-            {
-                commandList.DrawInstanced(entry.VertexCount, 1, 0, 0);
-            }
-        }
-
-        private void PlatformEndDraw()
-        {
+            // Close CommandList.
             commandList.Close();
         }
 
-        private void PlatformDispose()
+        public void Dispose()
         {
             constantBuffer.Dispose();
             pipelineState.Dispose();

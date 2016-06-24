@@ -1,18 +1,21 @@
-﻿using SharpDX.DXGI;
-
-namespace Nine.Graphics.DirectX
+﻿namespace Nine.Graphics.Rendering
 {
+    using System.Runtime.InteropServices;
     using Nine.Graphics.Content;
     using SharpDX.Direct3D12;
-    using System.Runtime.InteropServices;
+    using SharpDX.DXGI;
 
-    partial class TextureFactory
+    public class DXTextureFactory : TextureFactory<DXTexture>
     {
-        private Texture PlatformCreateTexture(TextureContent data)
+        public DXTextureFactory(IGraphicsHost graphicsHost, ITextureLoader loader, int capacity = 1024)
+            : base(graphicsHost, loader, capacity)
+        { }
+
+        public override Texture<DXTexture> CreateTexture(TextureContent data)
         {
             //return new Texture(new DXTexture(), data.Width, data.Height, data.Left, data.Right, data.Top, data.Bottom, data.IsTransparent);
 
-            var graphicsHost = this.graphicsHost as Nine.Graphics.DirectX.GraphicsHost;
+            var graphicsHost = GraphicsHost as GraphicsHost;
             if (graphicsHost == null) return null;
             
             var textureDesc = ResourceDescription.Texture2D(Format.R8G8B8A8_UNorm, data.Width, data.Height);
@@ -45,7 +48,7 @@ namespace Nine.Graphics.DirectX
                 Resource = texture,
             };
             
-            return new Texture(platformTexture, data.Width, data.Height, data.Left, data.Right, data.Top, data.Bottom, data.IsTransparent);
+            return new Texture<DXTexture>(platformTexture, data.Width, data.Height, data.Left, data.Right, data.Top, data.Bottom, data.IsTransparent);
         }
     }
 }

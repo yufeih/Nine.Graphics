@@ -2,9 +2,9 @@
 {
     using System.Diagnostics;
 
-    public partial class Texture
+    public class Texture<T>
     {
-        public readonly PlatformTexture PlatformTexture;
+        public readonly T PlatformTexture;
 
         public readonly int Width;
         public readonly int Height;
@@ -19,11 +19,11 @@
 
         public readonly bool IsTransparent;
 
-        public Texture(PlatformTexture texture, int width, int height, bool isTransparent)
+        public Texture(T texture, int width, int height, bool isTransparent)
             : this(texture, width, height, 0, width, 0, height, isTransparent)
         { }
 
-        public Texture(PlatformTexture texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom, bool isTransparent)
+        public Texture(T texture, int sourceWidth, int sourceHeight, int left, int right, int top, int bottom, bool isTransparent)
         {
             Debug.Assert(sourceWidth > 0);
             Debug.Assert(sourceHeight > 0);
