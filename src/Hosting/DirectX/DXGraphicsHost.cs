@@ -9,7 +9,6 @@ namespace Nine.Graphics.Rendering
     using SharpDX.Direct3D12;
     using SharpDX.Mathematics.Interop;
     using SharpDX.Windows;
-    using System.Linq;
     using System.Runtime.CompilerServices;
 
     public class DXGraphicsHost : IGraphicsHost
@@ -140,7 +139,7 @@ namespace Nine.Graphics.Rendering
             rtvHandle += CurrentFrameIndex * rtvDescriptorSize;
             commandList.SetRenderTargets(1, rtvHandle, null);
 
-            var clearColor = new RawColor4(Branding.Color.R / 255.0f, Branding.Color.G / 255.0f, Branding.Color.B / 255.0f, Branding.Color.A / 255.0f);
+            var clearColor = new RawColor4(0, 0, 0, 0);
             commandList.ClearRenderTargetView(rtvHandle, clearColor, 0, null);
 
             draw(window.Width, window.Height);

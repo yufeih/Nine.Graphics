@@ -25,6 +25,7 @@
             }
 
             if (!File.Exists(name)) return null;
+
             return File.OpenRead(name);
         }
     }

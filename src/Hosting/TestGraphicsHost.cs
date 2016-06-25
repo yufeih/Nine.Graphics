@@ -51,7 +51,7 @@
             Height = height;
             FrameTime = frameTime;
             Epsilon = epsilon;
-            OutputPath = outputPath;
+            OutputPath = outputPath ?? "TestResults";
             FramePixelsA = new byte[width * height * 4];
             FramePixelsB = new byte[width * height * 4];
         }
@@ -59,7 +59,7 @@
         public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
             var frameIdentifier = GetFrameIdentifier(frameName);
-            var framePath = $"{ OutputPath }/{ GetType().FullName }/{ frameIdentifier }";
+            var framePath = Path.Combine(OutputPath, frameIdentifier);
 
             CompareTwoFrames(draw, framePath + ".png");
             CompareWithExpectedImage(FramePixelsA, framePath + ".png");
@@ -147,7 +147,7 @@
                 var directory = Path.GetDirectoryName(path);
                 var filename = Path.GetFileNameWithoutExtension(path);
 
-                path = $"{ directory }/{ filename }.{ tag }{ extension }";
+                path = Path.Combine(directory, $"{filename}.{tag}{extension}");
             }
 
             if (!Directory.Exists(Path.GetDirectoryName(path)))

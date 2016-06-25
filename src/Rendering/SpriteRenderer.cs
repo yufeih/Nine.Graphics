@@ -13,7 +13,7 @@
 
         public SpriteRenderer(TextureFactory<T> textureFactory, int initialSpriteCapacity)
         {
-            if (_textureFactory == null) throw new ArgumentNullException(nameof(_textureFactory));
+            if (textureFactory == null) throw new ArgumentNullException(nameof(textureFactory));
 
             _textureFactory = textureFactory;
 
@@ -56,7 +56,7 @@
                     {
                         previousTexture = currentTexture;
                     }
-                    else if (_equaltyComparer.Equals(currentTexture.PlatformTexture, previousTexture.PlatformTexture))
+                    else if (!_equaltyComparer.Equals(currentTexture.PlatformTexture, previousTexture.PlatformTexture))
                     {
                         if (!drawing)
                         {

@@ -9,7 +9,7 @@
 
         public DXTestGraphicsHost(
             int width, int height,
-            int frameTime = 1000, float epsilon = 0.001f, string outputPath = "TestResults/DirectX")
+            int frameTime = 1000, float epsilon = 0.001f, string outputPath = null)
             : base(width, height, frameTime, epsilon, outputPath)
         { }
 

@@ -20,7 +20,7 @@
 
             GraphicsContext = new GraphicsContext(mode ?? GraphicsMode.Default, Utilities.CreateWindowsWindowInfo(windowHandle));
 
-            GL.ClearColor(Color.FromArgb(Branding.Color.A, Branding.Color.R, Branding.Color.G, Branding.Color.B));
+            GL.ClearColor(Color.Transparent);
         }
 
         public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)

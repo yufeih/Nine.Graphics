@@ -1,15 +1,15 @@
 ﻿namespace Nine.Graphics
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Threading.Tasks;
     using Nine.Graphics.Content;
     using Nine.Imaging;
     using Nine.Injection;
-    using System;
-    using System.IO;
-    using System.Threading.Tasks;
     using Xunit;
-    using System.Collections.Generic;
 
-    class FontTest : DrawTest<FontTest>, IDrawTest
+    class FontTest : DrawingTest<FontTest>, IDrawingTest
     {
         public IEnumerable<Drawing> GetDrawings()
         {
@@ -85,7 +85,7 @@
 
         private void SaveFrame(TextureContent textureContent, string path)
         {
-            path = $"{ OutputPath }/{ nameof(FontTest) }/{ path }";
+            path = $"{OutputPath}/{nameof(FontTest)}/{path}";
 
             if (!Directory.Exists(Path.GetDirectoryName(path)))
             {

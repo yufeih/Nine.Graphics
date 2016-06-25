@@ -1,17 +1,18 @@
 ﻿namespace Nine.Graphics
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
     using System.Threading.Tasks;
     using Nine.Injection;
     using Xunit;
-    using System.Collections.Generic;
 
-    public interface IDrawTest
+    public interface IDrawingTest
     {
         IEnumerable<Drawing> GetDrawings();
     }
 
-    public abstract class DrawTest<T> where T : IDrawTest, new()
+    public abstract class DrawingTest<T> where T : IDrawingTest, new()
     {
         public static string OutputPath = "TestResults";
 
@@ -23,13 +24,11 @@
 
         public static readonly TheoryData<Drawing> Drawings = new DrawingBuilder();
 
-        [Theory]
-        [MemberData(nameof(Drawings))]
-        public Task gl(Drawing scene) => scene?.Draw(OpenGlContainer) ?? Task.FromResult(0);
+        [Theory, MemberData(nameof(Drawings))]
+        public Task gl(Drawing scene) => scene?.Draw(OpenGlContainer, "gl") ?? Task.FromResult(0);
 
-        [Theory]
-        [MemberData(nameof(Drawings))]
-        public Task dx(Drawing scene) => scene?.Draw(DirectXContainer) ?? Task.FromResult(0);
+        [Theory, MemberData(nameof(Drawings))]
+        public Task dx(Drawing scene) => scene?.Draw(DirectXContainer, "dx") ?? Task.FromResult(0);
 
         class DrawingBuilder : TheoryData<Drawing>
         {
@@ -40,14 +39,7 @@
 
                 foreach (var drawing in test.GetDrawings())
                 {
-                    var name = $"{ i++ }";
-                    if (drawing.Name != null)
-                    {
-                        name += "-" + drawing.Name;
-                    }
-
-                    drawing.Name = name;
-                    drawing.FrameName = $"{ typeof(T).Name }/{ name }";
+                    drawing.Name = Path.Combine(typeof(T).Name, $"{++i}");
                     Add(drawing);
                 }
             }

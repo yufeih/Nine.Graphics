@@ -12,14 +12,14 @@
 
         public GLTestGraphicsHost(
             int width, int height, GraphicsMode mode = null,
-            int frameTime = 1000, float epsilon = 0.001f, string outputPath = "TestResults/OpenGL")
+            int frameTime = 1000, float epsilon = 0.001f, string outputPath = null)
             : base(width, height, frameTime, epsilon, outputPath)
         {
             GLDebug.CheckAccess();
 
             _window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
 
-            GL.ClearColor(Color.FromArgb(Branding.Color.A, Branding.Color.R, Branding.Color.G, Branding.Color.B));
+            GL.ClearColor(Color.Transparent);
         }
 
         protected override void BeginFrame()

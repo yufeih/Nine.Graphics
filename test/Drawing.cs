@@ -1,54 +1,38 @@
 ﻿namespace Nine.Graphics
 {
-    using Nine.Graphics.Rendering;
-    using Nine.Injection;
     using System;
     using System.Threading.Tasks;
-    using Xunit.Abstractions;
+    using Nine.Graphics.Rendering;
+    using Nine.Injection;
 
-    public class Drawing : IXunitSerializable
+    public class Drawing
     {
         public string Name;
-        public string FrameName;
 
-        private readonly Func<IContainer, Task> beforeDraw;
-        private readonly Action<IContainer, int, int> draw;
+        private readonly Func<IContainer, Task> _beforeDraw;
+        private readonly Action<IContainer, int, int> _draw;
 
-        public Drawing() { } // Needed for deserializer
         public Drawing(Action<IContainer, int, int> draw, Func<IContainer, Task> beforeDraw = null, string name = null)
         {
-            this.Name = name;
-            this.draw = draw;
-            this.beforeDraw = beforeDraw;
+            Name = name;
+            _draw = draw;
+            _beforeDraw = beforeDraw;
         }
 
-        public async Task Draw(IContainer container)
+        public async Task Draw(IContainer container, string hostName)
         {
-            if (beforeDraw != null)
+            if (_beforeDraw != null)
             {
-                await beforeDraw(container);
+                await _beforeDraw(container);
             }
 
             var host = container.Get<IGraphicsHost>();
             if (host != null)
             {
-                host.DrawFrame((w, h) => draw?.Invoke(container, w, h), FrameName ?? "<noname>");
+                host.DrawFrame((w, h) => _draw?.Invoke(container, w, h), $"{Name}-{hostName}");
             }
         }
 
-        public void Deserialize(IXunitSerializationInfo info)
-        {
-            Name = info.GetValue<string>(nameof(Name));
-        }
-
-        public void Serialize(IXunitSerializationInfo info)
-        {
-            info.AddValue(nameof(Name), Name);
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
     }
 }

@@ -1,13 +1,13 @@
 ﻿namespace Nine.Graphics
 {
-    using Nine.Graphics.Content;
-    using Nine.Graphics.Rendering;
-    using Nine.Injection;
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
+    using Nine.Graphics.Content;
+    using Nine.Graphics.Rendering;
+    using Nine.Injection;
 
-    public class SpriteTest : DrawTest<SpriteTest>, IDrawTest
+    public class SpriteTest : DrawingTest<SpriteTest>, IDrawingTest
     {
         private static readonly TextureId[] textures =
         {
@@ -46,10 +46,7 @@
             },
         };
 
-        public IEnumerable<Drawing> GetDrawings()
-        {
-            return scenes.Select(CreateDrawing);
-        }
+        public IEnumerable<Drawing> GetDrawings() => scenes.Select(CreateDrawing);
 
         private static Drawing CreateDrawing(Sprite[] scene)
         {

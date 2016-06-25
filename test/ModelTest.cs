@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Numerics;
 
-    public class ModelTest : DrawTest<ModelTest>, IDrawTest
+    public class ModelTest : DrawingTest<ModelTest>, IDrawingTest
     {
         private static readonly ModelId[] models =
         {

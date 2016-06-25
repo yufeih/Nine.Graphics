@@ -58,7 +58,7 @@
 
             GLDebug.CheckAccess();
 
-            GL.ClearColor(Color.FromArgb(Branding.Color.R, Branding.Color.G, Branding.Color.B, Branding.Color.A));
+            GL.ClearColor(Color.Transparent);
         }
 
         public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
