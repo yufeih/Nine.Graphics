@@ -19,7 +19,7 @@
         public IModelRenderer ModelRenderer;
 
 
-        public void DrawFrame<T>(Action<int, int> draw, [CallerMemberName]string frameName = null)
+        public bool DrawFrame<T>(Action<int, int> draw, [CallerMemberName]string frameName = null)
             => Host.DrawFrame(draw, Path.Combine(typeof(T).Name, frameName));
 
         public static readonly IContentProvider ContentProvider = new ContentProvider();
