@@ -6,7 +6,6 @@
     using System.IO;
     using System.Runtime.CompilerServices;
     using Nine.Imaging;
-    using Nine.Graphics.Rendering;
 
     public class GraphicsTestFailedException : Exception
     {
@@ -17,14 +16,14 @@
     /// Enables a couple of key graphics testing scenarios:
     /// 
     /// CORRECTNESS:
-    ///   - The image should be idential to an expected image.
+    ///   - The image should be identical to an expected image.
     ///     The expected image is usually pre-rendered and verified manually.
     ///   - The same input state should always produce the same result between 2 frames.
-    ///   - The same input state should produce nearly idential images between different renderers.
+    ///   - The same input state should produce nearly identical images between different renderers.
     ///   - The renderer should only read the input state and never alter the state.
     /// 
     /// PERFORMANCE:
-    ///   - The input state is rendered multiple times to abtain time info.
+    ///   - The input state is rendered multiple times to obtain time info.
     ///   - The time info is compared against a baseline to warn if something become drastically slower.
     ///   - The time info is compared against multiple renderers for comparison.
     /// 
@@ -33,25 +32,37 @@
     ///   - Be able to render a frame to the output window.
     /// 
     /// </remarks>
-    public sealed partial class TestGraphicsHost : IGraphicsHost
+    public abstract class TestGraphicsHost : IGraphicsHost
     {
-        private readonly int width;
-        private readonly int height;
-        private readonly int frameTime;
-        private readonly float epsilon;
-        private readonly string outputPath;
-        private readonly byte[] framePixelsA;
-        private readonly byte[] framePixelsB;
-        private readonly Stopwatch watch = new Stopwatch();
-        private readonly Dictionary<string, int> frameCounters = new Dictionary<string, int>();
+        public readonly int Width;
+        public readonly int Height;
+        public readonly int FrameTime;
+        public readonly float Epsilon;
+        public readonly string OutputPath;
+        public readonly byte[] FramePixelsA;
+        public readonly byte[] FramePixelsB;
+
+        private readonly Stopwatch _watch = new Stopwatch();
+        private readonly Dictionary<string, int> _frameCounters = new Dictionary<string, int>();
+
+        public TestGraphicsHost(int width, int height, int frameTime, float epsilon, string outputPath)
+        {
+            Width = width;
+            Height = height;
+            FrameTime = frameTime;
+            Epsilon = epsilon;
+            OutputPath = outputPath;
+            FramePixelsA = new byte[width * height * 4];
+            FramePixelsB = new byte[width * height * 4];
+        }
 
         public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
             var frameIdentifier = GetFrameIdentifier(frameName);
-            var framePath = $"{ outputPath }/{ GetType().FullName }/{ frameIdentifier }";
+            var framePath = $"{ OutputPath }/{ GetType().FullName }/{ frameIdentifier }";
 
             CompareTwoFrames(draw, framePath + ".png");
-            CompareWithExpectedImage(framePixelsA, framePath + ".png");
+            CompareWithExpectedImage(FramePixelsA, framePath + ".png");
             ComparePerformance(draw, frameIdentifier, framePath + ".perf");
 
             return false;
@@ -60,38 +71,38 @@
         private string GetFrameIdentifier(string frameName)
         {
             int counter;
-            if (!frameCounters.TryGetValue(frameName, out counter))
+            if (!_frameCounters.TryGetValue(frameName, out counter))
             {
-                frameCounters[frameName] = 0;
+                _frameCounters[frameName] = 0;
             }
 
-            frameCounters[frameName] = ++counter;
+            _frameCounters[frameName] = ++counter;
 
             return frameName + (counter > 0 ? $"-{ counter }" : "");
         }
 
         private void CompareTwoFrames(Action<int, int> draw, string framePath)
         {
-            PlatformBeginFrame();
-            draw(width, height);
-            PlatformEndFrame(framePixelsA);
+            BeginFrame();
+            draw(Width, Height);
+            EndFrame(FramePixelsA);
 
-            PlatformBeginFrame();
-            draw(width, height);
-            PlatformEndFrame(framePixelsB);
+            BeginFrame();
+            draw(Width, Height);
+            EndFrame(FramePixelsB);
 
-            CompareImage(framePixelsA, framePixelsB, framePath, true);
+            CompareImage(FramePixelsA, FramePixelsB, framePath, true);
         }
+
+        protected abstract void BeginFrame();
+        protected abstract void EndFrame(byte[] pixels);
 
         private void CompareWithExpectedImage(byte[] pixels, string framePath)
         {
             if (File.Exists(framePath))
             {
-                using (var expectedStream = File.OpenRead(framePath))
-                {
-                    var expectedImage = new Image(expectedStream);
-                    CompareImage(expectedImage.Pixels, pixels, framePath, false);
-                }
+                var expectedImage = Image.Load(framePath);
+                CompareImage(expectedImage.Pixels, pixels, framePath, false);
             }
         }
 
@@ -109,7 +120,7 @@
                 diff += Math.Abs(expected[i] - actual[i]);
             }
 
-            if (diff > epsilon * expected.Length)
+            if (diff > Epsilon * expected.Length)
             {
                 if (saveExpected)
                 {
@@ -146,8 +157,7 @@
 
             using (var stream = File.OpenWrite(path))
             {
-                var img = new Image();
-                img.SetPixels(width, height, pixels);
+                var img = new Image(Width, Height, pixels);
                 img.SaveAsPng(stream);
             }
         }
@@ -172,26 +182,26 @@
 
         private void ComparePerformance(Action<int, int> draw, string frameName, string framePath)
         {
-            if (frameTime <= 0)
+            if (FrameTime <= 0)
             {
                 return;
             }
 
-            watch.Restart();
+            _watch.Restart();
 
             var frameCount = 0;
 
-            while (watch.Elapsed.TotalMilliseconds < frameTime)
+            while (_watch.Elapsed.TotalMilliseconds < FrameTime)
             {
-                PlatformBeginFrame();
-                draw(width, height);
-                PlatformEndFrame(null);
+                BeginFrame();
+                draw(Width, Height);
+                EndFrame(null);
                 frameCount++;
             }
 
-            watch.Stop();
+            _watch.Stop();
 
-            SaveAndVerifyPerf(frameCount, watch.Elapsed.TotalMilliseconds, frameName, framePath);
+            SaveAndVerifyPerf(frameCount, _watch.Elapsed.TotalMilliseconds, frameName, framePath);
         }
 
         private void SaveAndVerifyPerf(int count, double time, string frameName, string framePath)

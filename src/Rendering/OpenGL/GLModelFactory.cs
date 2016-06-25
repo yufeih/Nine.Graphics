@@ -5,9 +5,13 @@
     using System;
     using System.Collections.Generic;
 
-    partial class ModelFactory
+    public class GLModelFactory : ModelFactory<int>
     {
-        private unsafe Model PlatformCreateModel(ModelContent data)
+        public GLModelFactory(IGraphicsHost graphicsHost, IModelLoader loader, int capacity = 1024)
+            : base(graphicsHost, loader, capacity)
+        { }
+
+        public override unsafe Model CreateModel(ModelContent data)
         {
             GLDebug.CheckAccess();
 

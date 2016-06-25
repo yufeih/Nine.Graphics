@@ -56,9 +56,9 @@ float4 main(PS_IN input) : SV_Target
         private SharpDX.Direct3D12.Resource vertexBuffer;
         private VertexBufferView vertexBufferView;
 
-        private readonly GraphicsHost graphicsHost;
+        private readonly DXGraphicsHost graphicsHost;
         
-        public DXSpriteRenderer(GraphicsHost graphicsHost, DXTextureFactory textureFactory, int initialSpriteCapacity = 1024)
+        public DXSpriteRenderer(DXGraphicsHost graphicsHost, DXTextureFactory textureFactory, int initialSpriteCapacity = 1024)
             : base(textureFactory, initialSpriteCapacity)
         {
             if (graphicsHost == null) throw new ArgumentNullException(nameof(graphicsHost));

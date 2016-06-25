@@ -16,20 +16,20 @@
                .Map<ITextureLoader, TextureLoader>()
                .Map<IFontLoader, FontLoader>()
                .Map<IModelLoader, ModelLoader>()
-               .Map<ITexturePreloader, OpenGL.TextureFactory>()
-               .Map<IFontPreloader, OpenGL.FontTextureFactory>()
-               .Map<IModelPreloader, OpenGL.ModelFactory>()
-               .Map<ISpriteRenderer, OpenGL.SpriteRenderer>()
-               .Map<ITextSpriteRenderer, OpenGL.TextSpriteRenderer>()
-               .Map<IModelRenderer, OpenGL.ModelRenderer>();
+               .Map<ITexturePreloader, GLTextureFactory>()
+               .Map<IFontPreloader, GLFontTextureFactory>()
+               .Map<IModelPreloader, GLModelFactory>()
+               .Map<ISpriteRenderer, GLSpriteRenderer>()
+               .Map<ITextSpriteRenderer, GLTextSpriteRenderer>()
+               .Map<IModelRenderer, GLModelRenderer>();
             
             if (test)
             {
-                container.Map<IGraphicsHost>(new OpenGL.TestGraphicsHost(width, height));
+                container.Map<IGraphicsHost>(new GLTestGraphicsHost(width, height));
             }
             else
             {
-                var host = new OpenGL.GraphicsHost(width, height);
+                var host = new GLGraphicsHost(width, height);
 
                 container.Map<IGraphicsHost>(host);
             }
@@ -47,22 +47,22 @@
                .Map<ITextureLoader, TextureLoader>()
                .Map<IFontLoader, FontLoader>()
                .Map<IModelLoader, ModelLoader>()
-               .Map<ITexturePreloader, DirectX.TextureFactory>()
-               .Map<IFontPreloader, DirectX.FontTextureFactory>()
-               .Map<IModelPreloader, DirectX.ModelFactory>()
-               .Map<ISpriteRenderer, DirectX.SpriteRenderer>()
-               .Map<ITextSpriteRenderer, DirectX.TextSpriteRenderer>()
-               .Map<IModelRenderer, DirectX.ModelRenderer>();
+               .Map<ITexturePreloader, DXTextureFactory>()
+               .Map<IFontPreloader, DXFontTextureFactory>()
+               .Map<IModelPreloader, DXModelFactory>()
+               .Map<ISpriteRenderer, DXSpriteRenderer>()
+               .Map<ITextSpriteRenderer, DXTextSpriteRenderer>()
+               .Map<IModelRenderer, DXModelRenderer>();
             
             if (test)
             {
-                var host = new DirectX.TestGraphicsHost();
+                var host = new DXTestGraphicsHost(width, height);
                 container.Map<IGraphicsHost>(host);
                 container.Map(host.Device);
             }
             else
             {
-                var host = new DirectX.GraphicsHost(width, height);
+                var host = new DXGraphicsHost(width, height);
                 container.Map<IGraphicsHost>(host);
                 container.Map(host.Device);
             }

@@ -12,7 +12,7 @@ namespace Nine.Graphics.Rendering
     using System.Linq;
     using System.Runtime.CompilerServices;
 
-    public class GraphicsHost : Rendering.IGraphicsHost
+    public class DXGraphicsHost : IGraphicsHost
     {
         public readonly int FrameCount = 1;
 
@@ -42,10 +42,10 @@ namespace Nine.Graphics.Rendering
         //public int RTVDescriptorSize => rtvDescriptorSize;
 
         public GraphicsCommandList RequestBundle(PipelineState initialState = null) => bundlePool.GetObject(initialState);
-        private readonly GraphicsCommandListPool bundlePool;
+        private readonly DXGraphicsCommandListPool bundlePool;
 
         public GraphicsCommandList RequestCommandList() => commandListPool.GetObject(null);
-        private readonly GraphicsCommandListPool commandListPool;
+        private readonly DXGraphicsCommandListPool commandListPool;
 
         // Pipeline Objects
         private Device device;
@@ -84,11 +84,11 @@ namespace Nine.Graphics.Rendering
         private ViewportF viewport;
         private Rectangle scissorRect;
 
-        public GraphicsHost(int width, int height, bool hidden = false) 
+        public DXGraphicsHost(int width, int height, bool hidden = false) 
             : this(new RenderForm("Nine.Graphics") { Width = width, Height = height }, hidden)
         { }
 
-        public GraphicsHost(RenderForm window, bool hidden = false)
+        public DXGraphicsHost(RenderForm window, bool hidden = false)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
@@ -111,8 +111,8 @@ namespace Nine.Graphics.Rendering
             commandList.Close();
             
             bundleAllocator = device.CreateCommandAllocator(CommandListType.Bundle);
-            bundlePool = new GraphicsCommandListPool(this, bundleAllocator, CommandListType.Bundle, "Bundle");
-            commandListPool = new GraphicsCommandListPool(this, CommandAllocator, CommandListType.Direct);
+            bundlePool = new DXGraphicsCommandListPool(this, bundleAllocator, CommandListType.Bundle, "Bundle");
+            commandListPool = new DXGraphicsCommandListPool(this, CommandAllocator, CommandListType.Direct);
         }
         
         public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
@@ -138,7 +138,7 @@ namespace Nine.Graphics.Rendering
 
             CpuDescriptorHandle rtvHandle = rtvHeap.CPUDescriptorHandleForHeapStart;
             rtvHandle += CurrentFrameIndex * rtvDescriptorSize;
-            commandList.SetRenderTargets(1, rtvHandle, false, null);
+            commandList.SetRenderTargets(1, rtvHandle, null);
 
             var clearColor = new RawColor4(Branding.Color.R / 255.0f, Branding.Color.G / 255.0f, Branding.Color.B / 255.0f, Branding.Color.A / 255.0f);
             commandList.ClearRenderTargetView(rtvHandle, clearColor, 0, null);

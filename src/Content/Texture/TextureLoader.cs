@@ -37,9 +37,9 @@
             {
                 if (stream == null) return null;
 
-                var image = new Image(stream);
+                var image = Image.Load(stream);
                 var isTransparent = PremultiplyAlpha(image.Pixels);
-                return new TextureContent(image.PixelWidth, image.PixelHeight, image.Pixels, isTransparent);
+                return new TextureContent(image.Width, image.Height, image.Pixels, isTransparent);
             }
         }
 

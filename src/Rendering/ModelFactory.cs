@@ -5,9 +5,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Nine.Graphics.Content;
-    using Rendering;
 
-    public partial class ModelFactory : IModelPreloader
+    public abstract class ModelFactory<T> : IModelPreloader
     {
         enum LoadState { None, Loading, Loaded, Failed, Missing }
 
@@ -71,7 +70,7 @@
                     return;
                 }
 
-                models[modelId.Id].Slice = PlatformCreateModel(data);
+                models[modelId.Id].Slice = CreateModel(data);
                 models[modelId.Id].LoadState = LoadState.Loaded;
             }
             catch
@@ -81,6 +80,8 @@
                 models[modelId.Id].LoadState = LoadState.Failed;
             }
         }
+
+        public abstract Model CreateModel(ModelContent data);
 
         Task IModelPreloader.Preload(params ModelId[] models)
         {

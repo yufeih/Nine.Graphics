@@ -15,7 +15,7 @@
         {
             //return new Texture(new DXTexture(), data.Width, data.Height, data.Left, data.Right, data.Top, data.Bottom, data.IsTransparent);
 
-            var graphicsHost = GraphicsHost as GraphicsHost;
+            var graphicsHost = GraphicsHost as DXGraphicsHost;
             if (graphicsHost == null) return null;
             
             var textureDesc = ResourceDescription.Texture2D(Format.R8G8B8A8_UNorm, data.Width, data.Height);

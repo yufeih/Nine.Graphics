@@ -3,7 +3,7 @@
     using System;
     using System.Numerics;
 
-    public sealed partial class ModelRenderer : IModelRenderer, IDisposable
+    public abstract class ModelRenderer<T> : IModelRenderer
     {
         public unsafe void Draw(Matrix4x4 view, Matrix4x4 projection, Slice<Graphics.Model> models)
         {
@@ -11,21 +11,20 @@
             {
                 Graphics.Model* model = pModel;
 
-                PlatformBeginDraw(ref view, ref projection);
+                BeginDraw(ref view, ref projection);
 
                 for (int i = 0; i < models.Length; i++)
                 {
-                    PlatformDraw(model);
+                    Draw(model);
                     model++;
                 }
 
-                PlatformEndDraw();
+                EndDraw();
             }
         }
 
-        public void Dispose()
-        {
-            PlatformDispose();
-        }
+        protected abstract void EndDraw();
+        protected abstract unsafe void Draw(Graphics.Model* model);
+        protected abstract void BeginDraw(ref Matrix4x4 view, ref Matrix4x4 projection);
     }
 }

@@ -1,7 +1,6 @@
 ﻿namespace Nine.Graphics.Rendering
 {
     using System;
-    using System.Diagnostics;
     using System.Numerics;
 
     public abstract class TextSpriteRenderer<T> : ITextSpriteRenderer, IDisposable

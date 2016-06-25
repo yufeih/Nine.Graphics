@@ -4,16 +4,16 @@
     using System;
     using System.Collections.Concurrent;
 
-    class GraphicsCommandListPool : ConcurrentBag<GraphicsCommandList>
+    class DXGraphicsCommandListPool : ConcurrentBag<GraphicsCommandList>
     {
         private ConcurrentBag<GraphicsCommandList> spareObjects;
 
-        private readonly GraphicsHost graphicsHost;
+        private readonly DXGraphicsHost graphicsHost;
         private readonly CommandAllocator allocator;
         private readonly CommandListType type;
         private readonly string debugName;
 
-        public GraphicsCommandListPool(GraphicsHost graphicsHost, CommandAllocator allocator, CommandListType type, string debugName = "CMDLIST")
+        public DXGraphicsCommandListPool(DXGraphicsHost graphicsHost, CommandAllocator allocator, CommandListType type, string debugName = "CMDLIST")
             : base()
         {
             if (graphicsHost == null) throw new ArgumentNullException(nameof(graphicsHost));

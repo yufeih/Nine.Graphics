@@ -2,12 +2,10 @@
 {
     using System;
     using System.Drawing;
-    using Nine.Graphics.Rendering;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
     using OpenTK.Platform;
     using System.Runtime.CompilerServices;
-
 
     /// <summary>
     /// Represents a graphics host that is embedded inside a designated window.

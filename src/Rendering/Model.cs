@@ -4,6 +4,7 @@
     using System.Diagnostics;
     using System.Numerics;
     using Nine.Graphics.Content;
+    using PlatformBuffer = System.Int32;
     
     public partial class ModelBone
     {

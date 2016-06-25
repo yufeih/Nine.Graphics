@@ -32,7 +32,7 @@
         public static void PrintProgramAttributes(int program)
         {
             int count = 0;
-            GL.GetProgram(program, GetProgramParameterName.ActiveAttributes, out count);
+            GL.GetProgram(program, ProgramParameter.ActiveAttributes, out count);
 
             Console.WriteLine("\nAttributes(program: " + program + ", count: " + count + "):");
 
@@ -55,7 +55,7 @@
         public static void PrintProgramUniforms(int program)
         {
             int count = 0;
-            GL.GetProgram(program, GetProgramParameterName.ActiveUniforms, out count);
+            GL.GetProgram(program, ProgramParameter.ActiveUniforms, out count);
 
             Console.WriteLine("\nUniforms(program: " + program + ", count: " + count + "):");
 
