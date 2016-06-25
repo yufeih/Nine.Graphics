@@ -1,24 +1,21 @@
 ﻿namespace Nine.Graphics.Content
 {
-    using SharpFont;
     using System;
     using System.Drawing;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
-
-    using Library = SharpFont.Library;
+    using SharpFont;
 
     public sealed class FontLoader : IFontLoader, IDisposable
     {
-        private readonly IContentProvider contentProvider;
-        private readonly Library freetype;
-        private readonly string defaultFont;
-        private readonly int textureSize;
-        private readonly Fixed26Dot6 baseFontSize;
+        private readonly IContentProvider _contentProvider;
+        private readonly Lazy<Library> _freetype;
+        private readonly string _defaultFont;
+        private readonly int _textureSize;
+        private readonly Fixed26Dot6 _baseFontSize;
 
-        private RectanglePacker packer;
-        private byte[] pixels;
+        private RectanglePacker _packer;
+        private byte[] _pixels;
 
         public bool UseSystemFonts { get; set; } = true;
 
@@ -28,16 +25,16 @@
             if (baseFontSize <= 1 || baseFontSize > textureSize) throw new ArgumentOutOfRangeException(nameof(baseFontSize));
             if (textureSize <= 1) throw new ArgumentOutOfRangeException(nameof(textureSize));
             
-            this.defaultFont = defaultFont ?? "Consola";
-            this.contentProvider = contentProvider;
-            this.baseFontSize = baseFontSize;
-            this.textureSize = textureSize;
-            this.freetype = new Library();
+            _defaultFont = defaultFont ?? "Consola";
+            _contentProvider = contentProvider;
+            _baseFontSize = baseFontSize;
+            _textureSize = textureSize;
+            _freetype = new Lazy<Library>(() => new Library());
         }
 
         public async Task<IFontFace> LoadFont(string font)
         {
-            font = string.IsNullOrEmpty(font) ? defaultFont : font;
+            font = string.IsNullOrEmpty(font) ? _defaultFont : font;
 
             if (UseSystemFonts)
             {
@@ -47,13 +44,13 @@
 
                 if (File.Exists(fontPath))
                 {
-                    return new FontFace(this, freetype.NewFace(fontPath, 0));
+                    return new FontFace(this, _freetype.Value.NewFace(fontPath, 0));
                 }
             }
 
-            if (contentProvider != null)
+            if (_contentProvider != null)
             {
-                using (var stream = await contentProvider.Open(font))
+                using (var stream = await _contentProvider.Open(font))
                 {
                     if (stream == null)
                     {
@@ -62,7 +59,7 @@
 
                     var buffer = new byte[stream.Length];
                     stream.Read(buffer, 0, (int)stream.Length);
-                    return new FontFace(this, freetype.NewMemoryFace(buffer, 0));
+                    return new FontFace(this, _freetype.Value.NewMemoryFace(buffer, 0));
                 }
             }
 
@@ -71,7 +68,10 @@
 
         public void Dispose()
         {
-            freetype.Dispose();
+            if (_freetype.IsValueCreated)
+            {
+                _freetype.Value.Dispose();
+            }
         }
 
         class FontFace : IFontFace
@@ -93,38 +93,38 @@
                     return default(GlyphLoadResult);
                 }
 
-                face.SetCharSize(parent.baseFontSize, parent.baseFontSize, 72, 72);
+                face.SetCharSize(parent._baseFontSize, parent._baseFontSize, 72, 72);
                 face.LoadGlyph(glyph, LoadFlags.Default, LoadTarget.Normal);
 
                 var point = default(Point);
                 var createsNewTexture = false;
                 var metrics = face.Glyph.Metrics;
-                var textureSize = parent.textureSize;
+                var textureSize = parent._textureSize;
 
-                if (parent.packer == null)
+                if (parent._packer == null)
                 {
                     createsNewTexture = true;
-                    parent.packer = new RectanglePacker(textureSize, textureSize);
-                    parent.pixels = new byte[textureSize * textureSize];
+                    parent._packer = new RectanglePacker(textureSize, textureSize);
+                    parent._pixels = new byte[textureSize * textureSize];
                 }
 
-                if (parent.packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+                if (parent._packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
                 {
-                    FillGlyph(face, parent.pixels, textureSize, point.X, point.Y);
+                    FillGlyph(face, parent._pixels, textureSize, point.X, point.Y);
 
-                    return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent.pixels), createsNewTexture);
+                    return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent._pixels), createsNewTexture);
                 }
                 else
                 {
-                    parent.packer = new RectanglePacker(textureSize, textureSize);
+                    parent._packer = new RectanglePacker(textureSize, textureSize);
 
-                    if (parent.packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
+                    if (parent._packer.TryPack(metrics.Width.ToInt32(), metrics.Height.ToInt32(), 1, out point))
                     {
-                        parent.pixels = new byte[textureSize * textureSize];
+                        parent._pixels = new byte[textureSize * textureSize];
 
-                        FillGlyph(face, parent.pixels, textureSize, point.X, point.Y);
+                        FillGlyph(face, parent._pixels, textureSize, point.X, point.Y);
 
-                        return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent.pixels), true);
+                        return new GlyphLoadResult(new TextureContent(textureSize, textureSize, parent._pixels), true);
                     }
                 }
 

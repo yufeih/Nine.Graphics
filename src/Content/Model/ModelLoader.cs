@@ -1,9 +1,7 @@
 ﻿namespace Nine.Graphics.Content
 {
     using Assimp;
-    using Assimp.Configs;
     using System;
-    using System.Linq;
     using System.Collections.Generic;
     using System.Numerics;
     using System.Threading.Tasks;
@@ -18,20 +16,19 @@
 
     public class ModelLoader : IModelLoader
     {
-        public ImportQuality Quality { get; set; }
+        public ImportQuality Quality { get; set; } = ImportQuality.High;
 
-        private readonly IContentProvider contentLocator;
-        private readonly AssimpContext context;
+        private readonly IContentProvider _contentProvider;
+        private readonly Lazy<AssimpContext> _assimp;
 
         public ModelLoader(IContentProvider contentLocator)
         {
             if (contentLocator == null) throw new ArgumentNullException(nameof(contentLocator));
-            
-            this.contentLocator = contentLocator;
-            this.Quality = ImportQuality.High;
 
-            this.context = new AssimpContext();
-            //this.context.SetConfig(new NormalSmoothingAngleConfig(66.0f));
+            _contentProvider = contentLocator;
+
+            _assimp = new Lazy<AssimpContext>(() => new AssimpContext());
+            //_assimp.SetConfig(new NormalSmoothingAngleConfig(66.0f));
         }
 
         public async Task<ModelContent> Load(string name)
@@ -46,7 +43,7 @@
 
             var quality = PostProcessPreset.TargetRealTimeFast;
 
-            switch (this.Quality)
+            switch (Quality)
             {
                 case ImportQuality.Low:
                     quality = PostProcessPreset.TargetRealTimeFast;
@@ -59,14 +56,14 @@
                     break;
             }
 
-            using (var stream = await contentLocator.Open(name).ConfigureAwait(false))
+            using (var stream = await _contentProvider.Open(name).ConfigureAwait(false))
             {
                 if (stream == null) return null;
 
                 var meshes = new List<ModelMeshContent>();
 
-                var fileExtension = System.IO.Path.GetExtension(name);
-                var scene = context.ImportFileFromStream(stream, quality, fileExtension);
+                var fileExtension = Path.GetExtension(name);
+                var scene = _assimp.Value.ImportFileFromStream(stream, quality, fileExtension);
 
                 foreach (var mesh in scene.Meshes)
                 {

@@ -1,46 +1,36 @@
 ﻿namespace Nine.Graphics
 {
-    using Nine.Graphics.Content;
-    using Nine.Graphics.Rendering;
-    using Nine.Injection;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Numerics;
+    using System;
+    using System.Threading.Tasks;
+    using Xunit;
 
-    public class ModelTest : DrawingTest<ModelTest>, IDrawingTest
+    public class ModelTest
     {
-        private static readonly ModelId[] models =
+        private static readonly ModelId[] Models =
         {
             "Content/cube.fbx"
         };
 
-        private static readonly Model[][] scenes =
+        public static readonly DrawingTheoryData<Model[]> Scenes = new DrawingTheoryData<Model[]>
         {
-            new [] { new Model(models[0]) },
+            new [] { new Model(Models[0]) },
         };
 
-        public IEnumerable<Drawing> GetDrawings()
+        // [Theory, MemberData(nameof(Scenes))]
+        public static async Task draw_models(Lazy<DrawingContext> context, Model[] scene)
         {
-            return scenes.Select(CreateDrawing);
-        }
+            await context.Value.ModelPreloader.Preload(Models);
 
-        private static Drawing CreateDrawing(Model[] scene)
-        {
-            return new Drawing(
+            var renderer = context.Value.ModelRenderer;
 
-                draw: (container, width, height) =>
-                {
-                    var renderer = container.Get<IModelRenderer>();
-                    var view = Matrix4x4.CreateLookAt(new Vector3(-500), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-                    var projection = Matrix4x4.CreatePerspectiveFieldOfView(45, width / height, 0.1f, 1000.0f);
-                    renderer.Draw(view, projection, scene);
-                },
+            context.Value.Host.DrawFrame((width, height) =>
+            {
+                var view = Matrix4x4.CreateLookAt(new Vector3(-500), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+                var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.ToRadius(45), width / height, 0.1f, 1000.0f);
 
-                beforeDraw: container =>
-                {
-                    return container.Get<IModelPreloader>().Preload(ModelTest.models);
-                }
-            );
+                renderer.Draw(view, projection, scene);
+            });
         }
     }
 }

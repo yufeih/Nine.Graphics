@@ -12,8 +12,8 @@
 
         public GLTestGraphicsHost(
             int width, int height, GraphicsMode mode = null,
-            int frameTime = 1000, float epsilon = 0.001f, string outputPath = null)
-            : base(width, height, frameTime, epsilon, outputPath)
+            int testDuration = 1000, float epsilon = 0.001f, string outputPath = null)
+            : base("gl", width, height, testDuration, epsilon, outputPath)
         {
             GLDebug.CheckAccess();
 

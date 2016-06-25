@@ -19,16 +19,13 @@
         }
 
         private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
-        private readonly IGraphicsHost graphicsHost;
         private readonly IModelLoader loader;
         private Entry[] models;
 
-        public ModelFactory(IGraphicsHost graphicsHost, IModelLoader loader, int capacity = 1024)
+        public ModelFactory(IModelLoader loader, int capacity = 1024)
         {
-            if (graphicsHost == null) throw new ArgumentNullException(nameof(graphicsHost));
             if (loader == null) throw new ArgumentNullException(nameof(loader));
 
-            this.graphicsHost = graphicsHost;
             this.loader = loader;
             this.models = new Entry[capacity];
         }
@@ -75,7 +72,8 @@
             }
             catch
             {
-                await LoadModel(ModelId.Error);
+                // TODO: StackOverflow
+                // await LoadModel(ModelId.Error);
                 models[modelId.Id].Slice = models[ModelId.Error.Id].Slice;
                 models[modelId.Id].LoadState = LoadState.Failed;
             }

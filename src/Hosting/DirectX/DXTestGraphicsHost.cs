@@ -9,8 +9,8 @@
 
         public DXTestGraphicsHost(
             int width, int height,
-            int frameTime = 1000, float epsilon = 0.001f, string outputPath = null)
-            : base(width, height, frameTime, epsilon, outputPath)
+            int testDuration = 1000, float epsilon = 0.001f, string outputPath = null)
+            : base("dx", width, height, testDuration, epsilon, outputPath)
         { }
 
         protected override void BeginFrame()

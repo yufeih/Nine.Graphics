@@ -1,4 +1,4 @@
-﻿namespace Nine.Graphics.Content
+﻿namespace Nine.Graphics.Rendering
 {
     using System.Threading.Tasks;
 

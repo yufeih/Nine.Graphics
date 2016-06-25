@@ -5,8 +5,8 @@
 
     public class GLTextureFactory : TextureFactory<int>
     {
-        public GLTextureFactory(IGraphicsHost graphicsHost, ITextureLoader loader, int capacity = 1024)
-            : base(graphicsHost, loader, capacity)
+        public GLTextureFactory(ITextureLoader loader, int capacity = 1024)
+            : base(loader, capacity)
         { }
 
         public override Texture<int> CreateTexture(TextureContent data)

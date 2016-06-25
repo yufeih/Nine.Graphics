@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Runtime.CompilerServices;
     using Nine.Imaging;
 
@@ -34,35 +35,50 @@
     /// </remarks>
     public abstract class TestGraphicsHost : IGraphicsHost
     {
+        public readonly string Name;
         public readonly int Width;
         public readonly int Height;
-        public readonly int FrameTime;
-        public readonly float Epsilon;
-        public readonly string OutputPath;
-        public readonly byte[] FramePixelsA;
-        public readonly byte[] FramePixelsB;
+
+        private readonly float _epsilon;
+        private readonly string _outputPath;
+        private readonly int _testDuration;
+        private readonly byte[] _framePixelsA;
+        private readonly byte[] _framePixelsB;
 
         private readonly Stopwatch _watch = new Stopwatch();
         private readonly Dictionary<string, int> _frameCounters = new Dictionary<string, int>();
 
-        public TestGraphicsHost(int width, int height, int frameTime, float epsilon, string outputPath)
+        private readonly string _perfFile;
+        private readonly Dictionary<string, double> _perf = new Dictionary<string, double>();
+
+        public TestGraphicsHost(string name, int width, int height, int testDuration, float epsilon, string outputPath)
         {
+            Name = name;
             Width = width;
             Height = height;
-            FrameTime = frameTime;
-            Epsilon = epsilon;
-            OutputPath = outputPath ?? "TestResults";
-            FramePixelsA = new byte[width * height * 4];
-            FramePixelsB = new byte[width * height * 4];
+            _epsilon = epsilon;
+            _outputPath = outputPath ?? "TestResults";
+
+            _testDuration = testDuration;
+            _framePixelsA = new byte[width * height * 4];
+            _framePixelsB = new byte[width * height * 4];
+
+            _perfFile = Path.Combine(_outputPath, "perf.log");
+            if (File.Exists(_perfFile))
+            {
+                _perf = File.ReadAllLines(_perfFile)
+                            .Select(line => line.Split('\t'))
+                            .ToDictionary(k => k[0], v => double.Parse(v[1]));
+            }
         }
 
         public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
             var frameIdentifier = GetFrameIdentifier(frameName);
-            var framePath = Path.Combine(OutputPath, frameIdentifier);
+            var framePath = Path.Combine(_outputPath, frameIdentifier);
 
             CompareTwoFrames(draw, framePath + ".png");
-            CompareWithExpectedImage(FramePixelsA, framePath + ".png");
+            CompareWithExpectedImage(_framePixelsA, framePath + ".png");
             ComparePerformance(draw, frameIdentifier, framePath + ".perf");
 
             return false;
@@ -78,20 +94,20 @@
 
             _frameCounters[frameName] = ++counter;
 
-            return frameName + (counter > 0 ? $"-{ counter }" : "");
+            return $"{frameName}-{counter}-{Name}";
         }
 
         private void CompareTwoFrames(Action<int, int> draw, string framePath)
         {
             BeginFrame();
             draw(Width, Height);
-            EndFrame(FramePixelsA);
+            EndFrame(_framePixelsA);
 
             BeginFrame();
             draw(Width, Height);
-            EndFrame(FramePixelsB);
+            EndFrame(_framePixelsB);
 
-            CompareImage(FramePixelsA, FramePixelsB, framePath, true);
+            CompareImage(_framePixelsA, _framePixelsB, framePath, true);
         }
 
         protected abstract void BeginFrame();
@@ -120,7 +136,7 @@
                 diff += Math.Abs(expected[i] - actual[i]);
             }
 
-            if (diff > Epsilon * expected.Length)
+            if (diff > _epsilon * expected.Length)
             {
                 if (saveExpected)
                 {
@@ -182,7 +198,7 @@
 
         private void ComparePerformance(Action<int, int> draw, string frameName, string framePath)
         {
-            if (FrameTime <= 0)
+            if (_testDuration <= 0)
             {
                 return;
             }
@@ -191,7 +207,7 @@
 
             var frameCount = 0;
 
-            while (_watch.Elapsed.TotalMilliseconds < FrameTime)
+            while (_watch.Elapsed.TotalMilliseconds < _testDuration)
             {
                 BeginFrame();
                 draw(Width, Height);
@@ -201,12 +217,14 @@
 
             _watch.Stop();
 
-            SaveAndVerifyPerf(frameCount, _watch.Elapsed.TotalMilliseconds, frameName, framePath);
+            SaveAndVerifyPerf(frameCount, _watch.Elapsed.TotalMilliseconds, frameName);
         }
 
-        private void SaveAndVerifyPerf(int count, double time, string frameName, string framePath)
+        private void SaveAndVerifyPerf(int count, double time, string frameName)
         {
-            var previousFps = File.Exists(framePath) ? double.Parse(File.ReadAllText(framePath)) : 0;
+            var previousFps = 0.0;
+
+            _perf.TryGetValue(frameName, out previousFps);
 
             var fps = 1000 * count / time;
             var isRunningSlower = fps < previousFps * 0.75;
@@ -225,7 +243,9 @@
 
             if (!isRunningSlower)
             {
-                File.WriteAllText(framePath, fps.ToString());
+                _perf[frameName] = fps;
+
+                File.WriteAllLines(_perfFile, _perf.OrderBy(p => p.Key).Select(p => string.Concat(p.Key, "\t",p.Value)));
             }
         }
     }

@@ -7,8 +7,8 @@
 
     public class GLModelFactory : ModelFactory<int>
     {
-        public GLModelFactory(IGraphicsHost graphicsHost, IModelLoader loader, int capacity = 1024)
-            : base(graphicsHost, loader, capacity)
+        public GLModelFactory(IModelLoader loader, int capacity = 1024)
+            : base(loader, capacity)
         { }
 
         public override unsafe Model CreateModel(ModelContent data)

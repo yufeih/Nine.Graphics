@@ -5,8 +5,8 @@
 
     public class DXModelFactory : ModelFactory<int>
     {
-        public DXModelFactory(IGraphicsHost graphicsHost, IModelLoader loader, int capacity = 1024)
-            : base(graphicsHost, loader, capacity)
+        public DXModelFactory(IModelLoader loader, int capacity = 1024)
+            : base(loader, capacity)
         { }
 
         public override Model CreateModel(ModelContent data)

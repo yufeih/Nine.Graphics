@@ -1,30 +1,22 @@
 ﻿namespace Nine.Graphics
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
     using Nine.Graphics.Content;
     using Nine.Imaging;
-    using Nine.Injection;
     using Xunit;
 
-    class FontTest : DrawingTest<FontTest>, IDrawingTest
+    class FontTest
     {
-        public IEnumerable<Drawing> GetDrawings()
-        {
-            yield break;
-        }
-
         [Fact]
         public async Task build_default_ascii_table()
         {
             var textureCount = 0;
-            var fontLoader = OpenGlContainer.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
-            var font = await fontLoader.LoadFont();
+            var font = await DrawingContext.FontLoader.LoadFont();
             for (var c = '\0'; c <= '\u00FF'; c++)
             {
                 var glyph = font.LoadGlyph(c);
@@ -40,14 +32,13 @@
         }
 
         [Fact]
-        public async Task build_full_unicode_table(Lazy<IContainer> container)
+        public async Task build_full_unicode_table()
         {
             var textureCount = 0;
-            var fontLoader = OpenGlContainer.Get<IFontLoader>();
 
             GlyphLoadResult lastGlyph = new GlyphLoadResult();
 
-            var font = await fontLoader.LoadFont("simhei");
+            var font = await DrawingContext.FontLoader.LoadFont("simhei");
             for (var c = char.MinValue; c < char.MaxValue; c++)
             {
                 var glyph = font.LoadGlyph(c);
@@ -85,7 +76,7 @@
 
         private void SaveFrame(TextureContent textureContent, string path)
         {
-            path = $"{OutputPath}/{nameof(FontTest)}/{path}";
+            path = $"TestResults/{nameof(FontTest)}/{path}";
 
             if (!Directory.Exists(Path.GetDirectoryName(path)))
             {

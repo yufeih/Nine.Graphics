@@ -21,15 +21,12 @@
         private readonly SynchronizationContext _syncContext = SynchronizationContext.Current;
         private Entry[] _textures;
 
-        public IGraphicsHost GraphicsHost { get; }
         public ITextureLoader TextureLoader { get; }
 
-        public TextureFactory(IGraphicsHost graphicsHost, ITextureLoader loader, int capacity = 1024)
+        public TextureFactory(ITextureLoader loader, int capacity = 1024)
         {
-            if (graphicsHost == null) throw new ArgumentNullException(nameof(graphicsHost));
             if (loader == null) throw new ArgumentNullException(nameof(loader));
-
-            GraphicsHost = graphicsHost;
+            
             TextureLoader = loader;
 
             _textures = new Entry[capacity];
