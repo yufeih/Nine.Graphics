@@ -22,9 +22,9 @@
             if (HasGpu())
             {
                 _window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
-            }
 
-            GL.ClearColor(Color.Transparent);
+                GL.ClearColor(Color.Transparent);
+            }
         }
 
         private bool HasGpu()
