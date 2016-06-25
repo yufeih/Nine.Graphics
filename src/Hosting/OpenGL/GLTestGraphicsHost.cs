@@ -10,6 +10,8 @@
     {
         private readonly GameWindow _window;
 
+        public override bool IsAvailable => _window != null;
+
         public GLTestGraphicsHost(
             int width, int height, GraphicsMode mode = null,
             int testDuration = 1000, float epsilon = 0.001f, string outputPath = null)
@@ -17,7 +19,10 @@
         {
             GLDebug.CheckAccess();
 
-            _window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
+            if (GraphicsMode.Default != null)
+            {
+                _window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
+            }
 
             GL.ClearColor(Color.Transparent);
         }
