@@ -1,12 +1,8 @@
 ﻿namespace Nine.Graphics.Rendering
 {
     using OpenTK;
-    using OpenTK.Graphics.OpenGL;
-    using System;
-    using System.Diagnostics;
     using System.Numerics;
-    using System.Text;
-    using System.Threading;
+    using OpenTK.Graphics;
 
     static class GLHelper
     {
@@ -31,6 +27,18 @@
             result.Row3.Y = m.M42;
             result.Row3.Z = m.M43;
             result.Row3.W = m.M44;
+        }
+
+        public static bool IsGLAvailable()
+        {
+            try
+            {
+                return GraphicsMode.Default != null;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

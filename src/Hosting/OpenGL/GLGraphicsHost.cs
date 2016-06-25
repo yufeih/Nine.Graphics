@@ -39,7 +39,9 @@
 
         public readonly GameWindow Window;
 
-        private static readonly OpenGLSynchronizationContext syncContext = new OpenGLSynchronizationContext();
+        public bool IsAvailable => GLHelper.IsGLAvailable();
+
+        private static readonly OpenGLSynchronizationContext s_syncContext = new OpenGLSynchronizationContext();
 
         public GLGraphicsHost(int width, int height, GraphicsMode mode = null, bool vSync = true)
             : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.Default) { VSync = vSync ? VSyncMode.On : VSyncMode.Off, Visible = true })
@@ -54,7 +56,7 @@
 
             Window = window;
 
-            SynchronizationContext.SetSynchronizationContext(syncContext);
+            SynchronizationContext.SetSynchronizationContext(s_syncContext);
 
             GLDebug.CheckAccess();
 
@@ -66,7 +68,7 @@
             GLDebug.CheckAccess();
 
             Window.ProcessEvents();
-            syncContext.DrainQueue();
+            s_syncContext.DrainQueue();
 
             if (Window.IsExiting)
             {

@@ -5,6 +5,8 @@
 
     public interface IGraphicsHost
     {
+        bool IsAvailable { get; }
+
         /// <summary>
         /// Draws one frame using the draw action.
         /// </summary>

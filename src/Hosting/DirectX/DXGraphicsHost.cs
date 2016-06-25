@@ -15,6 +15,7 @@ namespace Nine.Graphics.Rendering
     {
         public readonly int FrameCount = 1;
 
+        public bool IsAvailable => true;
 
         public IntPtr WindowHandle => window.Handle;
 

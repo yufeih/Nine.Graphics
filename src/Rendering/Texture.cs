@@ -12,10 +12,10 @@
         public readonly int SourceWidth;
         public readonly int SourceHeight;
 
-        public readonly float Left;
-        public readonly float Right;
-        public readonly float Top;
-        public readonly float Bottom;
+        public readonly float UvLeft;
+        public readonly float UvRight;
+        public readonly float UvTop;
+        public readonly float UvBottom;
 
         public readonly bool IsTransparent;
 
@@ -43,10 +43,10 @@
             this.Width = right - left;
             this.Height = bottom - top;
 
-            this.Left = (float)left / sourceWidth;
-            this.Right = (float)right / sourceWidth;
-            this.Top = (float)top / sourceHeight;
-            this.Bottom = (float)bottom / sourceHeight;
+            this.UvLeft = (float)left / sourceWidth;
+            this.UvRight = (float)right / sourceWidth;
+            this.UvTop = (float)top / sourceHeight;
+            this.UvBottom = (float)bottom / sourceHeight;
 
             this.IsTransparent = isTransparent;
         }

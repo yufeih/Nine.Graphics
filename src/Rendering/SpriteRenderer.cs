@@ -141,26 +141,26 @@
             tl->Position.X = x;
             tl->Position.Y = y;
             tl->Color = sprite->Color.Bgra;
-            tl->TextureCoordinate.X = texture.Left;
-            tl->TextureCoordinate.Y = texture.Top;
+            tl->TextureCoordinate.X = texture.UvLeft;
+            tl->TextureCoordinate.Y = texture.UvTop;
 
             tr->Position.X = x + w;
             tr->Position.Y = y;
             tr->Color = sprite->Color.Bgra;
-            tr->TextureCoordinate.X = texture.Right;
-            tr->TextureCoordinate.Y = texture.Top;
+            tr->TextureCoordinate.X = texture.UvRight;
+            tr->TextureCoordinate.Y = texture.UvTop;
 
             bl->Position.X = x;
             bl->Position.Y = y + h;
             bl->Color = sprite->Color.Bgra;
-            bl->TextureCoordinate.X = texture.Left;
-            bl->TextureCoordinate.Y = texture.Bottom;
+            bl->TextureCoordinate.X = texture.UvLeft;
+            bl->TextureCoordinate.Y = texture.UvBottom;
 
             br->Position.X = x + w;
             br->Position.Y = y + h;
             br->Color = sprite->Color.Bgra;
-            br->TextureCoordinate.X = texture.Right;
-            br->TextureCoordinate.Y = texture.Bottom;
+            br->TextureCoordinate.X = texture.UvRight;
+            br->TextureCoordinate.Y = texture.UvBottom;
         }
 
         private unsafe void PopulateVertexWithTransform(
@@ -176,26 +176,26 @@
             tl->Position.X = x;
             tl->Position.Y = y;
             tl->Color = sprite->Color.Bgra;
-            tl->TextureCoordinate.X = texture.Left;
-            tl->TextureCoordinate.Y = texture.Top;
+            tl->TextureCoordinate.X = texture.UvLeft;
+            tl->TextureCoordinate.Y = texture.UvTop;
 
             tr->Position.X = x + w;
             tr->Position.Y = y;
             tr->Color = sprite->Color.Bgra;
-            tr->TextureCoordinate.X = texture.Right;
-            tr->TextureCoordinate.Y = texture.Top;
+            tr->TextureCoordinate.X = texture.UvRight;
+            tr->TextureCoordinate.Y = texture.UvTop;
 
             bl->Position.X = x;
             bl->Position.Y = y + h;
             bl->Color = sprite->Color.Bgra;
-            bl->TextureCoordinate.X = texture.Left;
-            bl->TextureCoordinate.Y = texture.Bottom;
+            bl->TextureCoordinate.X = texture.UvLeft;
+            bl->TextureCoordinate.Y = texture.UvBottom;
 
             br->Position.X = x + w;
             br->Position.Y = y + h;
             br->Color = sprite->Color.Bgra;
-            br->TextureCoordinate.X = texture.Right;
-            br->TextureCoordinate.Y = texture.Bottom;
+            br->TextureCoordinate.X = texture.UvRight;
+            br->TextureCoordinate.Y = texture.UvBottom;
 
             tl->Position = Vector2.Transform(tl->Position, transform);
             tr->Position = Vector2.Transform(tr->Position, transform);
@@ -224,26 +224,26 @@
             tl->Position.X = (float)(x + dx * cos - dy * sin);
             tl->Position.Y = (float)(y + dx * sin + dy * cos);
             tl->Color = sprite->Color.Bgra;
-            tl->TextureCoordinate.X = texture.Left;
-            tl->TextureCoordinate.Y = texture.Top;
+            tl->TextureCoordinate.X = texture.UvLeft;
+            tl->TextureCoordinate.Y = texture.UvTop;
 
             tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
             tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
             tr->Color = sprite->Color.Bgra;
-            tr->TextureCoordinate.X = texture.Right;
-            tr->TextureCoordinate.Y = texture.Top;
+            tr->TextureCoordinate.X = texture.UvRight;
+            tr->TextureCoordinate.Y = texture.UvTop;
 
             bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
             bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
             bl->Color = sprite->Color.Bgra;
-            bl->TextureCoordinate.X = texture.Left;
-            bl->TextureCoordinate.Y = texture.Bottom;
+            bl->TextureCoordinate.X = texture.UvLeft;
+            bl->TextureCoordinate.Y = texture.UvBottom;
 
             br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
             br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
             br->Color = sprite->Color.Bgra;
-            br->TextureCoordinate.X = texture.Right;
-            br->TextureCoordinate.Y = texture.Bottom;
+            br->TextureCoordinate.X = texture.UvRight;
+            br->TextureCoordinate.Y = texture.UvBottom;
         }
 
         private unsafe void PopulateVertexWithRotationAndTransform(
@@ -267,26 +267,26 @@
             tl->Position.X = (float)(x + dx * cos - dy * sin);
             tl->Position.Y = (float)(y + dx * sin + dy * cos);
             tl->Color = sprite->Color.Bgra;
-            tl->TextureCoordinate.X = texture.Left;
-            tl->TextureCoordinate.Y = texture.Top;
+            tl->TextureCoordinate.X = texture.UvLeft;
+            tl->TextureCoordinate.Y = texture.UvTop;
 
             tr->Position.X = (float)(x + (dx + w) * cos - dy * sin);
             tr->Position.Y = (float)(y + (dx + w) * sin + dy * cos);
             tr->Color = sprite->Color.Bgra;
-            tr->TextureCoordinate.X = texture.Right;
-            tr->TextureCoordinate.Y = texture.Top;
+            tr->TextureCoordinate.X = texture.UvRight;
+            tr->TextureCoordinate.Y = texture.UvTop;
 
             bl->Position.X = (float)(x + dx * cos - (dy + h) * sin);
             bl->Position.Y = (float)(y + dx * sin + (dy + h) * cos);
             bl->Color = sprite->Color.Bgra;
-            bl->TextureCoordinate.X = texture.Left;
-            bl->TextureCoordinate.Y = texture.Bottom;
+            bl->TextureCoordinate.X = texture.UvLeft;
+            bl->TextureCoordinate.Y = texture.UvBottom;
 
             br->Position.X = (float)(x + (dx + w) * cos - (dy + h) * sin);
             br->Position.Y = (float)(y + (dx + w) * sin + (dy + h) * cos);
             br->Color = sprite->Color.Bgra;
-            br->TextureCoordinate.X = texture.Right;
-            br->TextureCoordinate.Y = texture.Bottom;
+            br->TextureCoordinate.X = texture.UvRight;
+            br->TextureCoordinate.Y = texture.UvBottom;
 
             tl->Position = Vector2.Transform(tl->Position, transform);
             tr->Position = Vector2.Transform(tr->Position, transform);

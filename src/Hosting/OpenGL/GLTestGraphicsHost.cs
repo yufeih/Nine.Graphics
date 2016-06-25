@@ -19,23 +19,11 @@
         {
             GLDebug.CheckAccess();
 
-            if (HasGpu())
+            if (GLHelper.IsGLAvailable())
             {
                 _window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
 
                 GL.ClearColor(Color.Transparent);
-            }
-        }
-
-        private bool HasGpu()
-        {
-            try
-            {
-                return GraphicsMode.Default != null;
-            }
-            catch
-            {
-                return false;
             }
         }
 

@@ -18,18 +18,19 @@
         };
 
         // [Theory, MemberData(nameof(Scenes))]
-        public static async Task draw_models(Lazy<DrawingContext> context, Model[] scene)
+        public static async Task draw_models(Lazy<DrawingContext> contextFactory, Model[] scene)
         {
-            await context.Value.ModelPreloader.Preload(Models);
+            var context = contextFactory.Value;
+            if (context == null) return;
 
-            var renderer = context.Value.ModelRenderer;
-
-            context.Value.Host.DrawFrame((width, height) =>
+            await context.ModelPreloader.Preload(Models);
+            
+            context.Host.DrawFrame((width, height) =>
             {
                 var view = Matrix4x4.CreateLookAt(new Vector3(-500), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
                 var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.ToRadius(45), width / height, 0.1f, 1000.0f);
 
-                renderer.Draw(view, projection, scene);
+                context.ModelRenderer.Draw(view, projection, scene);
             });
         }
     }

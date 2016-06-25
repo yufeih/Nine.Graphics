@@ -45,17 +45,18 @@
         };
 
         [Theory, MemberData(nameof(Scenes))]
-        public static async Task draw_sprites(Lazy<DrawingContext> context, Sprite[] scene)
+        public static async Task draw_sprites(Lazy<DrawingContext> contextFactory, Sprite[] scene)
         {
-            await context.Value.TexturePreloader.Preload(Textures);
+            var context = contextFactory.Value;
+            if (context == null) return;
 
-            var renderer = context.Value.SpriteRenderer;
+            await context.TexturePreloader.Preload(Textures);
 
-            context.Value.DrawFrame<SpriteTest>((width, height) =>
+            context.DrawFrame<SpriteTest>((width, height) =>
             {
                 var camera = Matrix4x4.CreateOrthographicOffCenter(0, width, height, 0, 0, 1);
 
-                renderer.Draw(camera, scene);
+                context.SpriteRenderer.Draw(camera, scene);
             });
         }
     }
