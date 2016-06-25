@@ -1,4 +1,4 @@
-# Nine.Graphics [![NuGet Version](http://img.shields.io/nuget/v/Nine.Graphics.svg)](https://www.nuget.org/packages/Nine.Graphics) [![Build status](https://ci.appveyor.com/api/projects/status/lj0j06cxmlhymr3f)](https://ci.appveyor.com/project/yufeih/nine-graphics)
+# Nine.Graphics [![Build status](https://ci.appveyor.com/api/projects/status/lj0j06cxmlhymr3f)](https://ci.appveyor.com/project/yufeih/nine-graphics)
 
 > This project is still a work in progress, a lot of things are not implemented yet.
 
