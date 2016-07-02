@@ -28,17 +28,5 @@
             result.Row3.Z = m.M43;
             result.Row3.W = m.M44;
         }
-
-        public static bool IsGLAvailable()
-        {
-            try
-            {
-                return GraphicsMode.Default != null;
-            }
-            catch
-            {
-                return false;
-            }
-        }
     }
 }

@@ -7,8 +7,6 @@
     {
         public Device Device { get; }
 
-        public override bool IsAvailable => Device != null;
-
         public DXTestGraphicsHost(
             int width, int height,
             int testDuration = 1000, float epsilon = 0.001f, string outputPath = null)

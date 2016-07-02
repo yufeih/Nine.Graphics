@@ -15,8 +15,6 @@ namespace Nine.Graphics.Rendering
     {
         public readonly int FrameCount = 1;
 
-        public bool IsAvailable => true;
-
         public IntPtr WindowHandle => window.Handle;
 
         /// <summary> Gets the current graphics device. </summary>

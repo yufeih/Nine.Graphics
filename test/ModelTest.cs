@@ -21,7 +21,6 @@
         public static async Task draw_models(Lazy<DrawingContext> contextFactory, Model[] scene)
         {
             var context = contextFactory.Value;
-            if (context == null) return;
 
             await context.ModelPreloader.Preload(Models);
             

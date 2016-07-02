@@ -14,8 +14,6 @@
     {
         public readonly GraphicsContext GraphicsContext;
 
-        public bool IsAvailable => true;
-
         public EmbeddedGraphicsHost(IntPtr windowHandle, GraphicsMode mode = null)
         {
             GLDebug.CheckAccess();

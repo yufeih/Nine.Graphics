@@ -36,8 +36,6 @@
         {
             var host = test ? (IGraphicsHost)new GLTestGraphicsHost(width, height) : new GLGraphicsHost(width, height);
 
-            if (!host.IsAvailable) return null;
-
             var textureFactory = new GLTextureFactory(TextureLoader);
             var fontFactory = new GLFontTextureFactory(FontLoader);
             var modelFactory = new GLModelFactory(ModelLoader);
@@ -59,8 +57,6 @@
         public static DrawingContext CreateDirectX(int width, int height, bool test = false)
         {
             var host = new DXGraphicsHost(width, height);
-
-            if (!host.IsAvailable) return null;
 
             var textureFactory = new DXTextureFactory(TextureLoader);
             var fontFactory = new DXFontTextureFactory(FontLoader);

@@ -51,8 +51,6 @@
         private readonly string _perfFile;
         private readonly Dictionary<string, double> _perf = new Dictionary<string, double>();
 
-        public abstract bool IsAvailable { get; }
-
         public TestGraphicsHost(string name, int width, int height, int testDuration, float epsilon, string outputPath)
         {
             Name = name;
@@ -76,8 +74,6 @@
 
         public bool DrawFrame(Action<int, int> draw, [CallerMemberName]string frameName = null)
         {
-            if (!IsAvailable) return false;
-
             var frameIdentifier = GetFrameIdentifier(frameName);
             var framePath = Path.Combine(_outputPath, frameIdentifier);
 

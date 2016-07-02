@@ -48,7 +48,6 @@
         public static async Task draw_sprites(Lazy<DrawingContext> contextFactory, Sprite[] scene)
         {
             var context = contextFactory.Value;
-            if (context == null) return;
 
             await context.TexturePreloader.Preload(Textures);
 

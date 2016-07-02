@@ -39,9 +39,22 @@
 
         public readonly GameWindow Window;
 
-        public bool IsAvailable => GLHelper.IsGLAvailable();
-
         private static readonly OpenGLSynchronizationContext s_syncContext = new OpenGLSynchronizationContext();
+
+        public static bool IsAvailable
+        {
+            get
+            {
+                try
+                {
+                    return GraphicsMode.Default != null;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
         public GLGraphicsHost(int width, int height, GraphicsMode mode = null, bool vSync = true)
             : this(new GameWindow(width, height, mode, "Nine.Graphics", GameWindowFlags.Default) { VSync = vSync ? VSyncMode.On : VSyncMode.Off, Visible = true })

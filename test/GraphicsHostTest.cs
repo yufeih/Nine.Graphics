@@ -11,7 +11,6 @@
         public static void empty_scene(Lazy<DrawingContext> contextFactory, string scene)
         {
             var context = contextFactory.Value;
-            if (context == null) return;
 
             context.DrawFrame<GraphicsHostTest>((width, height) => { });
         }

@@ -10,8 +10,6 @@
     {
         private readonly GameWindow _window;
 
-        public override bool IsAvailable => _window != null;
-
         public GLTestGraphicsHost(
             int width, int height, GraphicsMode mode = null,
             int testDuration = 1000, float epsilon = 0.001f, string outputPath = null)
@@ -19,12 +17,9 @@
         {
             GLDebug.CheckAccess();
 
-            if (GLHelper.IsGLAvailable())
-            {
-                _window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
+            _window = new GameWindow(width, height, mode) { VSync = VSyncMode.Off };
 
-                GL.ClearColor(Color.Transparent);
-            }
+            GL.ClearColor(Color.Transparent);
         }
 
         protected override void BeginFrame()
