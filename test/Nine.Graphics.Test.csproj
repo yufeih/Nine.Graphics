@@ -54,9 +54,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\dep\Nine.Imaging\src\*.cs" />
-    <Compile Include="..\dep\Nine.Imaging\src\Encoding\**\*.cs" />
-    <Compile Include="..\src\**\*.cs" />
     <Compile Include="*.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +108,7 @@
       <HintPath>..\packages\System.Numerics.Vectors.4.1.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
@@ -130,6 +128,8 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <Import Project="..\src\Nine.Graphics.projitems" Label="Shared" />
+  <Import Project="..\dep\Nine.Imaging\src\Nine.Imaging.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
