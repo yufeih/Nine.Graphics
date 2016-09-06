@@ -5,7 +5,23 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nine.Graphics.Test", "test\Nine.Graphics.Test.csproj", "{65252ACE-C744-44C8-9AC1-197F54B329E0}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Nine.Imaging", "dep\Nine.Imaging\src\Nine.Imaging.shproj", "{FE23C75C-DEAE-4C78-807C-998DB7A32125}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A87FE7F6-7458-415B-82D2-96EB58153738}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dep", "dep", "{A72167EB-1944-46EE-98CA-CA847586434C}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Nine.Graphics", "src\Nine.Graphics.shproj", "{FE23C75C-DEAE-4C78-807C-958DB7A32125}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5B554BB7-1569-427A-9254-ECD709FDD3DF}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Nine.Graphics.projitems*{fe23c75c-deae-4c78-807c-958db7a32125}*SharedItemsImports = 13
+		dep\Nine.Imaging\src\Nine.Imaging.projitems*{fe23c75c-deae-4c78-807c-998db7a32125}*SharedItemsImports = 13
+		src\Nine.Graphics.projitems*{65252ace-c744-44c8-9ac1-197f54b329e0}*SharedItemsImports = 4
+		dep\Nine.Imaging\src\Nine.Imaging.projitems*{65252ace-c744-44c8-9ac1-197f54b329e0}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -18,5 +34,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{65252ACE-C744-44C8-9AC1-197F54B329E0} = {5B554BB7-1569-427A-9254-ECD709FDD3DF}
+		{FE23C75C-DEAE-4C78-807C-998DB7A32125} = {A72167EB-1944-46EE-98CA-CA847586434C}
+		{FE23C75C-DEAE-4C78-807C-958DB7A32125} = {A87FE7F6-7458-415B-82D2-96EB58153738}
 	EndGlobalSection
 EndGlobal
